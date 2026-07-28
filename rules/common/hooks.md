@@ -1,30 +1,29 @@
-# Hooks System
+# Hooks & TodoWrite
 
 ## Hook Types
 
-- **PreToolUse**: Before tool execution (validation, parameter modification)
-- **PostToolUse**: After tool execution (auto-format, checks)
-- **Stop**: When session ends (final verification)
+| Hook        | Fires                 | Typical use                           |
+| ----------- | --------------------- | ------------------------------------- |
+| PreToolUse  | Before tool execution | Validate parameters, block unsafe ops |
+| PostToolUse | After tool execution  | Auto-format, run checks               |
+| Stop        | Session ends          | Final verification, save state        |
 
 ## Auto-Accept Permissions
 
-Use with caution:
-- Enable for trusted, well-defined plans
+- Enable only for trusted, well-defined plans
 - Disable for exploratory work
-- Never use dangerously-skip-permissions flag
+- **Never** use `--dangerously-skip-permissions`
 - Configure `allowedTools` in `~/.claude.json` instead
 
-## TodoWrite Best Practices
+## TodoWrite
 
-Use TodoWrite tool to:
-- Track progress on multi-step tasks
-- Verify understanding of instructions
-- Enable real-time steering
-- Show granular implementation steps
-
-Todo list reveals:
-- Out of order steps
+Use to track progress on multi-step tasks. The list itself reveals:
+- Out-of-order steps
 - Missing items
-- Extra unnecessary items
+- Unnecessary extras
 - Wrong granularity
 - Misinterpreted requirements
+
+Mark each task `completed` immediately when done — don't batch updates.
+
+The list is **user-visible** — write it so the user can spot drift and redirect mid-task. TodoWrite is a steering channel, not private bookkeeping.

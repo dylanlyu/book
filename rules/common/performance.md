@@ -1,55 +1,57 @@
-# Performance Optimization
+# Performance & Resource Strategy
 
-## Model Selection Strategy
+## Model Selection
 
-**Haiku** (90% of Sonnet capability, 3x cost savings):
-- Lightweight agents with frequent invocation
-- Pair programming and code generation
-- Worker agents in multi-agent systems
+Pick by **task shape**, not by model capability claims. The aliases below are
+stable; which generation they resolve to is the harness's business, not this file's.
 
-**Sonnet** (Best coding model):
-- Main development work
-- Orchestrating multi-agent workflows
-- Complex coding tasks
+| Alias    | Choose when the task…                                                    |
+| -------- | ------------------------------------------------------------------------ |
+| `haiku`  | has a known-good procedure and a checkable output — formatting, extraction, classification, mechanical edits, high-frequency worker agents in a fan-out |
+| `sonnet` | requires reading unfamiliar code and deciding what to change — the default for implementation, review, and orchestration |
+| `opus`   | has no known procedure and an expensive wrong answer — architecture, cross-cutting refactor design, root-causing a bug that survived one fix attempt |
 
-**Opus** (Deepest reasoning):
-- Complex architectural decisions
-- Maximum reasoning requirements
-- Research and analysis tasks
+**Default to `sonnet`.** Deviate only for a stated reason.
+
+**Escalate** when a task fails twice at its current tier — a third attempt at the
+same tier usually repeats the same wrong assumption. **Downgrade** when the same
+prompt shape has succeeded repeatedly; that's evidence the procedure is known.
+
+Use `/model-route` when the tier isn't obvious from the table.
 
 ## Context Window Management
 
-Avoid last 20% of context window for:
-- Large-scale refactoring
-- Feature implementation spanning multiple files
-- Debugging complex interactions
+- **High-sensitivity tasks** (avoid the last 20% of context): multi-file refactoring, large feature implementation, complex cross-file debugging.
+- **Low-sensitivity tasks** (safe near limits): single-file edits, isolated utilities, doc updates, simple bug fixes.
 
-Lower context sensitivity tasks:
-- Single-file edits
-- Independent utility creation
-- Documentation updates
-- Simple bug fixes
+## Context Handoff
+
+When work spans multiple sessions or grows complex:
+
+- Maintain a **Mental Model** artifact (e.g. `task.md`, `docs/notes/<task>.md`) recording: current assumptions · completed steps · next logical actions.
+- After a milestone (PR merged, refactor done, feature shipped), proactively suggest **context compaction** or a new session.
+- Do not silently push through context degradation — flag it and hand off cleanly.
 
 ## Extended Thinking + Plan Mode
 
-Extended thinking is enabled by default, reserving up to 31,999 tokens for internal reasoning.
+For complex reasoning tasks:
 
-Control extended thinking via:
-- **Toggle**: Option+T (macOS) / Alt+T (Windows/Linux)
-- **Config**: Set `alwaysThinkingEnabled` in `~/.claude/settings.json`
-- **Budget cap**: `export MAX_THINKING_TOKENS=10000` (bash) or `$env:MAX_THINKING_TOKENS = "10000"` (PowerShell)
-- **Verbose mode**: Ctrl+O to see thinking output
+1. Keep extended thinking enabled (default — reserves up to ~32K tokens for internal reasoning)
+2. Use **Plan Mode** for structured multi-step work
+3. Run multiple critique rounds via split-role sub-agents (factual reviewer, senior engineer, security expert)
 
-For complex tasks requiring deep reasoning:
-1. Ensure extended thinking is enabled (on by default)
-2. Enable **Plan Mode** for structured approach
-3. Use multiple critique rounds for thorough analysis
-4. Use split role sub-agents for diverse perspectives
+**Operator controls** (when the user wants to tune thinking):
 
-## Build Troubleshooting
+- Toggle: `Option+T` (macOS) / `Alt+T` (Windows / Linux)
+- Persistent setting: `alwaysThinkingEnabled` in `~/.claude/settings.json`
+- Budget cap: `export MAX_THINKING_TOKENS=10000` (bash) · `$env:MAX_THINKING_TOKENS = "10000"` (PowerShell)
+- Verbose output: `Ctrl+O` to surface the thinking trace
 
-If build fails:
-1. Use **build-error-resolver** agent
-2. Analyze error messages
-3. Fix incrementally
-4. Verify after each fix
+## Build & Tooling Failures
+
+Delegate to specialized resolvers instead of trial-and-error:
+
+- Generic build → `build-error-resolver`
+- Language-specific → `go-build-resolver`, `rust-build-resolver`, `kotlin-build-resolver`, `java-build-resolver`, `cpp-build-resolver`, `dart-build-resolver`, `pytorch-build-resolver`
+
+Fix incrementally; verify after each fix.

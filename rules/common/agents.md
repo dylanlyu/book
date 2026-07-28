@@ -1,30 +1,37 @@
 # Agent Orchestration
 
+## Core Principles
+
+- **Parallel by default**: Run independent agents simultaneously, not sequentially.
+- **Proactive**: Don't wait for failures. Invoke before, during, and after writing code.
+- **Right scope**: Match agent specificity to the problem (language-specific > general).
+
+## Trigger Rules (Invoke Without Waiting for User)
+
+| Trigger | Agent(s) |
+|---------|----------|
+| Complex feature or refactor | `planner` |
+| Architectural decision | `architect` |
+| Code written or modified | `code-reviewer` + language reviewer |
+| New feature or bug fix | `tdd-guide` |
+| Security-sensitive changes | `security-reviewer` |
+| Build failure | language-specific build resolver |
+| Dead code / cleanup | `refactor-cleaner` |
+| Performance bottleneck | `performance-optimizer` |
+| E2E flow change | `e2e-runner` |
+| Documentation drift | `doc-updater` |
+
 ## Available Agents
 
-Located in `~/.claude/agents/`:
+Located in `~/.claude/agents/`. Organized by category:
 
-| Agent | Purpose | When to Use |
-|-------|---------|-------------|
-| planner | Implementation planning | Complex features, refactoring |
-| architect | System design | Architectural decisions |
-| tdd-guide | Test-driven development | New features, bug fixes |
-| code-reviewer | Code review | After writing code |
-| security-reviewer | Security analysis | Before commits |
-| build-error-resolver | Fix build errors | When build fails |
-| e2e-runner | E2E testing | Critical user flows |
-| refactor-cleaner | Dead code cleanup | Code maintenance |
-| doc-updater | Documentation | Updating docs |
-| rust-reviewer | Rust code review | Rust projects |
-| harmonyos-app-resolver | HarmonyOS app development | HarmonyOS/ArkTS projects |
+**Core**: `planner`, `architect`, `tdd-guide`, `code-reviewer`, `security-reviewer`, `refactor-cleaner`, `doc-updater`, `performance-optimizer`, `code-simplifier`, `e2e-runner`, `code-explorer`, `code-architect`
 
-## Immediate Agent Usage
+**Language reviewers**: `typescript-reviewer`, `go-reviewer`, `python-reviewer`, `kotlin-reviewer`, `rust-reviewer`, `java-reviewer`, `flutter-reviewer`, `database-reviewer`, `cpp-reviewer`, `csharp-reviewer`, `fsharp-reviewer`
 
-No user prompt needed:
-1. Complex feature requests - Use **planner** agent
-2. Code just written/modified - Use **code-reviewer** agent
-3. Bug fix or new feature - Use **tdd-guide** agent
-4. Architectural decision - Use **architect** agent
+**Build resolvers**: `go-build-resolver`, `rust-build-resolver`, `kotlin-build-resolver`, `java-build-resolver`, `cpp-build-resolver`, `dart-build-resolver`, `pytorch-build-resolver`, `harmonyos-app-resolver`, `build-error-resolver`
+
+**Specialists**: `silent-failure-hunter`, `type-design-analyzer`, `comment-analyzer`, `pr-test-analyzer`
 
 ## Parallel Task Execution
 

@@ -40,14 +40,6 @@ MANY SMALL FILES > FEW LARGE FILES:
 - Extract utilities from large modules
 - Organize by feature/domain, not by type
 
-## Scout Rule
-
-Always leave the code cleaner than you found it. Every feature PR should include a small cleanup unrelated to the main task but within the modified scope — fix one piece of technical debt, remove dead code, or improve a confusing name.
-
-## Atomic Change Principle
-
-Each edit should be limited to a single functional module or logical component to ensure reviewability and reduce conflicts. For files over 500 lines, never use full overwrite — always use targeted edits.
-
 ## Error Handling
 
 ALWAYS handle errors comprehensively:
@@ -84,13 +76,15 @@ Use named constants for meaningful thresholds, delays, and limits.
 
 ### Long Functions
 
-Split large functions into focused pieces with clear responsibilities (50 lines max).
+Split large functions into focused pieces with clear responsibilities.
 
-## Quality Gate (Self-Check Before Commit)
+## Code Quality Checklist
 
-- Readable, well-named identifiers
-- Functions <50 lines · files <800 lines · nesting ≤4 levels
-- Errors handled explicitly (never swallowed)
-- No hardcoded values — use named constants or config
-- Immutable patterns — no in-place mutation
-- No leftover `console.log` / debug prints / TODO without ticket
+Before marking work complete:
+- [ ] Code is readable and well-named
+- [ ] Functions are small (<50 lines)
+- [ ] Files are focused (<800 lines)
+- [ ] No deep nesting (>4 levels)
+- [ ] Proper error handling
+- [ ] No hardcoded values (use constants or config)
+- [ ] No mutation (immutable patterns used)

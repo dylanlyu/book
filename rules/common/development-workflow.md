@@ -1,44 +1,26 @@
 # Development Workflow
 
-> This file extends [common/git-workflow.md](./git-workflow.md) with the full feature development process that happens before git operations.
+End-to-end pipeline for any non-trivial change. Each step links to the rule that owns the detail.
 
-The Feature Implementation Workflow describes the development pipeline: research, planning, TDD, code review, and then committing to git.
+## Feature Implementation Pipeline
 
-## Feature Implementation Workflow
+0. **Research & Reuse** _(mandatory before writing new code)_
+   - **GitHub first**: `gh search repos` / `gh search code` to find existing implementations and patterns
+   - **Library docs second**: Context7 or primary vendor docs to confirm API behavior
+   - **Exa third**: only when the first two are insufficient
+   - **Package registries**: npm / PyPI / crates.io / Maven before hand-rolling utilities
+   - Prefer adopting or porting a proven approach over net-new code
 
-0. **Research & Reuse** _(mandatory before any new implementation)_
-   - **GitHub code search first:** Run `gh search repos` and `gh search code` to find existing implementations, templates, and patterns before writing anything new.
-   - **Library docs second:** Use Context7 or primary vendor docs to confirm API behavior, package usage, and version-specific details before implementing.
-   - **Exa only when the first two are insufficient:** Use Exa for broader web research or discovery after GitHub search and primary docs.
-   - **Check package registries:** Search npm, PyPI, crates.io, and other registries before writing utility code. Prefer battle-tested libraries over hand-rolled solutions.
-   - **Search for adaptable implementations:** Look for open-source projects that solve 80%+ of the problem and can be forked, ported, or wrapped.
-   - Prefer adopting or porting a proven approach over writing net-new code when it meets the requirement.
+1. **Plan First** — invoke `planner`. Produce PRD / architecture / system design / task list. Identify dependencies, risks, key edge cases.
 
-1. **Plan First**
-   - Use **planner** agent to create implementation plan
-   - Generate planning docs before coding: PRD, architecture, system_design, tech_doc, task_list
-   - Identify dependencies and risks
-   - Break down into phases
+2. **Hypothesis Verification** _(bug fixes only)_ — explicitly state "**why it failed**" and "**how the fix addresses it**" before any code change. Never patch without root-cause understanding.
 
-2. **TDD Approach**
-   - Use **tdd-guide** agent
-   - Write tests first (RED)
-   - Implement to pass tests (GREEN)
-   - Refactor (IMPROVE)
-   - Verify 80%+ coverage
+3. **TDD** — see [testing.md](./testing.md). Use `tdd-guide`. Target ≥80% coverage.
 
-3. **Code Review**
-   - Use **code-reviewer** agent immediately after writing code
-   - Address CRITICAL and HIGH issues
-   - Fix MEDIUM issues when possible
+4. **Code Review** — see [code-review.md](./code-review.md). Run `code-reviewer` + the language reviewer in parallel after writing. Fix CRITICAL/HIGH; address MEDIUM when feasible.
 
-4. **Commit & Push**
-   - Detailed commit messages
-   - Follow conventional commits format
-   - See [git-workflow.md](./git-workflow.md) for commit message format and PR process
+5. **Documentation Sync** — when modifying core logic, API handlers, or DB schemas, proactively update README, specs, codemaps, and CLAUDE.md / AGENTS.md. Land docs in the same commit as the code.
 
-5. **Pre-Review Checks**
-   - Verify all automated checks (CI/CD) are passing
-   - Resolve any merge conflicts
-   - Ensure branch is up to date with target branch
-   - Only request review after these checks pass
+6. **Commit & Push** — see [git-workflow.md](./git-workflow.md). Conventional commits.
+
+7. **Pre-Review Gate** — CI green · conflicts resolved · branch up to date with target. Only request review after this passes.

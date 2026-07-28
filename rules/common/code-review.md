@@ -1,124 +1,64 @@
 # Code Review Standards
 
-## Purpose
+> Quality checklist lives in [coding-style.md](./coding-style.md). Security checklist lives in [security.md](./security.md). This file defines **when to review, severity, and which agent to invoke**.
 
-Code review ensures quality, security, and maintainability before code is merged. This rule defines when and how to conduct code reviews.
+## Mandatory Triggers
 
-## When to Review
+Run review (yourself or via agent) when:
+- Code was just written or modified
+- About to commit to a shared branch
+- Security-sensitive code changed (auth, payments, user data, crypto, file I/O, DB queries, external APIs)
+- Architectural changes
+- Before merging a PR
 
-**MANDATORY review triggers:**
+**Pre-review preconditions**: CI passing · merge conflicts resolved · branch up to date with target.
 
-- After writing or modifying code
-- Before any commit to shared branches
-- When security-sensitive code is changed (auth, payments, user data)
-- When architectural changes are made
-- Before merging pull requests
+## Severity Levels
 
-**Pre-Review Requirements:**
+| Level    | Meaning                             | Action                 |
+| -------- | ----------------------------------- | ---------------------- |
+| CRITICAL | Security vulnerability or data loss | **BLOCK** — must fix   |
+| HIGH     | Bug or significant quality issue    | **WARN** — should fix  |
+| MEDIUM   | Maintainability concern             | INFO — consider fixing |
+| LOW      | Style or minor suggestion           | NOTE — optional        |
 
-Before requesting review, ensure:
+**Approve** if no CRITICAL/HIGH. **Warning** if only HIGH (merge with caution). **Block** on any CRITICAL.
 
-- All automated checks (CI/CD) are passing
-- Merge conflicts are resolved
-- Branch is up to date with target branch
+## Reviewer Agent Map
 
-## Review Checklist
+| Scope                                | Agent                  |
+| ------------------------------------ | ---------------------- |
+| General quality / patterns           | `code-reviewer`        |
+| Security / OWASP                     | `security-reviewer`    |
+| TypeScript / JavaScript              | `typescript-reviewer`  |
+| Python                               | `python-reviewer`      |
+| Go                                   | `go-reviewer`          |
+| Rust                                 | `rust-reviewer`        |
+| Kotlin                               | `kotlin-reviewer`      |
+| Java / Spring Boot                   | `java-reviewer`        |
+| C++                                  | `cpp-reviewer`         |
+| C# / .NET                            | `csharp-reviewer`      |
+| Flutter / Dart                       | `flutter-reviewer`     |
+| SQL / schema / queries               | `database-reviewer`    |
 
-Before marking code complete:
-
-- [ ] Code is readable and well-named
-- [ ] Functions are focused (<50 lines)
-- [ ] Files are cohesive (<800 lines)
-- [ ] No deep nesting (>4 levels)
-- [ ] Errors are handled explicitly
-- [ ] No hardcoded secrets or credentials
-- [ ] No console.log or debug statements
-- [ ] Tests exist for new functionality
-- [ ] Test coverage meets 80% minimum
-
-## Security Review Triggers
-
-**STOP and use security-reviewer agent when:**
-
-- Authentication or authorization code
-- User input handling
-- Database queries
-- File system operations
-- External API calls
-- Cryptographic operations
-- Payment or financial code
-
-## Review Severity Levels
-
-| Level | Meaning | Action |
-|-------|---------|--------|
-| CRITICAL | Security vulnerability or data loss risk | **BLOCK** - Must fix before merge |
-| HIGH | Bug or significant quality issue | **WARN** - Should fix before merge |
-| MEDIUM | Maintainability concern | **INFO** - Consider fixing |
-| LOW | Style or minor suggestion | **NOTE** - Optional |
-
-## Agent Usage
-
-Use these agents for code review:
-
-| Agent | Purpose |
-|-------|---------|
-| **code-reviewer** | General code quality, patterns, best practices |
-| **security-reviewer** | Security vulnerabilities, OWASP Top 10 |
-| **typescript-reviewer** | TypeScript/JavaScript specific issues |
-| **python-reviewer** | Python specific issues |
-| **go-reviewer** | Go specific issues |
-| **rust-reviewer** | Rust specific issues |
+For language-specific changes, run **`code-reviewer` + the language reviewer in parallel**.
 
 ## Review Workflow
 
-```
-1. Run git diff to understand changes
-2. Check security checklist first
-3. Review code quality checklist
-4. Run relevant tests
-5. Verify coverage >= 80%
-6. Use appropriate agent for detailed review
-```
+1. `git diff` to scope the change
+2. Run security checklist first ([security.md](./security.md))
+3. Run quality checklist ([coding-style.md](./coding-style.md))
+4. Run tests, verify coverage ≥ 80% ([testing.md](./testing.md))
+5. Invoke appropriate reviewer agent(s) for deep review
 
-## Common Issues to Catch
+## Performance Issues to Catch
 
-### Security
+Beyond quality and security, scan changes for these performance smells:
 
-- Hardcoded credentials (API keys, passwords, tokens)
-- SQL injection (string concatenation in queries)
-- XSS vulnerabilities (unescaped user input)
-- Path traversal (unsanitized file paths)
-- CSRF protection missing
-- Authentication bypasses
+- **N+1 queries** — replace per-iteration queries with JOINs or batched fetches
+- **Missing pagination** — add `LIMIT` / cursor on any list endpoint that can grow
+- **Unbounded queries** — apply explicit constraints (date range, status filter, max rows)
+- **Missing caching** — cache deterministic, expensive operations (computed aggregates, external API calls)
+- **Sync I/O in hot paths** — prefer async / streaming for network and disk-heavy work
 
-### Code Quality
-
-- Large functions (>50 lines) - split into smaller
-- Large files (>800 lines) - extract modules
-- Deep nesting (>4 levels) - use early returns
-- Missing error handling - handle explicitly
-- Mutation patterns - prefer immutable operations
-- Missing tests - add test coverage
-
-### Performance
-
-- N+1 queries - use JOINs or batching
-- Missing pagination - add LIMIT to queries
-- Unbounded queries - add constraints
-- Missing caching - cache expensive operations
-
-## Approval Criteria
-
-- **Approve**: No CRITICAL or HIGH issues
-- **Warning**: Only HIGH issues (merge with caution)
-- **Block**: CRITICAL issues found
-
-## Integration with Other Rules
-
-This rule works with:
-
-- [testing.md](testing.md) - Test coverage requirements
-- [security.md](security.md) - Security checklist
-- [git-workflow.md](git-workflow.md) - Commit standards
-- [agents.md](agents.md) - Agent delegation
+If any of these surface, delegate to **`performance-optimizer`** for a deeper pass.
