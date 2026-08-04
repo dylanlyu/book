@@ -31,7 +31,7 @@ function runTests() {
     const parsed = parseInstallArgs([
       'node',
       'scripts/install-apply.js',
-      '--target', 'cursor',
+      '--target', 'zed',
       '--profile', 'developer',
       '--modules', 'platform-configs, workflow-quality ,platform-configs',
       '--with', 'lang:typescript',
@@ -41,7 +41,7 @@ function runTests() {
       '--json'
     ]);
 
-    assert.strictEqual(parsed.target, 'cursor');
+    assert.strictEqual(parsed.target, 'zed');
     assert.strictEqual(parsed.profileId, 'developer');
     assert.strictEqual(parsed.configPath, 'ecc-install.json');
     assert.deepStrictEqual(parsed.moduleIds, ['platform-configs', 'workflow-quality']);
@@ -141,7 +141,7 @@ function runTests() {
   if (test('rejects --locale for non-Claude targets', () => {
     assert.throws(
       () => normalizeInstallRequest({
-        target: 'cursor',
+        target: 'zed',
         profileId: null,
         moduleIds: [],
         includeComponentIds: [],
@@ -155,7 +155,7 @@ function runTests() {
 
   if (test('normalizes manifest installs into a canonical request', () => {
     const request = normalizeInstallRequest({
-      target: 'cursor',
+      target: 'zed',
       profileId: 'developer',
       moduleIds: [],
       includeComponentIds: ['lang:typescript'],
@@ -164,7 +164,7 @@ function runTests() {
     });
 
     assert.strictEqual(request.mode, 'manifest');
-    assert.strictEqual(request.target, 'cursor');
+    assert.strictEqual(request.target, 'zed');
     assert.strictEqual(request.profileId, 'developer');
     assert.deepStrictEqual(request.includeComponentIds, ['lang:typescript']);
     assert.deepStrictEqual(request.excludeComponentIds, ['capability:media']);
@@ -173,7 +173,7 @@ function runTests() {
 
   if (test('merges config-backed component selections with CLI overrides', () => {
     const request = normalizeInstallRequest({
-      target: 'cursor',
+      target: 'zed',
       profileId: null,
       moduleIds: ['platform-configs'],
       includeComponentIds: ['framework:nextjs'],
@@ -191,7 +191,7 @@ function runTests() {
     });
 
     assert.strictEqual(request.mode, 'manifest');
-    assert.strictEqual(request.target, 'cursor');
+    assert.strictEqual(request.target, 'zed');
     assert.strictEqual(request.profileId, 'developer');
     assert.deepStrictEqual(request.moduleIds, ['workflow-quality', 'platform-configs']);
     assert.deepStrictEqual(request.includeComponentIds, ['lang:typescript', 'framework:nextjs']);
@@ -202,7 +202,7 @@ function runTests() {
   if (test('validates explicit module IDs against the manifest catalog', () => {
     assert.throws(
       () => normalizeInstallRequest({
-        target: 'cursor',
+        target: 'zed',
         profileId: null,
         moduleIds: ['ghost-module'],
         includeComponentIds: [],

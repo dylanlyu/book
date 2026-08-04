@@ -44,7 +44,7 @@ PROMPTS_DEST="$CODEX_HOME/prompts"
 BASELINE_MERGE_SCRIPT="$REPO_ROOT/scripts/codex/merge-codex-config.js"
 HOOKS_INSTALLER="$REPO_ROOT/scripts/codex/install-global-git-hooks.sh"
 SANITY_CHECKER="$REPO_ROOT/scripts/codex/check-codex-global-state.sh"
-CURSOR_RULES_DIR="$REPO_ROOT/.cursor/rules"
+ECC_RULES_DIR="$REPO_ROOT/rules"
 
 STAMP="$(date +%Y%m%d-%H%M%S)"
 BACKUP_DIR="$CODEX_HOME/backups/ecc-$STAMP"
@@ -169,7 +169,7 @@ require_path "$PROMPTS_SRC" "ECC commands directory"
 require_path "$BASELINE_MERGE_SCRIPT" "ECC Codex baseline merge script"
 require_path "$HOOKS_INSTALLER" "ECC global git hooks installer"
 require_path "$SANITY_CHECKER" "ECC global sanity checker"
-require_path "$CURSOR_RULES_DIR" "ECC Cursor rules directory"
+require_path "$ECC_RULES_DIR" "ECC rules directory"
 require_path "$CONFIG_FILE" "Codex config.toml"
 require_path "$MCP_MERGE_SCRIPT" "ECC MCP merge script"
 
@@ -427,15 +427,15 @@ write_extension_prompt "ecc-rules-pack-common.md" <<EOF
 
 Apply ECC common engineering rules for this session. Use these files as the source of truth:
 
-- \`$CURSOR_RULES_DIR/common-agents.md\`
-- \`$CURSOR_RULES_DIR/common-coding-style.md\`
-- \`$CURSOR_RULES_DIR/common-development-workflow.md\`
-- \`$CURSOR_RULES_DIR/common-git-workflow.md\`
-- \`$CURSOR_RULES_DIR/common-hooks.md\`
-- \`$CURSOR_RULES_DIR/common-patterns.md\`
-- \`$CURSOR_RULES_DIR/common-performance.md\`
-- \`$CURSOR_RULES_DIR/common-security.md\`
-- \`$CURSOR_RULES_DIR/common-testing.md\`
+- \`$ECC_RULES_DIR/common/agents.md\`
+- \`$ECC_RULES_DIR/common/coding-style.md\`
+- \`$ECC_RULES_DIR/common/development-workflow.md\`
+- \`$ECC_RULES_DIR/common/git-workflow.md\`
+- \`$ECC_RULES_DIR/common/hooks.md\`
+- \`$ECC_RULES_DIR/common/patterns.md\`
+- \`$ECC_RULES_DIR/common/performance.md\`
+- \`$ECC_RULES_DIR/common/security.md\`
+- \`$ECC_RULES_DIR/common/testing.md\`
 
 Treat these as strict defaults for planning, implementation, review, and verification in this repo.
 EOF
@@ -449,11 +449,11 @@ Apply ECC common rules plus TypeScript-specific rules for this session.
 Use \`$PROMPTS_DEST/ecc-rules-pack-common.md\`.
 
 ## TypeScript Extensions
-- \`$CURSOR_RULES_DIR/typescript-coding-style.md\`
-- \`$CURSOR_RULES_DIR/typescript-hooks.md\`
-- \`$CURSOR_RULES_DIR/typescript-patterns.md\`
-- \`$CURSOR_RULES_DIR/typescript-security.md\`
-- \`$CURSOR_RULES_DIR/typescript-testing.md\`
+- \`$ECC_RULES_DIR/typescript/coding-style.md\`
+- \`$ECC_RULES_DIR/typescript/hooks.md\`
+- \`$ECC_RULES_DIR/typescript/patterns.md\`
+- \`$ECC_RULES_DIR/typescript/security.md\`
+- \`$ECC_RULES_DIR/typescript/testing.md\`
 
 Language-specific guidance overrides common rules when they conflict.
 EOF
@@ -467,11 +467,11 @@ Apply ECC common rules plus Python-specific rules for this session.
 Use \`$PROMPTS_DEST/ecc-rules-pack-common.md\`.
 
 ## Python Extensions
-- \`$CURSOR_RULES_DIR/python-coding-style.md\`
-- \`$CURSOR_RULES_DIR/python-hooks.md\`
-- \`$CURSOR_RULES_DIR/python-patterns.md\`
-- \`$CURSOR_RULES_DIR/python-security.md\`
-- \`$CURSOR_RULES_DIR/python-testing.md\`
+- \`$ECC_RULES_DIR/python/coding-style.md\`
+- \`$ECC_RULES_DIR/python/hooks.md\`
+- \`$ECC_RULES_DIR/python/patterns.md\`
+- \`$ECC_RULES_DIR/python/security.md\`
+- \`$ECC_RULES_DIR/python/testing.md\`
 
 Language-specific guidance overrides common rules when they conflict.
 EOF
@@ -485,11 +485,11 @@ Apply ECC common rules plus Go-specific rules for this session.
 Use \`$PROMPTS_DEST/ecc-rules-pack-common.md\`.
 
 ## Go Extensions
-- \`$CURSOR_RULES_DIR/golang-coding-style.md\`
-- \`$CURSOR_RULES_DIR/golang-hooks.md\`
-- \`$CURSOR_RULES_DIR/golang-patterns.md\`
-- \`$CURSOR_RULES_DIR/golang-security.md\`
-- \`$CURSOR_RULES_DIR/golang-testing.md\`
+- \`$ECC_RULES_DIR/golang/coding-style.md\`
+- \`$ECC_RULES_DIR/golang/hooks.md\`
+- \`$ECC_RULES_DIR/golang/patterns.md\`
+- \`$ECC_RULES_DIR/golang/security.md\`
+- \`$ECC_RULES_DIR/golang/testing.md\`
 
 Language-specific guidance overrides common rules when they conflict.
 EOF
@@ -503,11 +503,11 @@ Apply ECC common rules plus Swift-specific rules for this session.
 Use \`$PROMPTS_DEST/ecc-rules-pack-common.md\`.
 
 ## Swift Extensions
-- \`$CURSOR_RULES_DIR/swift-coding-style.md\`
-- \`$CURSOR_RULES_DIR/swift-hooks.md\`
-- \`$CURSOR_RULES_DIR/swift-patterns.md\`
-- \`$CURSOR_RULES_DIR/swift-security.md\`
-- \`$CURSOR_RULES_DIR/swift-testing.md\`
+- \`$ECC_RULES_DIR/swift/coding-style.md\`
+- \`$ECC_RULES_DIR/swift/hooks.md\`
+- \`$ECC_RULES_DIR/swift/patterns.md\`
+- \`$ECC_RULES_DIR/swift/security.md\`
+- \`$ECC_RULES_DIR/swift/testing.md\`
 
 Language-specific guidance overrides common rules when they conflict.
 EOF

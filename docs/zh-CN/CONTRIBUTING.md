@@ -358,24 +358,22 @@ description: 在 /help 中显示的简要描述
 * **Context7** 是一个暴露 `resolve-library-id` 和 `query-docs` 的 MCP 服务器。当用户询问库、框架或 API 时，请使用它，以便答案能反映最新的文档和代码示例。
 * 在贡献依赖于实时文档的**技能**时（例如设置、API 使用），请描述如何使用相关的 MCP 工具（例如，解析库 ID，然后查询文档），并指向 `documentation-lookup` 技能或 Context7 作为参考模式。
 * 在贡献能回答文档/API 问题的**智能体**时，请在智能体的工具中包含 Context7 MCP 工具名称（例如 `mcp__context7__resolve-library-id`, `mcp__context7__query-docs`），并记录解析 → 查询的工作流程。
-* **mcp-configs/mcp-servers.json** 包含一个 Context7 条目；用户在其工具链（例如 Claude Code, Cursor）中启用它，以使用文档查找技能（位于 `skills/documentation-lookup/`）和 `/docs` 命令。
+* **mcp-configs/mcp-servers.json** 包含一个 Context7 条目；用户在其工具链（例如 Claude Code, Codex）中启用它，以使用文档查找技能（位于 `skills/documentation-lookup/`）和 `/docs` 命令。
 
 ***
 
 ## 跨平台与翻译
 
-### 技能子集 (Codex 和 Cursor)
+### 技能子集 (Codex)
 
 ECC 为其他平台提供了技能子集：
 
 * **Codex:** `.agents/skills/` — `agents/openai.yaml` 中列出的技能会被 Codex 加载。
-* **Cursor:** `.cursor/skills/` — 为 Cursor 打包了一个技能子集。
 
-当您**添加一个新技能**，并且希望它在 Codex 或 Cursor 上可用时：
+当您**添加一个新技能**，并且希望它在 Codex 上可用时：
 
 1. 像往常一样，在 `skills/your-skill-name/` 下添加该技能。
 2. 如果它应该在 **Codex** 上可用，请将其添加到 `.agents/skills/`（复制技能目录或添加引用），并在需要时确保它在 `agents/openai.yaml` 中被引用。
-3. 如果它应该在 **Cursor** 上可用，请根据 Cursor 的布局，将其添加到 `.cursor/skills/` 下。
 
 请参考这些目录中现有技能的结构。保持这些子集同步是手动操作；如果您更新了它们，请在您的 PR 中说明。
 

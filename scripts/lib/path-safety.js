@@ -7,7 +7,7 @@ const path = require('path');
  * Path containment helpers for install-state-driven file operations.
  *
  * Install-state files are project-local and therefore attacker-controllable
- * (a cloned/forked repo can ship a crafted `.cursor/ecc-install-state.json`).
+ * (a cloned/forked repo can ship a crafted `.claude/ecc-install-state.json`).
  * `repair`/`uninstall`/`auto-update` replay recorded operations, so every
  * write/delete destination MUST be confined to the adapter-derived trusted
  * root - never trusted from the state file itself (GHSA-hfpv-w6mp-5g95).
@@ -53,12 +53,7 @@ function resolveContainment(target, root) {
   const realRoot = realpathNearestExisting(root);
   const realTarget = realpathNearestExisting(target);
   const relativePath = path.relative(realRoot, realTarget);
-  const contained = relativePath === ''
-    || (
-      relativePath !== '..'
-      && !relativePath.startsWith(`..${path.sep}`)
-      && !path.isAbsolute(relativePath)
-    );
+  const contained = relativePath === '' || (relativePath !== '..' && !relativePath.startsWith(`..${path.sep}`) && !path.isAbsolute(relativePath));
   return {
     contained,
     realRoot,

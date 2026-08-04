@@ -328,18 +328,16 @@ Skills e agentes podem usar ferramentas **MCP (Model Context Protocol)** para ob
 
 ## Multiplataforma e Traduções
 
-### Subconjuntos de Skills (Codex e Cursor)
+### Subconjuntos de Skills (Codex)
 
 O ECC vem com subconjuntos de skills para outros harnesses:
 
 - **Codex:** `.agents/skills/` — skills listadas em `agents/openai.yaml` são carregadas pelo Codex.
-- **Cursor:** `.cursor/skills/` — um subconjunto de skills é incluído para Cursor.
 
-Ao **adicionar uma nova skill** que deve estar disponível no Codex ou Cursor:
+Ao **adicionar uma nova skill** que deve estar disponível no Codex:
 
 1. Adicione a skill em `skills/nome-da-sua-skill/` como de costume.
 2. Se deve estar disponível no **Codex**, adicione-a em `.agents/skills/` e garanta que seja referenciada em `agents/openai.yaml` se necessário.
-3. Se deve estar disponível no **Cursor**, adicione-a em `.cursor/skills/`.
 
 ### Traduções
 

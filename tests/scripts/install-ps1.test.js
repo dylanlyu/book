@@ -96,14 +96,14 @@ function runTests() {
     const projectDir = createTempDir('install-ps1-project-');
 
     try {
-      const result = run(powerShellCommand, ['--target', 'cursor', '--dry-run', 'typescript'], {
+      const result = run(powerShellCommand, ['--target', 'antigravity', '--dry-run', 'typescript'], {
         cwd: projectDir,
         homeDir,
       });
 
       assert.strictEqual(result.code, 0, result.stderr);
       assert.ok(result.stdout.includes('Dry-run install plan'));
-      assert.ok(!fs.existsSync(path.join(projectDir, '.cursor', 'hooks.json')));
+      assert.ok(!fs.existsSync(path.join(projectDir, '.agent', 'hooks.json')));
     } finally {
       cleanup(homeDir);
       cleanup(projectDir);

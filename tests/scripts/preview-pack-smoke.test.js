@@ -42,7 +42,7 @@ function manifestContent() {
     '| --- | --- | --- |',
     ...REQUIRED_ARTIFACTS.map(artifact => `| \`${artifact}\` | release artifact | checked |`),
     '',
-    '## Hermes Skill Boundary',
+    '## Sanitization Boundary',
     '',
     '- no raw workspace exports;',
     '',
@@ -70,20 +70,6 @@ function seedRepo(rootDir, overrides = {}) {
     }, null, 2),
     'scripts/preview-pack-smoke.js': 'preview pack smoke script',
     [`${RELEASE_DIR}/preview-pack-manifest.md`]: manifestContent(),
-    'docs/HERMES-SETUP.md': [
-      '# Hermes Setup',
-      'Public Release Candidate Scope',
-      'ECC v2.0.0-rc.1 documents the Hermes surface',
-      'No raw workspace export is included.',
-    ].join('\n'),
-    'skills/hermes-imports/SKILL.md': [
-      '---',
-      'name: hermes-imports',
-      '---',
-      'Sanitization Checklist',
-      'Do not ship raw workspace exports',
-      'Output Contract',
-    ].join('\n'),
   };
 
   for (const artifact of REQUIRED_ARTIFACTS) {
@@ -197,7 +183,7 @@ function runTests() {
     }
   })) passed++; else failed++;
 
-  if (test('Hermes boundary fails closed on private local paths', () => {
+  if (test('sanitization boundary fails closed on private local paths', () => {
     const rootDir = createTempDir('preview-pack-smoke-private-path-');
 
     try {
@@ -206,7 +192,7 @@ function runTests() {
       });
 
       const report = buildReport({ root: rootDir });
-      const boundary = report.checks.find(check => check.id === 'hermes-boundary-sanitized');
+      const boundary = report.checks.find(check => check.id === 'preview-pack-boundary-sanitized');
 
       assert.strictEqual(report.ready, false);
       assert.strictEqual(boundary.status, 'fail');

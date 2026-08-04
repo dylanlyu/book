@@ -51,7 +51,7 @@ function seedRepo(rootDir, overrides = {}) {
     'scripts/preview-pack-smoke.js': [
       'ecc.preview-pack-smoke.v1',
       'preview-pack-artifacts-present',
-      'hermes-boundary-sanitized',
+      'preview-pack-boundary-sanitized',
       'publication-blockers-preserved'
     ].join('\n'),
     'scripts/release-video-suite.js': [
@@ -172,8 +172,6 @@ function seedRepo(rootDir, overrides = {}) {
       'Stale dependency-bot PRs closed: 24.',
       'Stale legacy payments/0EM roadmap issues closed: 72.'
     ].join('\n'),
-    'docs/HERMES-SETUP.md': 'Hermes setup Public Release Candidate Scope',
-    'skills/hermes-imports/SKILL.md': 'Hermes imports Sanitization Checklist Do not ship raw workspace exports Output Contract',
     'docs/stale-pr-salvage-ledger.md': [
       'Remaining Manual-Review Backlog',
       'Linear ITO-55',
@@ -358,12 +356,6 @@ function runTests() {
           && item.evidence.includes('deterministic smoke gate')
           && item.gap === 'repeat clean-checkout preview-pack smoke before publication'
       )));
-      assert.ok(report.requirements.some(item => (
-        item.id === 'hermes-specialized-skills'
-          && item.status === 'current'
-          && item.evidence.includes('covered by preview-pack smoke')
-          && item.gap === 'repeat preview-pack smoke before release review'
-      )));
       assert.ok(report.requirements.some(item => item.id === 'ecc-tools-next-level' && item.status === 'in_progress'));
       assert.ok(report.requirements.some(item => (
         item.id === 'agentshield-enterprise-iteration'
@@ -453,7 +445,6 @@ function runTests() {
       assert.ok(report.top_actions.some(item => item.id === 'partner-sponsor-talks-pack'));
       assert.ok(!report.top_actions.some(item => item.id === 'owner-approval-packet'));
       assert.ok(!report.top_actions.some(item => item.id === 'ecc-preview-pack'));
-      assert.ok(!report.top_actions.some(item => item.id === 'hermes-specialized-skills'));
       assert.ok(!report.top_actions.some(item => item.id === 'hypergrowth-command-center'));
       assert.ok(!report.top_actions.some(item => item.id === 'legacy-salvage'));
       assert.ok(!report.top_actions.some(item => item.id === 'linear-roadmap-and-progress'));
@@ -527,7 +518,7 @@ function runTests() {
     }
   })) passed++; else failed++;
 
-  if (test('preview pack and Hermes gates stay in progress until smoke gate is wired', () => {
+  if (test('preview pack gate stays in progress until smoke gate is wired', () => {
     const rootDir = createTempDir('operator-dashboard-preview-smoke-');
 
     try {
@@ -553,14 +544,10 @@ function runTests() {
 
       const report = buildSeededReport(rootDir);
       const previewPack = report.requirements.find(item => item.id === 'ecc-preview-pack');
-      const hermes = report.requirements.find(item => item.id === 'hermes-specialized-skills');
 
       assert.strictEqual(previewPack.status, 'in_progress');
       assert.strictEqual(previewPack.gap, 'final clean-checkout release approval and publish evidence still pending');
-      assert.strictEqual(hermes.status, 'in_progress');
-      assert.strictEqual(hermes.gap, 'final preview-pack smoke and release review pending');
       assert.ok(report.top_actions.some(item => item.id === 'ecc-preview-pack'));
-      assert.ok(report.top_actions.some(item => item.id === 'hermes-specialized-skills'));
     } finally {
       cleanup(rootDir);
     }

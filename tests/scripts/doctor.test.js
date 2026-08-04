@@ -136,12 +136,12 @@ function runTests() {
     const projectRoot = createTempDir('doctor-project-');
 
     try {
-      const targetRoot = path.join(projectRoot, '.cursor');
+      const targetRoot = path.join(projectRoot, '.zed');
       const statePath = path.join(targetRoot, 'ecc-install-state.json');
       fs.mkdirSync(targetRoot, { recursive: true });
 
       writeState(statePath, {
-        adapter: { id: 'cursor-project', target: 'cursor', kind: 'project' },
+        adapter: { id: 'zed-project', target: 'zed', kind: 'project' },
         targetRoot,
         installStatePath: statePath,
         request: {
@@ -158,7 +158,7 @@ function runTests() {
           {
             kind: 'copy-file',
             moduleId: 'platform-configs',
-            sourceRelativePath: '.cursor/hooks.json',
+            sourceRelativePath: '.zed/hooks.json',
             destinationPath: path.join(targetRoot, 'hooks.json'),
             strategy: 'sync-root-children',
             ownership: 'managed',
@@ -172,7 +172,7 @@ function runTests() {
         },
       });
 
-      const result = run(['--target', 'cursor', '--json'], { cwd: projectRoot, homeDir });
+      const result = run(['--target', 'zed', '--json'], { cwd: projectRoot, homeDir });
       assert.strictEqual(result.code, 1);
       const parsed = JSON.parse(result.stdout);
       assert.strictEqual(parsed.summary.errorCount, 1);

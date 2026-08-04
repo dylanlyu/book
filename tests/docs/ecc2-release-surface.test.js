@@ -64,24 +64,16 @@ test('release candidate directory includes the public launch pack', () => {
   }
 });
 
-test('README links to Hermes setup and current release notes', () => {
+test('README links to the current release notes', () => {
   const readme = read('README.md');
-  assert.ok(readme.includes('docs/HERMES-SETUP.md'), 'README must link to Hermes setup');
   assert.ok(readme.includes('docs/releases/2.0.0/release-notes.md'), 'README must link to the 2.0.0 release notes');
 });
 
 test('cross-harness architecture doc exists and names core harnesses', () => {
   const source = read('docs/architecture/cross-harness.md');
-  for (const harness of ['Claude Code', 'Codex', 'OpenCode', 'Cursor', 'Gemini', 'Hermes']) {
+  for (const harness of ['Claude Code', 'Codex', 'OpenCode', 'Zed']) {
     assert.ok(source.includes(harness), `Expected cross-harness doc to mention ${harness}`);
   }
-});
-
-test('Hermes import skill exists and declares sanitization rules', () => {
-  const source = read('skills/hermes-imports/SKILL.md');
-  assert.ok(source.includes('name: hermes-imports'));
-  assert.ok(source.includes('Sanitization Checklist'));
-  assert.ok(source.includes('Do not ship raw workspace exports'));
 });
 
 test('release docs do not contain private local workspace paths', () => {
@@ -125,21 +117,6 @@ test('announcement drafts avoid live-release claims before publication', () => {
   }
 });
 
-test('Hermes setup uses release-candidate wording for the rc.1 surface', () => {
-  const source = read('docs/HERMES-SETUP.md');
-  assert.ok(source.includes('Public Release Candidate Scope'));
-  assert.ok(source.includes('ECC v2.0.0-rc.1 documents the Hermes surface'));
-  assert.ok(!source.includes('Public Preview Scope'));
-});
-
-test('Hermes setup cross-links adjacent migration and architecture docs', () => {
-  const source = read('docs/HERMES-SETUP.md');
-  assert.ok(source.includes('HERMES-OPENCLAW-MIGRATION.md'));
-  assert.ok(source.includes('architecture/cross-harness.md'));
-  assert.ok(source.includes('Plan and scaffold migration artifacts'));
-  assert.ok(!source.includes('0.5. Generate and review artifacts with `ecc migrate plan` /'));
-});
-
 test('release docs preserve the ECC/Hermes boundary', () => {
   const releaseNotes = read('docs/releases/2.0.0-rc.1/release-notes.md');
   assert.ok(releaseNotes.includes('ECC is the reusable substrate'));
@@ -155,8 +132,6 @@ test('preview pack manifest assembles release, Hermes, and publication gates', (
   const manifest = read('docs/releases/2.0.0-rc.1/preview-pack-manifest.md');
 
   for (const artifact of [
-    'docs/HERMES-SETUP.md',
-    'skills/hermes-imports/SKILL.md',
     'docs/architecture/harness-adapter-compliance.md',
     'scripts/preview-pack-smoke.js',
     'scripts/release-approval-gate.js',
@@ -266,7 +241,6 @@ test('rc.1 quickstart gives a clone-to-cross-harness path', () => {
   assert.ok(quickstart.includes('git clone https://github.com/affaan-m/ECC.git'));
   assert.ok(quickstart.includes('cd ECC'));
   assert.ok(quickstart.includes('node tests/run-all.js'));
-  assert.ok(quickstart.includes('skills/hermes-imports/SKILL.md'));
 });
 
 test('cross-harness doc includes a worked skill portability example', () => {

@@ -2,16 +2,14 @@
 
 const { validateInstallModuleIds, LOCALE_ALIAS_TO_COMPONENT_ID, listSupportedLocales } = require('../install-manifests');
 
-const LEGACY_INSTALL_TARGETS = ['claude', 'claude-project', 'cursor', 'antigravity'];
+const LEGACY_INSTALL_TARGETS = ['claude', 'claude-project', 'antigravity'];
 
 function dedupeStrings(values) {
   return [...new Set((Array.isArray(values) ? values : []).map(value => String(value).trim()).filter(Boolean))];
 }
 
 function normalizeSkillComponentIds(rawValue) {
-  return dedupeStrings(String(rawValue || '').split(',')).map(value => (
-    value.startsWith('skill:') ? value : `skill:${value}`
-  ));
+  return dedupeStrings(String(rawValue || '').split(',')).map(value => (value.startsWith('skill:') ? value : `skill:${value}`));
 }
 
 function parseInstallArgs(argv) {
@@ -27,7 +25,7 @@ function parseInstallArgs(argv) {
     includeComponentIds: [],
     excludeComponentIds: [],
     languages: [],
-    locale: null,
+    locale: null
   };
 
   for (let index = 0; index < args.length; index += 1) {
@@ -85,51 +83,30 @@ function parseInstallArgs(argv) {
 }
 
 function normalizeInstallRequest(options = {}) {
-  const config = options.config && typeof options.config === 'object'
-    ? options.config
-    : null;
+  const config = options.config && typeof options.config === 'object' ? options.config : null;
   const profileId = options.profileId || config?.profileId || null;
   const target = options.target || config?.target || 'claude';
-  const moduleIds = validateInstallModuleIds(
-    dedupeStrings([...(config?.moduleIds || []), ...(options.moduleIds || [])])
-  );
+  const moduleIds = validateInstallModuleIds(dedupeStrings([...(config?.moduleIds || []), ...(options.moduleIds || [])]));
   const locale = options.locale || config?.locale || null;
   const localeComponentId = locale ? LOCALE_ALIAS_TO_COMPONENT_ID[locale] : null;
   if (locale && !localeComponentId) {
-    throw new Error(
-      `Unsupported locale: "${locale}". Supported locales: ${listSupportedLocales().join(', ')}`
-    );
+    throw new Error(`Unsupported locale: "${locale}". Supported locales: ${listSupportedLocales().join(', ')}`);
   }
   if (locale && target !== 'claude' && target !== 'claude-project') {
     throw new Error('--locale can only be used with --target claude or --target claude-project');
   }
-  const requestedIncludeComponentIds = dedupeStrings([
-    ...(config?.includeComponentIds || []),
-    ...(options.includeComponentIds || []),
-  ]);
-  const includeComponentIds = dedupeStrings([
-    ...requestedIncludeComponentIds,
-    ...(localeComponentId ? [localeComponentId] : []),
-  ]);
-  const excludeComponentIds = dedupeStrings([
-    ...(config?.excludeComponentIds || []),
-    ...(options.excludeComponentIds || []),
-  ]);
-  const legacyLanguages = dedupeStrings(dedupeStrings([
-    ...(Array.isArray(options.legacyLanguages) ? options.legacyLanguages : []),
-    ...(Array.isArray(options.languages) ? options.languages : []),
-  ]).map(language => language.toLowerCase()));
+  const requestedIncludeComponentIds = dedupeStrings([...(config?.includeComponentIds || []), ...(options.includeComponentIds || [])]);
+  const includeComponentIds = dedupeStrings([...requestedIncludeComponentIds, ...(localeComponentId ? [localeComponentId] : [])]);
+  const excludeComponentIds = dedupeStrings([...(config?.excludeComponentIds || []), ...(options.excludeComponentIds || [])]);
+  const legacyLanguages = dedupeStrings(
+    dedupeStrings([...(Array.isArray(options.legacyLanguages) ? options.legacyLanguages : []), ...(Array.isArray(options.languages) ? options.languages : [])]).map(language => language.toLowerCase())
+  );
   const hasManifestBaseSelection = Boolean(profileId) || moduleIds.length > 0 || includeComponentIds.length > 0;
-  const hasNonLocaleManifestSelection = Boolean(profileId)
-    || moduleIds.length > 0
-    || requestedIncludeComponentIds.length > 0
-    || excludeComponentIds.length > 0;
+  const hasNonLocaleManifestSelection = Boolean(profileId) || moduleIds.length > 0 || requestedIncludeComponentIds.length > 0 || excludeComponentIds.length > 0;
   const usingManifestMode = hasManifestBaseSelection || excludeComponentIds.length > 0;
 
   if (hasNonLocaleManifestSelection && legacyLanguages.length > 0) {
-    throw new Error(
-      'Legacy language arguments cannot be combined with --profile, --modules, --with, --without, or manifest config selections'
-    );
+    throw new Error('Legacy language arguments cannot be combined with --profile, --modules, --with, --without, or manifest config selections');
   }
 
   if (!options.help && !hasManifestBaseSelection && legacyLanguages.length === 0) {
@@ -137,21 +114,19 @@ function normalizeInstallRequest(options = {}) {
   }
 
   return {
-    mode: legacyLanguages.length > 0
-      ? 'legacy-compat'
-      : (usingManifestMode ? 'manifest' : 'legacy-compat'),
+    mode: legacyLanguages.length > 0 ? 'legacy-compat' : usingManifestMode ? 'manifest' : 'legacy-compat',
     target,
     profileId,
     moduleIds,
     includeComponentIds,
     excludeComponentIds,
     legacyLanguages,
-    configPath: config?.path || options.configPath || null,
+    configPath: config?.path || options.configPath || null
   };
 }
 
 module.exports = {
   LEGACY_INSTALL_TARGETS,
   normalizeInstallRequest,
-  parseInstallArgs,
+  parseInstallArgs
 };

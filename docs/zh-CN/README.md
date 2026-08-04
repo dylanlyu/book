@@ -35,7 +35,7 @@
 
 不仅仅是配置。一个完整的系统：技能、本能、内存优化、持续学习、安全扫描以及研究优先的开发。经过 10 多个月的密集日常使用和构建真实产品的经验，演进出生产就绪的智能体、钩子、命令、规则和 MCP 配置。
 
-适用于 **Claude Code**、**Codex**、**Cursor**、**OpenCode**、**Gemini** 以及其他 AI 智能体平台。
+适用于 **Claude Code**、**Codex**、**OpenCode**、**Zed** 以及其他 AI 智能体平台。
 
 ***
 
@@ -113,7 +113,7 @@
 * **钩子运行时控制** — `ECC_HOOK_PROFILE=minimal|standard|strict` 和 `ECC_DISABLED_HOOKS=...` 用于运行时门控，无需编辑钩子文件。
 * **新平台命令** — `/harness-audit`、`/loop-start`、`/loop-status`、`/quality-gate`、`/model-route`。
 * **NanoClaw v2** — 模型路由、技能热加载、会话分支/搜索/导出/压缩/指标。
-* **跨平台一致性** — 在 Claude Code、Cursor、OpenCode 和 Codex 应用/CLI 中行为更加统一。
+* **跨平台一致性** — 在 Claude Code、OpenCode 和 Codex 应用/CLI 中行为更加统一。
 * **997 项内部测试通过** — 钩子/运行时重构和兼容性更新后，完整套件全部通过。
 
 ### v1.7.0 — 跨平台扩展与演示文稿生成器（2026年2月）
@@ -121,7 +121,7 @@
 * **Codex 应用 + CLI 支持** — 基于 `AGENTS.md` 的直接 Codex 支持、安装器目标定位以及 Codex 文档
 * **`frontend-slides` 技能** — 零依赖的 HTML 演示文稿生成器，附带 PPTX 转换指导和严格的视口适配规则
 * **5个新的通用业务/内容技能** — `article-writing`、`content-engine`、`market-research`、`investor-materials`、`investor-outreach`
-* **更广泛的工具覆盖** — 加强了对 Cursor、Codex 和 OpenCode 的支持，使得同一代码仓库可以在所有主要平台上干净地部署
+* **更广泛的工具覆盖** — 加强了对 Codex、OpenCode 和 Zed 的支持，使得同一代码仓库可以在所有主要平台上干净地部署
 * **992项内部测试** — 在插件、钩子、技能和打包方面扩展了验证和回归测试覆盖
 
 ### v1.6.0 — Codex CLI、AgentShield 与市场（2026年2月）
@@ -166,7 +166,7 @@
 ## 统一记忆库
 
 `ecc memory` 使用可检查的 `ecc.memory.v1` Markdown 文档，在 Claude、
-Codex、Hermes 等 harness 之间传递上下文。常规搜索只召回 `project` 和
+Codex、OpenCode 等 harness 之间传递上下文。常规搜索只召回 `project` 和
 `team` 范围内状态为 active 的条目，按 ID 直接读取仍可用于检查非 active
 条目；`user` 范围必须显式请求。首个版本中的所有记忆都保持 unreviewed，
 接受后的知识应进入受治理的项目文档，
@@ -256,13 +256,13 @@ Copy-Item -Recurse rules/typescript "$HOME/.claude/rules/"
 /plugin list ecc@ecc
 ```
 
-**搞定！** 你现在可以使用 67 个智能体、281 项技能和 94 个命令了。
+**搞定！** 你现在可以使用 67 个智能体、279 项技能和 94 个命令了。
 
 ***
 
 ## 跨平台支持
 
-此插件现已完全支持 **Windows、macOS 和 Linux**，并与主流 IDE（Cursor、OpenCode、Antigravity）和 CLI 平台紧密集成。所有钩子和脚本都已用 Node.js 重写，以实现最大兼容性。
+此插件现已完全支持 **Windows、macOS 和 Linux**，并与主流 IDE（Zed、OpenCode、Antigravity）和 CLI 平台紧密集成。所有钩子和脚本都已用 Node.js 重写，以实现最大兼容性。
 
 ### 包管理器检测
 
@@ -925,11 +925,11 @@ cp -r everything-claude-code/rules/common ~/.claude/rules/common
 </details>
 
 <details>
-<summary><b>这能与 Cursor / OpenCode / Codex / Antigravity 一起使用吗？</b></summary>
+<summary><b>这能与 OpenCode / Codex / Zed / Antigravity 一起使用吗？</b></summary>
 
 是的。ECC 是跨平台的：
 
-* **Cursor**: 预翻译的配置位于 `.cursor/`。参见 [Cursor IDE 支持](#cursor-ide-支持)。
+* **Zed**: 项目本地适配器，提供设置、扁平化规则、命令、代理和技能，位于 `.zed/`。参见 [平台支持](#平台支持)。
 * **OpenCode**: `.opencode/` 中的完整插件支持。参见 [OpenCode 支持](#opencode-支持)。
 * **Codex**: 对 macOS 应用和 CLI 的一流支持，带有适配器漂移防护和 SessionStart 回退。参见 PR [#257](https://github.com/affaan-m/everything-claude-code/pull/257)。
 * **Antigravity**: 为工作流、技能和扁平化规则紧密集成的设置，位于 `.agent/`。参见 [Antigravity 指南](../ANTIGRAVITY-GUIDE.md)。
@@ -987,67 +987,6 @@ node tests/hooks/hooks.test.js
 * DevOps 智能体 (Kubernetes, Terraform, AWS, Docker)
 * 测试策略 (不同框架、视觉回归)
 * 领域特定知识 (ML, 数据工程, 移动端)
-
-***
-
-## Cursor IDE 支持
-
-ECC 提供**完整的 Cursor IDE 支持**，包括为 Cursor 原生格式适配的钩子、规则、代理、技能、命令和 MCP 配置。
-
-### 快速开始 (Cursor)
-
-```bash
-# macOS/Linux
-./install.sh --target cursor typescript
-./install.sh --target cursor python golang swift php
-```
-
-```powershell
-# Windows PowerShell
-.\install.ps1 --target cursor typescript
-.\install.ps1 --target cursor python golang swift php
-```
-
-### 包含内容
-
-| 组件 | 数量 | 详情 |
-|-----------|-------|---------|
-| 钩子事件 | 15 | sessionStart, beforeShellExecution, afterFileEdit, beforeMCPExecution, beforeSubmitPrompt 等 10 多个 |
-| 钩子脚本 | 16 | 通过共享适配器委托给 `scripts/hooks/` 的精简 Node.js 脚本 |
-| 规则 | 34 | 9 个通用规则（alwaysApply）+ 25 个语言特定规则（TypeScript, Python, Go, Swift, PHP） |
-| 代理 | 共享 | 通过根目录下的 AGENTS.md（由 Cursor 原生读取） |
-| 技能 | 共享 + 捆绑 | 通过根目录下的 AGENTS.md 和 `.cursor/skills/` 用于翻译后的补充内容 |
-| 命令 | 共享 | `.cursor/commands/`（如果已安装） |
-| MCP 配置 | 共享 | `.cursor/mcp.json`（如果已安装） |
-
-### 钩子架构（DRY 适配器模式）
-
-Cursor 的**钩子事件比 Claude Code 多**（20 对 8）。`.cursor/hooks/adapter.js` 模块将 Cursor 的 stdin JSON 转换为 Claude Code 的格式，允许重用现有的 `scripts/hooks/*.js` 而无需重复。
-
-```
-Cursor stdin JSON → adapter.js → transforms → scripts/hooks/*.js
-                                              (与 Claude Code 共享)
-```
-
-关键钩子：
-
-* **beforeShellExecution** — 阻止在 tmux 外启动开发服务器（退出码 2），git push 审查
-* **afterFileEdit** — 自动格式化 + TypeScript 检查 + console.log 警告
-* **beforeSubmitPrompt** — 检测提示中的密钥（sk-、ghp\_、AKIA 模式）
-* **beforeTabFileRead** — 阻止 Tab 读取 .env、.key、.pem 文件（退出码 2）
-* **beforeMCPExecution / afterMCPExecution** — MCP 审计日志记录
-
-### 规则格式
-
-Cursor 规则使用带有 `description`、`globs` 和 `alwaysApply` 的 YAML 前言：
-
-```yaml
----
-description: "TypeScript coding style extending common rules"
-globs: ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx"]
-alwaysApply: false
----
-```
 
 ***
 
@@ -1170,7 +1109,7 @@ opencode
 |---------|---------------|----------|--------|
 | 智能体 | PASS: 67 个    | PASS: 12 个 | **Claude Code 领先** |
 | 命令 | PASS: 94 个    | PASS: 35 个 | **Claude Code 领先** |
-| 技能 | PASS: 281 项   | PASS: 37 项 | **Claude Code 领先** |
+| 技能 | PASS: 279 项   | PASS: 37 项 | **Claude Code 领先** |
 | 钩子 | PASS: 8 种事件类型 | PASS: 11 种事件 | **OpenCode 更多！** |
 | 规则 | PASS: 29 条    | PASS: 13 条指令 | **Claude Code 领先** |
 | MCP 服务器 | PASS: 14 个    | PASS: 完整 | **完全对等** |
@@ -1274,17 +1213,17 @@ npm install ecc-universal
 
 ECC 是**第一个最大化利用每个主要 AI 编码工具的插件**。以下是每个平台的比较：
 
-| 功能特性 | Claude Code           | Cursor IDE | Codex CLI | OpenCode |
-|---------|-----------------------|------------|-----------|----------|
-| **智能体** | 67                    | 共享 (AGENTS.md) | 共享 (AGENTS.md) | 12 |
-| **命令** | 94                    | 共享 | 基于指令 | 35 |
-| **技能** | 281                   | 共享 | 10 (原生格式) | 37 |
-| **钩子事件** | 8 种类型                 | 15 种类型 | 暂无 | 11 种类型 |
-| **钩子脚本** | 20+ 个脚本               | 16 个脚本 (DRY 适配器) | N/A | 插件钩子 |
-| **规则** | 34 (通用 + 语言)          | 34 (YAML 前页) | 基于指令 | 13 条指令 |
-| **自定义工具** | 通过钩子                  | 通过钩子 | N/A | 6 个原生工具 |
-| **MCP 服务器** | 14                    | 共享 (mcp.json) | 4 (基于命令) | 完整 |
-| **配置格式** | settings.json         | hooks.json + rules/ | config.toml | opencode.json |
+| 功能特性 | Claude Code           | Codex CLI | OpenCode |
+|---------|-----------------------|-----------|----------|
+| **智能体** | 67                    | 共享 (AGENTS.md) | 12 |
+| **命令** | 94                    | 基于指令 | 35 |
+| **技能** | 279                   | 10 (原生格式) | 37 |
+| **钩子事件** | 8 种类型                 | 暂无 | 11 种类型 |
+| **钩子脚本** | 20+ 个脚本               | N/A | 插件钩子 |
+| **规则** | 34 (通用 + 语言)          | 基于指令 | 13 条指令 |
+| **自定义工具** | 通过钩子                  | N/A | 6 个原生工具 |
+| **MCP 服务器** | 14                    | 4 (基于命令) | 完整 |
+| **配置格式** | settings.json         | config.toml | opencode.json |
 | **上下文文件** | CLAUDE.md + AGENTS.md | AGENTS.md | AGENTS.md | AGENTS.md |
 | **秘密检测** | 基于钩子                  | beforeSubmitPrompt 钩子 | 基于沙箱 | 基于钩子 |
 | **自动格式化** | PostToolUse 钩子        | afterFileEdit 钩子 | N/A | file.edited 钩子 |
@@ -1293,7 +1232,6 @@ ECC 是**第一个最大化利用每个主要 AI 编码工具的插件**。以�
 **关键架构决策：**
 
 * **AGENTS.md** 在根目录是通用的跨工具文件（所有 4 个工具都能读取）
-* **DRY 适配器模式** 让 Cursor 可以重用 Claude Code 的钩子脚本而无需重复
 * **技能格式**（带有 YAML 前言的 SKILL.md）在 Claude Code、Codex 和 OpenCode 中都能工作
 * Codex 缺少钩子功能，通过 `AGENTS.md`、可选的 `model_instructions_file` 覆盖以及沙箱权限来弥补
 

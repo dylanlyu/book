@@ -34,7 +34,7 @@
 
 Não são apenas configurações. Um sistema completo: skills, instincts, otimização de memória, aprendizado contínuo, varredura de segurança e desenvolvimento com pesquisa em primeiro lugar. Agentes, hooks, comandos, regras e configurações MCP prontos para produção, desenvolvidos ao longo de 10+ meses de uso intensivo diário construindo produtos reais.
 
-Funciona com **Claude Code**, **Codex**, **Cursor**, **OpenCode**, **Gemini** e outros harnesses de agentes de IA.
+Funciona com **Claude Code**, **Codex**, **OpenCode**, **Zed** e outros harnesses de agentes de IA.
 
 ---
 
@@ -112,7 +112,7 @@ Graduação estável da linha 2.0: 261 skills, substrato de control-pane, invent
 - **Controles de runtime de hooks** — `ECC_HOOK_PROFILE=minimal|standard|strict` e `ECC_DISABLED_HOOKS=...` para controle em tempo de execução sem editar arquivos de hook.
 - **Novos comandos de harness** — `/harness-audit`, `/loop-start`, `/loop-status`, `/quality-gate`, `/model-route`.
 - **NanoClaw v2** — roteamento de modelo, carregamento a quente de skill, ramificação/busca/exportação/compactação/métricas de sessão.
-- **Paridade entre harnesses** — comportamento unificado em Claude Code, Cursor, OpenCode e Codex app/CLI.
+- **Paridade entre harnesses** — comportamento unificado em Claude Code, OpenCode e Codex app/CLI.
 - **997 testes internos passando** — suíte completa no verde após refatoração de hook/runtime e atualizações de compatibilidade.
 
 ---
@@ -146,7 +146,7 @@ npm install        # ou: pnpm install | yarn install | bun install
 # macOS/Linux
 ./install.sh typescript    # ou python ou golang ou swift ou php
 # ./install.sh typescript python golang swift php
-# ./install.sh --target cursor typescript
+# ./install.sh --target zed typescript
 # ./install.sh --target antigravity typescript
 ```
 
@@ -154,7 +154,7 @@ npm install        # ou: pnpm install | yarn install | bun install
 # Windows PowerShell
 .\install.ps1 typescript   # ou python ou golang ou swift ou php
 # .\install.ps1 typescript python golang swift php
-# .\install.ps1 --target cursor typescript
+# .\install.ps1 --target zed typescript
 # .\install.ps1 --target antigravity typescript
 
 # O ponto de entrada de compatibilidade npm também funciona multiplataforma
@@ -180,7 +180,7 @@ npx ecc-install typescript
 
 ## Suporte Multiplataforma
 
-Este plugin agora suporta totalmente **Windows, macOS e Linux**, com integração estreita em principais IDEs (Cursor, OpenCode, Antigravity) e harnesses CLI. Todos os hooks e scripts foram reescritos em Node.js para máxima compatibilidade.
+Este plugin agora suporta totalmente **Windows, macOS e Linux**, com integração estreita em principais IDEs (Zed, OpenCode, Antigravity) e harnesses CLI. Todos os hooks e scripts foram reescritos em Node.js para máxima compatibilidade.
 
 ### Detecção de Gerenciador de Pacotes
 
@@ -467,10 +467,10 @@ Este é o problema mais comum. **NÃO adicione um campo `"hooks"` ao `.claude-pl
 </details>
 
 <details>
-<summary><b>Posso usar o ECC com Cursor / OpenCode / Codex / Antigravity?</b></summary>
+<summary><b>Posso usar o ECC com OpenCode / Codex / Zed / Antigravity?</b></summary>
 
 Sim. O ECC é multiplataforma:
-- **Cursor**: Configs pré-traduzidas em `.cursor/`
+- **Zed**: Adaptador local de projeto em `.zed/` com settings, regras achatadas, comandos, agentes e skills
 - **OpenCode**: Suporte completo a plugins em `.opencode/`
 - **Codex**: Suporte de primeira classe para app macOS e CLI
 - **Antigravity**: Configuração integrada em `.agent/`

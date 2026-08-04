@@ -4,9 +4,9 @@
  * Run with: node tests/lib/agent-data-home.test.js
  *
  * Cwd / project context: many cases use `withIsolatedCwd()` (empty temp dir, no
- * `.cursor/`) so results do not depend on running inside a dogfooded ECC repo.
- * When this repo has `.cursor/ecc-agent-data.json` installed, `resolveAgentDataHome()`
- * from the real project root intentionally resolves to `~/.cursor/ecc` — see the
+ * `.claude/`) so results do not depend on running inside a dogfooded ECC repo.
+ * When this repo has `.claude/ecc-agent-data.json` installed, `resolveAgentDataHome()`
+ * from the real project root intentionally resolves to `~/.claude` — see the
  * dedicated test below; do not expect `~/.claude` while cwd is the ECC tree.
  */
 
@@ -53,7 +53,7 @@ function withEnv(overrides, fn) {
 }
 
 /**
- * Run fn with cwd in an empty directory (no .cursor/) so resolveProjectDir() does
+ * Run fn with cwd in an empty directory (no .claude/) so resolveProjectDir() does
  * not pick up the ECC repo's installed agent-data config.
  */
 function withIsolatedCwd(fn) {
@@ -87,12 +87,10 @@ function runTests() {
   let passed = 0;
   let failed = 0;
 
-  if (test('defaults to ~/.claude outside Cursor (isolated cwd)', () => {
+  if (test('defaults to ~/.claude (isolated cwd)', () => {
     withIsolatedCwd(() => {
       withEnv({
         ECC_AGENT_DATA_HOME: undefined,
-        CURSOR_VERSION: undefined,
-        CURSOR_PROJECT_DIR: undefined,
       }, () => {
         const agentDataHome = require('../../scripts/lib/agent-data-home');
         const home = os.homedir();
@@ -104,13 +102,13 @@ function runTests() {
     });
   })) passed++; else failed++;
 
-  if (test('resolveAgentDataHome uses projectDir + .cursor/ecc-agent-data.json', () => {
+  if (test('resolveAgentDataHome uses projectDir + .claude/ecc-agent-data.json', () => {
     const projectDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ecc-agent-data-home-project-'));
-    const cursorDir = path.join(projectDir, '.cursor');
-    fs.mkdirSync(cursorDir, { recursive: true });
+    const claudeDir = path.join(projectDir, '.claude');
+    fs.mkdirSync(claudeDir, { recursive: true });
     fs.writeFileSync(
-      path.join(cursorDir, 'ecc-agent-data.json'),
-      JSON.stringify({ agentDataHome: '~/.cursor/ecc' }),
+      path.join(claudeDir, 'ecc-agent-data.json'),
+      JSON.stringify({ agentDataHome: '~/.claude' }),
       'utf8'
     );
 
@@ -118,13 +116,11 @@ function runTests() {
       withIsolatedCwd(() => {
         withEnv({
           ECC_AGENT_DATA_HOME: undefined,
-          CURSOR_VERSION: undefined,
-          CURSOR_PROJECT_DIR: undefined,
         }, () => {
           const agentDataHome = require('../../scripts/lib/agent-data-home');
           assert.strictEqual(
             agentDataHome.resolveAgentDataHome({ projectDir }),
-            path.join(os.homedir(), '.cursor', 'ecc')
+            path.join(os.homedir(), '.claude')
           );
         });
       });
@@ -133,28 +129,10 @@ function runTests() {
     }
   })) passed++; else failed++;
 
-  if (test('defaults to ~/.cursor/ecc in Cursor hook runtime (isolated cwd)', () => {
-    withIsolatedCwd(() => {
-      withEnv({
-        ECC_AGENT_DATA_HOME: undefined,
-        CURSOR_VERSION: '1.0.0',
-        CURSOR_PROJECT_DIR: undefined,
-      }, () => {
-        const agentDataHome = require('../../scripts/lib/agent-data-home');
-        const home = os.homedir();
-        assert.strictEqual(
-          agentDataHome.resolveAgentDataHome(),
-          path.join(home, '.cursor', 'ecc')
-        );
-      });
-    });
-  })) passed++; else failed++;
-
-  if (test('honors ECC_AGENT_DATA_HOME over Cursor default', () => {
+  if (test('honors ECC_AGENT_DATA_HOME over the Claude default', () => {
     const override = path.join(os.tmpdir(), `ecc-override-${Date.now()}`);
     withEnv({
       ECC_AGENT_DATA_HOME: override,
-      CURSOR_VERSION: '1.0.0',
     }, () => {
       const agentDataHome = require('../../scripts/lib/agent-data-home');
       assert.strictEqual(agentDataHome.resolveAgentDataHome(), path.resolve(override));
@@ -164,8 +142,8 @@ function runTests() {
   if (test('reads project ecc-agent-data.json config file', () => {
     const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ecc-agent-data-home-read-'));
     const homeDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ecc-agent-data-home-user-'));
-    const configPath = path.join(tmpDir, '.cursor', 'ecc-agent-data.json');
-    const customHome = path.join(homeDir, '.cursor', 'ecc', 'custom');
+    const configPath = path.join(tmpDir, '.claude', 'ecc-agent-data.json');
+    const customHome = path.join(homeDir, '.claude', 'custom');
     fs.mkdirSync(path.dirname(configPath), { recursive: true });
     fs.writeFileSync(
       configPath,
@@ -176,14 +154,13 @@ function runTests() {
     try {
       withEnv({
         ECC_AGENT_DATA_HOME: undefined,
-        CURSOR_VERSION: undefined,
         HOME: homeDir,
         USERPROFILE: undefined,
       }, () => {
         const agentDataHome = require('../../scripts/lib/agent-data-home');
         assert.strictEqual(
           agentDataHome.readProjectConfigAt(configPath),
-          path.join(fs.realpathSync(homeDir), '.cursor', 'ecc', 'custom')
+          path.join(fs.realpathSync(homeDir), '.claude', 'custom')
         );
       });
     } finally {
@@ -195,7 +172,7 @@ function runTests() {
   if (test('allows the documented ~/.claude project sharing root and its descendants', () => {
     const projectDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ecc-agent-data-home-claude-'));
     const homeDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ecc-agent-data-home-claude-user-'));
-    const configPath = path.join(projectDir, '.cursor', 'ecc-agent-data.json');
+    const configPath = path.join(projectDir, '.claude', 'ecc-agent-data.json');
     fs.mkdirSync(path.dirname(configPath), { recursive: true });
     fs.mkdirSync(path.join(homeDir, '.claude'), { recursive: true });
 
@@ -238,13 +215,13 @@ function runTests() {
   if (test('rejects a relative agentDataHome that redirects into the project', () => {
     const stamp = Date.now();
     const projectDir = path.join(os.tmpdir(), `ecc-agent-data-home-relative-${stamp}`);
-    const cursorDir = path.join(projectDir, '.cursor');
+    const claudeDir = path.join(projectDir, '.claude');
     const otherCwd = path.join(os.tmpdir(), `ecc-agent-data-home-other-cwd-${stamp}`);
     const homeDir = path.join(os.tmpdir(), `ecc-agent-data-home-relative-user-${stamp}`);
-    fs.mkdirSync(cursorDir, { recursive: true });
+    fs.mkdirSync(claudeDir, { recursive: true });
     fs.mkdirSync(otherCwd, { recursive: true });
     fs.mkdirSync(homeDir, { recursive: true });
-    const configPath = path.join(cursorDir, 'ecc-agent-data.json');
+    const configPath = path.join(claudeDir, 'ecc-agent-data.json');
     fs.writeFileSync(
       configPath,
       JSON.stringify({ agentDataHome: '.ecc-data' }),
@@ -256,8 +233,6 @@ function runTests() {
       process.chdir(otherCwd);
       withEnv({
         ECC_AGENT_DATA_HOME: undefined,
-        CURSOR_VERSION: undefined,
-        CURSOR_PROJECT_DIR: projectDir,
         HOME: homeDir,
         USERPROFILE: undefined,
       }, () => {
@@ -270,9 +245,9 @@ function runTests() {
         assert.ok(messages.every(message => !message.includes('.ecc-data')));
         assert.strictEqual(
           captureConsoleErrors(
-            () => agentDataHome.resolveAgentDataHome({ projectDir, preferCursorDefault: true })
+            () => agentDataHome.resolveAgentDataHome({ projectDir })
           ).result,
-          path.join(homeDir, '.cursor', 'ecc')
+          path.join(homeDir, '.claude')
         );
       });
     } finally {
@@ -285,8 +260,8 @@ function runTests() {
 
   if (test('rejects relative project config paths even when the project is beneath the trusted root', () => {
     const homeDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ecc-agent-data-home-nested-user-'));
-    const projectDir = path.join(homeDir, '.cursor', 'ecc', 'checked-out-project');
-    const configPath = path.join(projectDir, '.cursor', 'ecc-agent-data.json');
+    const projectDir = path.join(homeDir, '.claude', 'checked-out-project');
+    const configPath = path.join(projectDir, '.claude', 'ecc-agent-data.json');
     const candidate = '.repo-data';
     fs.mkdirSync(path.dirname(configPath), { recursive: true });
     fs.writeFileSync(configPath, JSON.stringify({ agentDataHome: candidate }), 'utf8');
@@ -313,7 +288,7 @@ function runTests() {
   if (test('rejects traversal and absolute project config paths outside the allowed data roots', () => {
     const projectDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ecc-agent-data-home-unsafe-'));
     const homeDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ecc-agent-data-home-unsafe-user-'));
-    const configPath = path.join(projectDir, '.cursor', 'ecc-agent-data.json');
+    const configPath = path.join(projectDir, '.claude', 'ecc-agent-data.json');
     fs.mkdirSync(path.dirname(configPath), { recursive: true });
 
     try {
@@ -326,7 +301,7 @@ function runTests() {
         const unsafeCandidates = [
           '../../repo-data',
           path.join(projectDir, 'absolute-data'),
-          '~/.cursor/ecc/profiles/../traversed-data',
+          '~/.claude/profiles/../traversed-data',
           '~/.claude/profiles/../traversed-data',
           '~/.claude-other',
           '~/.config/ecc',
@@ -353,7 +328,7 @@ function runTests() {
     const projectDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ecc-agent-data-home-claude-link-'));
     const homeDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ecc-agent-data-home-claude-link-user-'));
     const outsideDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ecc-agent-data-home-claude-link-outside-'));
-    const configPath = path.join(projectDir, '.cursor', 'ecc-agent-data.json');
+    const configPath = path.join(projectDir, '.claude', 'ecc-agent-data.json');
     const claudeRoot = path.join(homeDir, '.claude');
     const linkPath = path.join(claudeRoot, 'redirect');
     fs.mkdirSync(path.dirname(configPath), { recursive: true });
@@ -389,11 +364,11 @@ function runTests() {
     }
   })) passed++; else failed++;
 
-  if (test('allows a non-existent project config destination beneath the Cursor data root', () => {
+  if (test('allows a non-existent project config destination beneath the Claude data root', () => {
     const projectDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ecc-agent-data-home-safe-'));
     const homeDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ecc-agent-data-home-safe-user-'));
-    const configPath = path.join(projectDir, '.cursor', 'ecc-agent-data.json');
-    const safeHome = path.join(homeDir, '.cursor', 'ecc', 'profiles', 'work');
+    const configPath = path.join(projectDir, '.claude', 'ecc-agent-data.json');
+    const safeHome = path.join(homeDir, '.claude', 'profiles', 'work');
     fs.mkdirSync(path.dirname(configPath), { recursive: true });
     fs.writeFileSync(configPath, JSON.stringify({ agentDataHome: safeHome }), 'utf8');
 
@@ -406,7 +381,7 @@ function runTests() {
         const agentDataHome = require('../../scripts/lib/agent-data-home');
         assert.strictEqual(
           agentDataHome.readProjectConfigAt(configPath),
-          path.join(fs.realpathSync(homeDir), '.cursor', 'ecc', 'profiles', 'work')
+          path.join(fs.realpathSync(homeDir), '.claude', 'profiles', 'work')
         );
       });
     } finally {
@@ -419,11 +394,11 @@ function runTests() {
     const projectDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ecc-agent-data-home-link-'));
     const homeDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ecc-agent-data-home-link-user-'));
     const outsideDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ecc-agent-data-home-link-outside-'));
-    const configPath = path.join(projectDir, '.cursor', 'ecc-agent-data.json');
-    const cursorRoot = path.join(homeDir, '.cursor', 'ecc');
-    const linkPath = path.join(cursorRoot, 'redirect');
+    const configPath = path.join(projectDir, '.claude', 'ecc-agent-data.json');
+    const claudeRoot = path.join(homeDir, '.claude');
+    const linkPath = path.join(claudeRoot, 'redirect');
     fs.mkdirSync(path.dirname(configPath), { recursive: true });
-    fs.mkdirSync(cursorRoot, { recursive: true });
+    fs.mkdirSync(claudeRoot, { recursive: true });
 
     try {
       try {
@@ -470,7 +445,6 @@ function runTests() {
     try {
       withEnv({
         ECC_AGENT_DATA_HOME: undefined,
-        CURSOR_VERSION: undefined,
       }, () => {
         const agentDataHome = require('../../scripts/lib/agent-data-home');
         assert.strictEqual(agentDataHome.readProjectConfigAt(configPath), null);
@@ -488,7 +462,6 @@ function runTests() {
   if (test('ensureAgentDataHomeEnv sets process.env when unset', () => {
     withEnv({
       ECC_AGENT_DATA_HOME: undefined,
-      CURSOR_VERSION: '1.0.0',
     }, () => {
       const agentDataHome = require('../../scripts/lib/agent-data-home');
       const resolved = agentDataHome.ensureAgentDataHomeEnv();

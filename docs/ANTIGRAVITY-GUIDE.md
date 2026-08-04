@@ -121,15 +121,15 @@ See [CONTRIBUTING.md](../CONTRIBUTING.md) for the full contribution guide.
 
 ## Comparison with Other Targets
 
-| Feature | Claude Code | Cursor | Codex | Antigravity |
-|---------|-------------|--------|-------|-------------|
-| Install target | `claude-home` | `cursor-project` | `codex-home` | `antigravity` |
-| Config root | `~/.claude/` | `.cursor/` | `~/.codex/` | `.agent/` |
-| Scope | User-level | Project-level | User-level | Project-level |
-| Rules format | Nested dirs | Flat | Flat | Flat |
-| Commands | `commands/` | N/A | N/A | `workflows/` |
-| Agents/Skills | `agents/` | N/A | N/A | `skills/` |
-| Install state | `ecc-install-state.json` | `ecc-install-state.json` | `ecc-install-state.json` | `ecc-install-state.json` |
+| Feature | Claude Code | Codex | Antigravity |
+|---------|-------------|-------|-------------|
+| Install target | `claude-home` | `codex-home` | `antigravity` |
+| Config root | `~/.claude/` | `~/.codex/` | `.agent/` |
+| Scope | User-level | User-level | Project-level |
+| Rules format | Nested dirs | Flat | Flat |
+| Commands | `commands/` | N/A | `workflows/` |
+| Agents/Skills | `agents/` | N/A | `skills/` |
+| Install state | `ecc-install-state.json` | `ecc-install-state.json` | `ecc-install-state.json` |
 
 ## Troubleshooting
 

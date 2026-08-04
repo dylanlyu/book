@@ -1,70 +1,18 @@
 #!/usr/bin/env node
 
-const {
-  SUPPORTED_INSTALL_TARGETS,
-  listInstallComponents,
-  listInstallProfiles,
-  loadInstallManifests,
-} = require('./lib/install-manifests');
+const { SUPPORTED_INSTALL_TARGETS, listInstallComponents, listInstallProfiles, loadInstallManifests } = require('./lib/install-manifests');
 
 const DEFAULT_TARGET = 'claude';
 const DEFAULT_LIMIT = 5;
 const MAX_LIMIT = 20;
 const SCHEMA_VERSION = 'ecc.consult.v1';
 const FUZZY_EXCLUDED_TOKENS = new Set(['review']);
-const MACHINE_LEARNING_CONTEXT_TOKENS = new Set([
-  'data-science',
-  'evals',
-  'evaluation',
-  'inference',
-  'ml',
-  'mle',
-  'mlops',
-  'model',
-  'models',
-  'pytorch',
-  'serving',
-  'training',
-]);
+const MACHINE_LEARNING_CONTEXT_TOKENS = new Set(['data-science', 'evals', 'evaluation', 'inference', 'ml', 'mle', 'mlops', 'model', 'models', 'pytorch', 'serving', 'training']);
 
-const STOP_WORDS = new Set([
-  'a',
-  'an',
-  'and',
-  'app',
-  'are',
-  'for',
-  'from',
-  'i',
-  'in',
-  'into',
-  'me',
-  'need',
-  'of',
-  'on',
-  'please',
-  'skill',
-  'skills',
-  'the',
-  'to',
-  'want',
-  'with',
-]);
+const STOP_WORDS = new Set(['a', 'an', 'and', 'app', 'are', 'for', 'from', 'i', 'in', 'into', 'me', 'need', 'of', 'on', 'please', 'skill', 'skills', 'the', 'to', 'want', 'with']);
 
 const COMPONENT_ALIASES = Object.freeze({
-  'capability:security': [
-    'appsec',
-    'auth',
-    'authorization',
-    'checklist',
-    'hardening',
-    'pentest',
-    'secret',
-    'secrets',
-    'threat',
-    'vulnerability',
-    'vulnerabilities',
-  ],
+  'capability:security': ['appsec', 'auth', 'authorization', 'checklist', 'hardening', 'pentest', 'secret', 'secrets', 'threat', 'vulnerability', 'vulnerabilities'],
   'capability:database': ['db', 'migration', 'migrations', 'postgres', 'postgresql', 'schema', 'sql'],
   'capability:research': ['api', 'apis', 'exa', 'external', 'investigation', 'search'],
   'capability:content': ['article', 'brand', 'business', 'copy', 'linkedin', 'writing'],
@@ -72,39 +20,15 @@ const COMPONENT_ALIASES = Object.freeze({
   'capability:social': ['distribution', 'post', 'posting', 'publish', 'publishing', 'twitter', 'x'],
   'capability:media': ['editing', 'image', 'remotion', 'slides', 'video'],
   'capability:orchestration': ['dmux', 'parallel', 'tmux', 'worktree', 'worktrees'],
-  'capability:machine-learning': [
-    'data-science',
-    'ml',
-    'mle',
-    'mlops',
-    'model',
-    'models',
-    'pytorch',
-    'training',
-  ],
-  'agent:mle-reviewer': [
-    'data-science',
-    'ml',
-    'mle',
-    'mlops',
-    'model',
-    'models',
-    'pytorch',
-    'training',
-    'inference',
-    'serving',
-    'evaluation',
-    'evals',
-    'model-review',
-    'review-training',
-  ],
+  'capability:machine-learning': ['data-science', 'ml', 'mle', 'mlops', 'model', 'models', 'pytorch', 'training'],
+  'agent:mle-reviewer': ['data-science', 'ml', 'mle', 'mlops', 'model', 'models', 'pytorch', 'training', 'inference', 'serving', 'evaluation', 'evals', 'model-review', 'review-training'],
   'framework:nextjs': ['next', 'next.js', 'nextjs'],
   'framework:react': ['react', 'tsx'],
   'framework:django': ['django'],
   'framework:springboot': ['spring', 'springboot'],
   'lang:typescript': ['javascript', 'js', 'node', 'nodejs', 'ts'],
   'lang:python': ['py'],
-  'lang:go': ['golang'],
+  'lang:go': ['golang']
 });
 
 const PROFILE_ALIASES = Object.freeze({
@@ -113,7 +37,7 @@ const PROFILE_ALIASES = Object.freeze({
   developer: ['app', 'code', 'coding', 'engineering', 'software'],
   security: ['appsec', 'audit', 'hardening', 'review', 'threat', 'vulnerability'],
   research: ['content', 'investigation', 'publishing', 'synthesis'],
-  full: ['all', 'complete', 'everything'],
+  full: ['all', 'complete', 'everything']
 });
 
 function showHelp(exitCode = 0) {
@@ -132,7 +56,7 @@ Options:
 
 Examples:
   node scripts/consult.js "security reviews"
-  node scripts/consult.js "Next.js React app" --target cursor
+  node scripts/consult.js "Next.js React app" --target zed
   node scripts/consult.js "operator workflows" --target codex --json
 `);
 
@@ -196,7 +120,7 @@ function parseArgs(argv) {
     target: DEFAULT_TARGET,
     limit: DEFAULT_LIMIT,
     json: false,
-    help: false,
+    help: false
   };
 
   if (args.includes('--help') || args.includes('-h')) {
@@ -229,9 +153,7 @@ function parseArgs(argv) {
   }
 
   if (!SUPPORTED_INSTALL_TARGETS.includes(parsed.target)) {
-    throw new Error(
-      `Unknown install target: ${parsed.target}. Expected one of ${SUPPORTED_INSTALL_TARGETS.join(', ')}`
-    );
+    throw new Error(`Unknown install target: ${parsed.target}. Expected one of ${SUPPORTED_INSTALL_TARGETS.join(', ')}`);
   }
 
   parsed.query = parsed.queryParts.join(' ').trim();
@@ -266,14 +188,7 @@ function scoreAgainstQuery(queryTokens, corpusTokens, options = {}) {
       return;
     }
 
-    if (
-      token.length >= 4
-      && !FUZZY_EXCLUDED_TOKENS.has(token)
-      && [...corpus].some(corpusToken => (
-        corpusToken.length >= 4
-        && (corpusToken.includes(token) || token.includes(corpusToken))
-      ))
-    ) {
+    if (token.length >= 4 && !FUZZY_EXCLUDED_TOKENS.has(token) && [...corpus].some(corpusToken => corpusToken.length >= 4 && (corpusToken.includes(token) || token.includes(corpusToken)))) {
       score += 1;
       reasons.push(`fuzzy matched "${token}"`);
     }
@@ -304,11 +219,8 @@ function preferredComponentBonus(component, queryTokens) {
   }
 
   if (
-    component.id === 'capability:security'
-    && (
-      queryTokens.some(token => ['audit', 'security', 'threat', 'vulnerability'].includes(token))
-      || (!hasMachineLearningContext && queryTokens.includes('review'))
-    )
+    component.id === 'capability:security' &&
+    (queryTokens.some(token => ['audit', 'security', 'threat', 'vulnerability'].includes(token)) || (!hasMachineLearningContext && queryTokens.includes('review')))
   ) {
     bonus += 4;
   }
@@ -320,29 +232,19 @@ function rankComponents({ queryTokens, target, limit }) {
   return listInstallComponents({ target })
     .map(component => {
       const aliases = COMPONENT_ALIASES[component.id] || [];
-      const corpusTokens = buildSearchCorpus([
-        component.id.replace(':', ' '),
-        component.family,
-        component.description,
-        component.moduleIds.join(' '),
-        aliases.join(' '),
-      ]);
+      const corpusTokens = buildSearchCorpus([component.id.replace(':', ' '), component.family, component.description, component.moduleIds.join(' '), aliases.join(' ')]);
       const { score, reasons } = scoreAgainstQuery(queryTokens, corpusTokens, {
-        preferred: preferredComponentBonus(component, queryTokens),
+        preferred: preferredComponentBonus(component, queryTokens)
       });
 
       return {
         component,
         score,
-        reasons,
+        reasons
       };
     })
     .filter(result => result.score > 0)
-    .sort((left, right) => (
-      right.score - left.score
-      || left.component.family.localeCompare(right.component.family)
-      || left.component.id.localeCompare(right.component.id)
-    ))
+    .sort((left, right) => right.score - left.score || left.component.family.localeCompare(right.component.family) || left.component.id.localeCompare(right.component.id))
     .slice(0, limit)
     .map(result => ({
       componentId: result.component.id,
@@ -353,7 +255,7 @@ function rankComponents({ queryTokens, target, limit }) {
       score: result.score,
       reasons: result.reasons.length > 0 ? result.reasons : ['related install component'],
       installCommand: commandFor('component', result.component.id, target),
-      planCommand: planCommandFor(result.component.id, target),
+      planCommand: planCommandFor(result.component.id, target)
     }));
 }
 
@@ -363,19 +265,14 @@ function rankProfiles({ queryTokens, target, limit }) {
     .map(profile => {
       const profileDefinition = manifests.profiles[profile.id] || {};
       const aliases = PROFILE_ALIASES[profile.id] || [];
-      const corpusTokens = buildSearchCorpus([
-        profile.id,
-        profile.description,
-        (profileDefinition.modules || []).join(' '),
-        aliases.join(' '),
-      ]);
+      const corpusTokens = buildSearchCorpus([profile.id, profile.description, (profileDefinition.modules || []).join(' '), aliases.join(' ')]);
       const preferred = queryTokens.includes(profile.id) ? 4 : 0;
       const { score, reasons } = scoreAgainstQuery(queryTokens, corpusTokens, { preferred });
 
       return {
         profile,
         score,
-        reasons,
+        reasons
       };
     })
     .filter(result => result.score > 0)
@@ -387,7 +284,7 @@ function rankProfiles({ queryTokens, target, limit }) {
       moduleCount: result.profile.moduleCount,
       score: result.score,
       reasons: result.reasons.length > 0 ? result.reasons : ['related install profile'],
-      installCommand: commandFor('profile', result.profile.id, target),
+      installCommand: commandFor('profile', result.profile.id, target)
     }));
 }
 
@@ -400,12 +297,12 @@ function buildConsultation(options) {
   const matches = rankComponents({
     queryTokens,
     target: options.target,
-    limit: options.limit,
+    limit: options.limit
   });
   const profiles = rankProfiles({
     queryTokens,
     target: options.target,
-    limit: options.limit,
+    limit: options.limit
   });
 
   return {
@@ -415,25 +312,15 @@ function buildConsultation(options) {
     generatedAt: new Date().toISOString(),
     matches,
     profiles,
-    nextSteps: matches.length > 0
-      ? [
-        `Preview the top component: ${matches[0].planCommand}`,
-        `Install it: ${matches[0].installCommand}`,
-      ]
-      : [
-        'Run `npx ecc catalog components` to browse all components.',
-        'Try a more specific query such as "security review", "Next.js", or "operator workflows".',
-      ],
+    nextSteps:
+      matches.length > 0
+        ? [`Preview the top component: ${matches[0].planCommand}`, `Install it: ${matches[0].installCommand}`]
+        : ['Run `npx ecc catalog components` to browse all components.', 'Try a more specific query such as "security review", "Next.js", or "operator workflows".']
   };
 }
 
 function formatText(payload) {
-  const lines = [
-    `ECC consult (${payload.generatedAt})`,
-    `Query: ${payload.query}`,
-    `Target: ${payload.target}`,
-    '',
-  ];
+  const lines = [`ECC consult (${payload.generatedAt})`, `Query: ${payload.query}`, `Target: ${payload.target}`, ''];
 
   if (payload.matches.length === 0) {
     lines.push('No strong component matches found.');
@@ -493,5 +380,5 @@ module.exports = {
   buildConsultation,
   formatText,
   parseArgs,
-  tokenize,
+  tokenize
 };

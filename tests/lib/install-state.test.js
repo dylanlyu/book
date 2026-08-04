@@ -44,9 +44,9 @@ function runTests() {
 
   if (test('creates a valid install-state payload', () => {
     const state = createInstallState({
-      adapter: { id: 'cursor-project' },
-      targetRoot: '/repo/.cursor',
-      installStatePath: '/repo/.cursor/ecc-install-state.json',
+      adapter: { id: 'zed-project' },
+      targetRoot: '/repo/.zed',
+      installStatePath: '/repo/.zed/ecc-install-state.json',
       request: {
         profile: 'developer',
         modules: ['orchestration'],
@@ -62,7 +62,7 @@ function runTests() {
           kind: 'copy-path',
           moduleId: 'rules-core',
           sourceRelativePath: 'rules',
-          destinationPath: '/repo/.cursor/rules',
+          destinationPath: '/repo/.zed/rules',
           strategy: 'preserve-relative-path',
           ownership: 'managed',
           scaffoldOnly: true,
@@ -77,7 +77,7 @@ function runTests() {
     });
 
     assert.strictEqual(state.schemaVersion, 'ecc.install.v1');
-    assert.strictEqual(state.target.id, 'cursor-project');
+    assert.strictEqual(state.target.id, 'zed-project');
     assert.strictEqual(state.request.profile, 'developer');
     assert.strictEqual(state.operations.length, 1);
   })) passed++; else failed++;
@@ -124,8 +124,8 @@ function runTests() {
     const operation = {
       kind: 'merge-json',
       moduleId: 'platform-configs',
-      sourceRelativePath: '.cursor/hooks.json',
-      destinationPath: '/repo/.cursor/hooks.json',
+      sourceRelativePath: '.zed/settings.json',
+      destinationPath: '/repo/.zed/hooks.json',
       strategy: 'merge-json',
       ownership: 'managed',
       scaffoldOnly: false,
@@ -142,9 +142,9 @@ function runTests() {
     };
 
     const state = createInstallState({
-      adapter: { id: 'cursor-project' },
-      targetRoot: '/repo/.cursor',
-      installStatePath: '/repo/.cursor/ecc-install-state.json',
+      adapter: { id: 'zed-project' },
+      targetRoot: '/repo/.zed',
+      installStatePath: '/repo/.zed/ecc-install-state.json',
       request: {
         profile: null,
         modules: ['platform-configs'],
@@ -195,9 +195,9 @@ function runTests() {
         installedAt: '2026-03-13T00:00:00Z',
         unexpected: true,
         target: {
-          id: 'cursor-project',
-          root: '/repo/.cursor',
-          installStatePath: '/repo/.cursor/ecc-install-state.json',
+          id: 'zed-project',
+          root: '/repo/.zed',
+          installStatePath: '/repo/.zed/ecc-install-state.json',
         },
         request: {
           modules: [],

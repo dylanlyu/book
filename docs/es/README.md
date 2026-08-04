@@ -38,9 +38,9 @@
 
 No son solo configuraciones. Es un sistema completo: skills, instintos, optimización de memoria, aprendizaje continuo, análisis de seguridad y desarrollo orientado a la investigación. Agentes listos para producción, skills, hooks, reglas, configuraciones de MCP y comandos legados, evolucionados durante más de 10 meses de uso diario intensivo construyendo productos reales.
 
-Funciona en **Codex**, **Claude Code**, **Cursor**, **OpenCode**, **Gemini**, **Zed**, **GitHub Copilot** y otros harnesses de agentes de IA.
+Funciona en **Codex**, **Claude Code**, **OpenCode**, **Zed**, **GitHub Copilot** y otros harnesses de agentes de IA.
 
-ECC v2.0.0-rc.1 añade la historia pública del operador Hermes sobre esa capa reutilizable: comienza con la [guía de configuración de Hermes](../HERMES-SETUP.md), luego revisa las [notas de la versión rc.1](../releases/2.0.0-rc.1/release-notes.md) y la [arquitectura multi-harness](../architecture/cross-harness.md).
+Comienza con las [notas de la versión rc.1](../releases/2.0.0-rc.1/release-notes.md) y la [arquitectura multi-harness](../architecture/cross-harness.md).
 
 ---
 
@@ -152,7 +152,7 @@ Este repositorio contiene solo el código. Las guías explican todo.
 - **Controles de ejecución de hooks** — `ECC_HOOK_PROFILE=minimal|standard|strict` y `ECC_DISABLED_HOOKS=...` para control en tiempo de ejecución sin editar los archivos de hooks.
 - **Nuevos comandos del harness** — `/harness-audit`, `/loop-start`, `/loop-status`, `/quality-gate`, `/model-route`.
 - **NanoClaw v2** — enrutamiento de modelos, carga en caliente de skills, rama/búsqueda/exportación/compactación/métricas de sesión.
-- **Paridad cross-harness** — comportamiento ajustado entre Claude Code, Cursor, OpenCode y Codex app/CLI.
+- **Paridad cross-harness** — comportamiento ajustado entre Claude Code, OpenCode y Codex app/CLI.
 - **997 pruebas internas pasando** — suite completa en verde tras la refactorización de hooks/runtime y actualizaciones de compatibilidad.
 
 ### v1.7.0 — Expansión Multiplataforma y Constructor de Presentaciones (Feb 2026)
@@ -160,7 +160,7 @@ Este repositorio contiene solo el código. Las guías explican todo.
 - **Soporte para Codex app + CLI** — Soporte directo de Codex basado en `AGENTS.md`, targeting del instalador y documentación de Codex
 - **Skill `frontend-slides`** — Constructor de presentaciones HTML sin dependencias con guía de conversión a PPTX y reglas estrictas de ajuste al viewport
 - **5 nuevas skills genéricas de negocio/contenido** — `article-writing`, `content-engine`, `market-research`, `investor-materials`, `investor-outreach`
-- **Mayor cobertura de herramientas** — Soporte para Cursor, Codex y OpenCode reforzado para que el mismo repo funcione limpiamente en todos los harnesses principales
+- **Mayor cobertura de herramientas** — Soporte para Codex, OpenCode y Zed reforzado para que el mismo repo funcione limpiamente en todos los harnesses principales
 - **992 pruebas internas** — Validación y cobertura de regresión ampliadas en plugin, hooks, skills y empaquetado
 
 ### v1.6.0 — Codex CLI, AgentShield y Marketplace (Feb 2026)
@@ -431,7 +431,7 @@ python3 ./ecc_dashboard.py
 
 ## Soporte Multiplataforma
 
-Este plugin ahora es totalmente compatible con **Windows, macOS y Linux**, junto con una integración estrecha en los principales IDEs (Cursor, Zed, OpenCode, Antigravity) y harnesses de CLI. Todos los hooks y scripts han sido reescritos en Node.js para máxima compatibilidad.
+Este plugin ahora es totalmente compatible con **Windows, macOS y Linux**, junto con una integración estrecha en los principales IDEs (Zed, OpenCode, Antigravity) y harnesses de CLI. Todos los hooks y scripts han sido reescritos en Node.js para máxima compatibilidad.
 
 ### Detección del Gestor de Paquetes
 
@@ -1001,11 +1001,10 @@ Cada componente es completamente independiente.
 </details>
 
 <details>
-<summary><b>¿Funciona con Cursor / OpenCode / Codex / Antigravity / GitHub Copilot?</b></summary>
+<summary><b>¿Funciona con OpenCode / Codex / Zed / Antigravity / GitHub Copilot?</b></summary>
 
 Sí. ECC es multiplataforma:
-- **Cursor**: Configuraciones pre-traducidas en `.cursor/`. Consulta [Soporte para Cursor IDE](#soporte-para-cursor-ide).
-- **Gemini CLI**: Soporte experimental local al proyecto mediante `.gemini/GEMINI.md` y conexiones compartidas del instalador.
+- **Zed**: Adaptador local al proyecto para settings, reglas aplanadas, comandos, agentes y skills en `.zed/`. Consulta [Soporte de Plataformas](#soporte-de-plataformas).
 - **OpenCode**: Soporte completo del plugin en `.opencode/`. Consulta [Soporte para OpenCode](#soporte-para-opencode).
 - **Codex**: Soporte de primera clase para la app macOS y CLI, con guardias de deriva del adaptador y fallback de SessionStart. Consulta PR [#257](https://github.com/affaan-m/ECC/pull/257).
 - **GitHub Copilot (VS Code)**: Capa de instrucciones y prompts mediante `.github/copilot-instructions.md`, `.vscode/settings.json` y `.github/prompts/`. Consulta [Soporte para GitHub Copilot](#soporte-para-github-copilot).
@@ -1072,72 +1071,6 @@ Estos no están empaquetados con ECC y no son auditados por este repo, pero vale
 - [claude-seo](https://github.com/AgriciDaniel/claude-seo) — Colección de skills y agentes centrados en SEO
 - [claude-ads](https://github.com/AgriciDaniel/claude-ads) — Colección de flujos de trabajo de auditoría de anuncios y crecimiento de pago
 - [claude-cybersecurity](https://github.com/AgriciDaniel/claude-cybersecurity) — Colección de skills y agentes orientados a seguridad
-
----
-
-## Soporte para Cursor IDE
-
-ECC proporciona soporte para Cursor IDE con hooks, reglas, agentes, skills, comandos y configuraciones de MCP adaptados para el diseño de proyecto de Cursor.
-
-### Inicio Rápido (Cursor)
-
-```bash
-# macOS/Linux
-./install.sh --target cursor typescript
-./install.sh --target cursor python golang swift php
-```
-
-```powershell
-# Windows PowerShell
-.\install.ps1 --target cursor typescript
-.\install.ps1 --target cursor python golang swift php
-```
-
-### Qué Incluye
-
-| Componente | Cantidad | Detalles |
-|------------|---------|---------|
-| Eventos de Hook | 15 | sessionStart, beforeShellExecution, afterFileEdit, beforeMCPExecution, beforeSubmitPrompt, y 10 más |
-| Scripts de Hook | 16 | Scripts Node.js delgados que delegan a `scripts/hooks/` mediante adaptador compartido |
-| Reglas | 34 | 9 comunes (alwaysApply) + 25 específicas de lenguaje (TypeScript, Python, Go, Swift, PHP) |
-| Agentes | 48 | `.cursor/agents/ecc-*.md` cuando se instala; con prefijo para evitar colisiones con agentes de usuario o marketplace |
-| Skills | Compartidas + Empaquetadas | `.cursor/skills/` para adiciones traducidas |
-| Comandos | Compartidos | `.cursor/commands/` si se instala |
-| Configuración MCP | Compartida | `.cursor/mcp.json` si se instala |
-
-### Notas de Carga en Cursor
-
-ECC no instala el `AGENTS.md` raíz en `.cursor/`. Cursor trata los archivos `AGENTS.md` anidados como contexto de directorio, por lo que copiar la identidad del repo de ECC en un proyecto host contaminaría ese proyecto.
-
-El comportamiento de carga nativo de Cursor puede variar según la versión. ECC instala agentes como `.cursor/agents/ecc-*.md`; si tu versión de Cursor no expone los agentes del proyecto, esos archivos siguen funcionando como definiciones de referencia explícitas en lugar de contexto de prompt global oculto.
-
-### Arquitectura de Hooks (Patrón de Adaptador DRY)
-
-Cursor tiene **más eventos de hook que Claude Code** (20 vs 8). El módulo `.cursor/hooks/adapter.js` transforma el JSON de stdin de Cursor al formato de Claude Code, permitiendo reutilizar los `scripts/hooks/*.js` existentes sin duplicación.
-
-```
-JSON de stdin de Cursor → adapter.js → transforma → scripts/hooks/*.js
-                                                    (compartido con Claude Code)
-```
-
-Hooks clave:
-- **beforeShellExecution** — Bloquea servidores de desarrollo fuera de tmux (exit 2), revisión de git push
-- **afterFileEdit** — Auto-formato + verificación de TypeScript + advertencia de console.log
-- **beforeSubmitPrompt** — Detecta secretos (sk-, ghp_, patrones AKIA) en prompts
-- **beforeTabFileRead** — Bloquea a Tab de leer archivos .env, .key, .pem (exit 2)
-- **beforeMCPExecution / afterMCPExecution** — Registro de auditoría de MCP
-
-### Formato de Reglas
-
-Las reglas de Cursor usan frontmatter YAML con `description`, `globs` y `alwaysApply`:
-
-```yaml
----
-description: "TypeScript coding style extending common rules"
-globs: ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx"]
-alwaysApply: false
----
-```
 
 ---
 
@@ -1235,18 +1168,18 @@ Para usar los prompts de flujo de trabajo en Copilot Chat:
 
 ECC es el **primer plugin que maximiza todas las principales herramientas de codificación con IA**. Así se compara cada harness:
 
-| Característica | Claude Code           | Cursor IDE | Codex CLI | OpenCode | GitHub Copilot |
-|----------------|-----------------------|------------|-----------|----------|----------------|
-| **Agentes** | 63                    | Compartidos (AGENTS.md) | Compartidos (AGENTS.md) | 12 | N/A |
-| **Comandos** | 79                    | Compartidos | Basados en instrucciones | 35 | 5 prompts |
-| **Skills** | 249                   | Compartidas | 10 (formato nativo) | 37 | Mediante instrucciones |
-| **Eventos de Hook** | 8 tipos               | 15 tipos | Ninguno aún | 11 tipos | Ninguno |
-| **Scripts de Hook** | 20+ scripts           | 16 scripts (adaptador DRY) | N/A | Hooks de plugin | N/A |
-| **Reglas** | 34 (común + lenguaje) | 34 (frontmatter YAML) | Basadas en instrucciones | 13 instrucciones | 1 archivo siempre activo |
-| **Herramientas Personalizadas** | Mediante hooks        | Mediante hooks | N/A | 6 herramientas nativas | N/A |
-| **Servidores MCP** | 14                    | Compartidos (mcp.json) | 7 (fusión automática vía parser TOML) | Completo | N/A |
-| **Formato de Configuración** | settings.json         | hooks.json + rules/ | config.toml | opencode.json | copilot-instructions.md + settings.json |
-| **Archivo de Contexto** | CLAUDE.md + AGENTS.md | AGENTS.md | AGENTS.md | AGENTS.md | copilot-instructions.md |
+| Característica | Claude Code           | Codex CLI | OpenCode | GitHub Copilot |
+|----------------|-----------------------|-----------|----------|----------------|
+| **Agentes** | 63                    | Compartidos (AGENTS.md) | 12 | N/A |
+| **Comandos** | 79                    | Basados en instrucciones | 35 | 5 prompts |
+| **Skills** | 249                   | 10 (formato nativo) | 37 | Mediante instrucciones |
+| **Eventos de Hook** | 8 tipos               | Ninguno aún | 11 tipos | Ninguno |
+| **Scripts de Hook** | 20+ scripts           | N/A | Hooks de plugin | N/A |
+| **Reglas** | 34 (común + lenguaje) | Basadas en instrucciones | 13 instrucciones | 1 archivo siempre activo |
+| **Herramientas Personalizadas** | Mediante hooks        | N/A | 6 herramientas nativas | N/A |
+| **Servidores MCP** | 14                    | 7 (fusión automática vía parser TOML) | Completo | N/A |
+| **Formato de Configuración** | settings.json         | config.toml | opencode.json | copilot-instructions.md + settings.json |
+| **Archivo de Contexto** | CLAUDE.md + AGENTS.md | AGENTS.md | AGENTS.md | copilot-instructions.md |
 
 ---
 

@@ -34,7 +34,7 @@
 
 단순한 설정 파일 모음이 아닙니다. 스킬, 직관(Instinct), 메모리 최적화, 지속적 학습, 보안 스캐닝, 리서치 우선 개발을 아우르는 완전한 시스템입니다. 10개월 이상 실제 프로덕트를 만들며 매일 집중적으로 사용해 발전시킨 프로덕션 레벨의 에이전트, 훅, 커맨드, 룰, MCP 설정이 포함되어 있습니다.
 
-**Claude Code**, **Codex**, **Cursor**, **OpenCode**, **Gemini** 등 다양한 AI 에이전트 하네스에서 사용할 수 있습니다.
+**Claude Code**, **Codex**, **OpenCode**, **Zed** 등 다양한 AI 에이전트 하네스에서 사용할 수 있습니다.
 
 ---
 
@@ -81,7 +81,7 @@
 - **훅 런타임 제어** — `ECC_HOOK_PROFILE=minimal|standard|strict`와 `ECC_DISABLED_HOOKS=...`로 훅 파일 수정 없이 런타임 제어.
 - **새 하네스 커맨드** — `/harness-audit`, `/loop-start`, `/loop-status`, `/quality-gate`, `/model-route`.
 - **NanoClaw v2** — 모델 라우팅, 스킬 핫로드, 세션 분기/검색/내보내기/압축/메트릭.
-- **크로스 하네스 호환성** — Claude Code, Cursor, OpenCode, Codex 간 동작 일관성 강화.
+- **크로스 하네스 호환성** — Claude Code, OpenCode, Codex 간 동작 일관성 강화.
 - **997개 내부 테스트 통과** — 훅/런타임 리팩토링 및 호환성 업데이트 후 전체 테스트 통과.
 
 ### v1.7.0 — 크로스 플랫폼 확장 & 프레젠테이션 빌더 (2026년 2월)
@@ -131,8 +131,8 @@ cd everything-claude-code
 ./install.sh typescript    # 또는 python, golang
 # 여러 언어를 한번에 설치할 수 있습니다:
 # ./install.sh typescript python golang
-# Cursor를 대상으로 설치:
-# ./install.sh --target cursor typescript
+# Zed를 대상으로 설치:
+# ./install.sh --target zed typescript
 ```
 
 수동 설치 방법은 `rules/` 폴더의 README를 참고하세요.
@@ -156,7 +156,7 @@ cd everything-claude-code
 
 ## 크로스 플랫폼 지원
 
-이 플러그인은 **Windows, macOS, Linux**를 완벽하게 지원하며, 주요 IDE(Cursor, OpenCode, Antigravity) 및 CLI 하네스와 긴밀하게 통합됩니다. 모든 훅과 스크립트는 최대 호환성을 위해 Node.js로 작성되었습니다.
+이 플러그인은 **Windows, macOS, Linux**를 완벽하게 지원하며, 주요 IDE(Zed, OpenCode, Antigravity) 및 CLI 하네스와 긴밀하게 통합됩니다. 모든 훅과 스크립트는 최대 호환성을 위해 Node.js로 작성되었습니다.
 
 ### 패키지 매니저 감지
 
@@ -580,10 +580,10 @@ cp -r everything-claude-code/rules/common ~/.claude/rules/common
 </details>
 
 <details>
-<summary><b>Cursor / OpenCode / Codex / Antigravity에서도 작동하나요?</b></summary>
+<summary><b>OpenCode / Codex / Zed / Antigravity에서도 작동하나요?</b></summary>
 
 네. ECC는 크로스 플랫폼입니다:
-- **Cursor**: `.cursor/`에 변환된 설정 제공
+- **Zed**: `.zed/`에 프로젝트 설정, 평탄화된 규칙, 커맨드, 에이전트, 스킬 제공
 - **OpenCode**: `.opencode/`에 전체 플러그인 지원
 - **Codex**: macOS 앱과 CLI 모두 퍼스트클래스 지원
 - **Antigravity**: `.agent/`에 워크플로우, 스킬, 평탄화된 룰 통합

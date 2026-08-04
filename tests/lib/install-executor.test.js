@@ -55,14 +55,6 @@ function writeLegacySourceFixture(root) {
   writeFile(root, path.join('rules', 'typescript', 'testing.md'), '# TS\n');
   writeFile(root, path.join('rules', 'python', 'testing.md'), '# Python\n');
 
-  writeFile(root, path.join('.cursor', 'rules', 'common-style.md'), '# Cursor common\n');
-  writeFile(root, path.join('.cursor', 'rules', 'typescript-style.md'), '# Cursor TS\n');
-  writeFile(root, path.join('.cursor', 'rules', 'python-style.txt'), '# Not markdown\n');
-  writeFile(root, path.join('.cursor', 'agents', 'planner.md'), '# Planner\n');
-  writeFile(root, path.join('.cursor', 'skills', 'demo', 'SKILL.md'), '# Demo\n');
-  writeFile(root, path.join('.cursor', 'commands', 'plan.md'), '# Plan\n');
-  writeFile(root, path.join('.cursor', 'hooks', 'hook.js'), 'process.exit(0);\n');
-  writeJson(root, path.join('.cursor', 'hooks.json'), { version: 1, hooks: {} });
   writeJson(root, '.mcp.json', { mcpServers: { github: { command: 'github-mcp' } } });
 
   writeFile(root, path.join('commands', 'plan.md'), '# Plan\n');
@@ -230,65 +222,6 @@ function runTests() {
     }
   })) passed++; else failed++;
 
-  if (test('plans Cursor legacy assets and JSON merge payloads', () => {
-    const sourceRoot = createTempDir('install-executor-source-');
-    const projectRoot = createTempDir('install-executor-project-');
-    const homeDir = createTempDir('install-executor-home-');
-    try {
-      writeLegacySourceFixture(sourceRoot);
-
-      const plan = createLegacyInstallPlan({
-        sourceRoot,
-        projectRoot,
-        homeDir,
-        target: 'cursor',
-        languages: ['typescript', 'ruby', 'bad/name'],
-      });
-
-      const targetRoot = path.join(projectRoot, '.cursor');
-      assert.strictEqual(plan.installRoot, targetRoot);
-      assert.ok(operationFor(plan, path.join('.cursor', 'rules', 'common-style.md')));
-      assert.ok(operationFor(plan, path.join('.cursor', 'rules', 'typescript-style.md')));
-      assert.ok(operationFor(plan, path.join('.cursor', 'agents', 'ecc-planner.md')));
-      assert.ok(!plan.operations.some(operation => (
-        operation.destinationPath.endsWith(path.join('.cursor', 'agents', 'planner.md'))
-      )));
-      assert.ok(operationFor(plan, path.join('.cursor', 'skills', 'demo', 'SKILL.md')));
-      assert.ok(operationFor(plan, path.join('.cursor', 'commands', 'plan.md')));
-      assert.ok(operationFor(plan, path.join('.cursor', 'hooks', 'hook.js')));
-      assert.ok(operationFor(plan, path.join('.cursor', 'hooks.json')));
-      const mergeOperation = plan.operations.find(operation => operation.kind === 'merge-json');
-      assert.ok(mergeOperation, 'Should merge shared MCP config into Cursor');
-      assert.deepStrictEqual(mergeOperation.mergePayload.mcpServers.github.command, 'github-mcp');
-      assert.ok(plan.warnings.some(warning => warning.includes("No Cursor rules for 'ruby'")));
-      assert.ok(plan.warnings.some(warning => warning.includes("Invalid language name 'bad/name'")));
-      assert.strictEqual(plan.statePreview.target.id, 'cursor-project');
-    } finally {
-      cleanup(sourceRoot);
-      cleanup(projectRoot);
-      cleanup(homeDir);
-    }
-  })) passed++; else failed++;
-
-  if (test('surfaces invalid Cursor MCP JSON while planning legacy install', () => {
-    const sourceRoot = createTempDir('install-executor-source-');
-    const projectRoot = createTempDir('install-executor-project-');
-    const homeDir = createTempDir('install-executor-home-');
-    try {
-      writeLegacySourceFixture(sourceRoot);
-      fs.writeFileSync(path.join(sourceRoot, '.mcp.json'), '[]\n', 'utf8');
-
-      assert.throws(
-        () => createLegacyInstallPlan({ sourceRoot, projectRoot, homeDir, target: 'cursor' }),
-        /Invalid \.mcp\.json/
-      );
-    } finally {
-      cleanup(sourceRoot);
-      cleanup(projectRoot);
-      cleanup(homeDir);
-    }
-  })) passed++; else failed++;
-
   if (test('plans Antigravity legacy files with flattened rule names', () => {
     const sourceRoot = createTempDir('install-executor-source-');
     const projectRoot = createTempDir('install-executor-project-');
@@ -384,7 +317,7 @@ function runTests() {
         sourceRoot: REPO_ROOT,
         projectRoot,
         homeDir,
-        target: 'cursor',
+        target: 'claude-project',
         legacyLanguages: ['rust'],
       });
 

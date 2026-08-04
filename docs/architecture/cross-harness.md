@@ -12,7 +12,7 @@ The goal is to keep the durable parts of agentic work in one repo:
 - session and orchestration patterns
 - durable, harness-neutral memory documents
 
-Claude Code, Codex, OpenCode, Cursor, Gemini, and future harnesses should adapt those assets at the edge instead of requiring a new workflow model for every tool.
+Claude Code, Codex, OpenCode, Zed, and future harnesses should adapt those assets at the edge instead of requiring a new workflow model for every tool.
 
 For the operator-facing support matrix and scorecard workflow, see
 [Harness Adapter Compliance Matrix](harness-adapter-compliance.md).
@@ -23,9 +23,9 @@ For the full-stack platform framing and product-integration loop, see
 
 | Surface | Shared Source | Harness Adapter | Current Status |
 |---------|---------------|-----------------|----------------|
-| Skills | `skills/*/SKILL.md` | Claude plugin, Codex plugin, `.agents/skills`, Cursor skill copies, OpenCode plugin/config | Supported with harness-specific packaging |
-| Rules and instructions | `rules/`, `AGENTS.md`, translated docs | Claude rules install, Codex `AGENTS.md`, Cursor rules, OpenCode instructions | Supported, but not identical across harnesses |
-| Hooks | `hooks/hooks.json`, `scripts/hooks/` | Claude native hooks, OpenCode plugin events, Cursor hook adapter | Hook-backed in Claude/OpenCode/Cursor; instruction-backed in Codex |
+| Skills | `skills/*/SKILL.md` | Claude plugin, Codex plugin, `.agents/skills`, Zed skill copies, OpenCode plugin/config | Supported with harness-specific packaging |
+| Rules and instructions | `rules/`, `AGENTS.md`, translated docs | Claude rules install, Codex `AGENTS.md`, Zed flattened rules, OpenCode instructions | Supported, but not identical across harnesses |
+| Hooks | `hooks/hooks.json`, `scripts/hooks/` | Claude native hooks, OpenCode plugin events | Hook-backed in Claude/OpenCode; instruction-backed in Codex and Zed |
 | MCPs | `.mcp.json`, `mcp-configs/` | Native MCP config import per harness | Supported where the harness exposes MCP |
 | Commands | `commands/`, CLI scripts | Claude slash commands, compatibility shims, CLI entrypoints | Supported, but command semantics vary |
 | Memory | `.ecc/memory/`, `~/.ecc/memory/` | `ecc memory` CLI or opt-in `ecc-memory-mcp` stdio server | Supported with explicit recall and unreviewed writes |
@@ -52,15 +52,14 @@ Each harness has different loading and enforcement behavior:
 - Claude Code loads plugin assets and has native hook execution.
 - Codex reads `AGENTS.md`, plugin metadata, skills, and MCP config, but hook parity is instruction-driven.
 - OpenCode has a plugin/event system that can reuse ECC hook logic through an adapter layer.
-- Cursor uses its own rule and hook layout, so ECC maintains translated surfaces under `.cursor/`.
-- Gemini support is install/instruction oriented and should be treated as a compatibility surface, not as full hook parity.
+- Zed consumes project settings plus flattened rules, so ECC maintains a translated surface under `.zed/`.
 
 Adapters should stay thin. The shared behavior belongs in `skills/`, `rules/`, `hooks/`, `scripts/`, and `mcp-configs/`.
 
 ## Shared Memory Contract
 
 ECC Memory Vault is the common knowledge-transfer surface for Claude, Codex,
-Hermes, Cursor, OpenCode, and other agents. It stores portable
+OpenCode, Zed, and other agents. It stores portable
 `ecc.memory.v1` Markdown documents in three scopes:
 
 - project: `<repo>/.ecc/memory/project/`
@@ -96,46 +95,17 @@ The trust boundary is consistent across every adapter:
   never turns memory frontmatter into a self-asserted approval;
 - active execution state remains in GitHub or Linear, not only in memory.
 
-`skills/unified-memory/SKILL.md` owns this workflow. Codex and Cursor receive
-behavior-identical packaging copies under `.agents/skills/` and
-`.cursor/skills/`; Hermes can import the canonical skill. No harness owns a
+`skills/unified-memory/SKILL.md` owns this workflow. Codex receives a
+behavior-identical packaging copy under `.agents/skills/`. No harness owns a
 separate authoritative memory store.
-
-## Hermes Boundary
-
-Hermes is not the public ECC runtime.
-
-Hermes is an operator shell that can consume ECC assets:
-
-- import selected ECC skills into a Hermes skills directory
-- use ECC MCP conventions for tool access
-- route chat, CLI, cron, and handoff workflows through reusable ECC patterns
-- distill repeated local operator work back into sanitized ECC skills
-
-The public repo should ship reusable patterns, not local Hermes state.
-
-Do ship:
-
-- sanitized setup docs
-- repo-relative demo prompts
-- general operator skills
-- examples that do not depend on private credentials
-
-Do not ship:
-
-- OAuth tokens or API keys
-- raw `~/.hermes` exports
-- personal workspace memory
-- private datasets
-- local-only automation packs that have not been reviewed
 
 ## Worked Example
 
-Use `skills/hermes-imports/SKILL.md` as the same skill source across harnesses.
+Use `skills/unified-memory/SKILL.md` as the same skill source across harnesses.
 
 The workflow is:
 
-1. Author the durable behavior once in `skills/hermes-imports/SKILL.md`.
+1. Author the durable behavior once in `skills/unified-memory/SKILL.md`.
 2. Keep secrets, local paths, and raw operator memory out of the skill.
 3. Let each harness adapt how the skill is loaded.
 4. Test the source skill and the harness-facing metadata separately.
@@ -156,14 +126,13 @@ Supported today:
 - Claude Code plugin packaging
 - Codex plugin metadata and MCP reference config
 - OpenCode package/plugin surface
-- Cursor-adapted rules, hooks, and skills
+- Zed-adapted project settings, flattened rules, and skills
 - file-first cross-harness memory through the CLI and opt-in MCP adapter
 - `ecc2/` as an alpha Rust control plane
 
 Still maturing:
 
 - exact hook parity across all harnesses
-- automated skill sync into Hermes
 - release packaging for `ecc2/`
 - cross-harness session resume semantics
 - optional semantic reranking and governed memory-promotion workflows

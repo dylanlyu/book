@@ -350,18 +350,16 @@ description: /help에 표시되는 간단한 설명
 
 ## 크로스-하네스 및 번역
 
-### 스킬 서브셋 (Codex 및 Cursor)
+### 스킬 서브셋 (Codex)
 
 ECC는 다른 하네스를 위한 스킬 서브셋도 제공합니다:
 
 - **Codex:** `.agents/skills/` — `agents/openai.yaml`에 나열된 스킬이 Codex에서 로드됩니다.
-- **Cursor:** `.cursor/skills/` — Cursor용 스킬 서브셋이 별도로 포함됩니다.
 
-Codex 또는 Cursor에서도 제공해야 하는 **새 스킬**을 추가한다면:
+Codex에서도 제공해야 하는 **새 스킬**을 추가한다면:
 
 1. 먼저 `skills/your-skill-name/` 아래에 일반적인 ECC 스킬로 추가합니다.
 2. **Codex**에서도 제공해야 하면 `.agents/skills/`에 반영하고, 필요하면 `agents/openai.yaml`에도 참조를 추가합니다.
-3. **Cursor**에서도 제공해야 하면 Cursor 레이아웃에 맞게 `.cursor/skills/` 아래에 추가합니다.
 
 기존 디렉터리의 구조를 확인한 뒤 같은 패턴을 따르세요. 이 서브셋 동기화는 수동이므로 PR 설명에 반영 여부를 적어 두는 것이 좋습니다.
 

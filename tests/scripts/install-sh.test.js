@@ -72,14 +72,14 @@ function runTests() {
     const projectDir = createTempDir('install-sh-project-');
 
     try {
-      const result = run(['--target', 'cursor', '--dry-run', 'typescript'], {
+      const result = run(['--target', 'antigravity', '--dry-run', 'typescript'], {
         cwd: projectDir,
         homeDir,
       });
 
       assert.strictEqual(result.code, 0, result.stderr);
       assert.ok(result.stdout.includes('Dry-run install plan'));
-      assert.ok(!fs.existsSync(path.join(projectDir, '.cursor', 'hooks.json')));
+      assert.ok(!fs.existsSync(path.join(projectDir, '.agent', 'hooks.json')));
     } finally {
       cleanup(homeDir);
       cleanup(projectDir);

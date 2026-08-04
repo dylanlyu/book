@@ -167,7 +167,7 @@ function runTests() {
 
   if (test('normalizes --profile + --with + --without as manifest mode', () => {
     const request = normalizeInstallRequest({
-      target: 'cursor',
+      target: 'zed',
       profileId: 'developer',
       moduleIds: [],
       includeComponentIds: ['lang:typescript', 'framework:nextjs'],
@@ -415,13 +415,13 @@ function runTests() {
   if (test('--with respects target compatibility filtering', () => {
     const plan = resolveInstallPlan({
       includeComponentIds: ['capability:orchestration'],
-      target: 'cursor',
+      target: 'zed',
     });
     // orchestration module only supports claude, codex, opencode
     assert.ok(!plan.selectedModuleIds.includes('orchestration'),
-      'Should skip orchestration for cursor target');
+      'Should skip orchestration for zed target');
     assert.ok(plan.skippedModuleIds.includes('orchestration'),
-      'Should report orchestration as skipped for cursor');
+      'Should report orchestration as skipped for zed');
   })) passed++; else failed++;
 
   if (test('--without with agent: component excludes the agent module', () => {

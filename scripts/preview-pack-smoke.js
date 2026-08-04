@@ -11,8 +11,6 @@ const SCHEMA_VERSION = 'ecc.preview-pack-smoke.v1';
 
 const REQUIRED_ARTIFACTS = [
   'README.md',
-  'docs/HERMES-SETUP.md',
-  'skills/hermes-imports/SKILL.md',
   'docs/architecture/cross-harness.md',
   'docs/architecture/harness-adapter-compliance.md',
   'docs/architecture/observability-readiness.md',
@@ -42,7 +40,7 @@ const REQUIRED_ARTIFACTS = [
   `${RELEASE_DIR}/linkedin-post.md`,
   `${RELEASE_DIR}/article-outline.md`,
   `${RELEASE_DIR}/telegram-handoff.md`,
-  `${RELEASE_DIR}/demo-prompts.md`,
+  `${RELEASE_DIR}/demo-prompts.md`
 ];
 
 const REQUIRED_VERIFICATION_COMMANDS = [
@@ -59,7 +57,7 @@ const REQUIRED_VERIFICATION_COMMANDS = [
   'npm audit signatures',
   'node tests/docs/ecc2-release-surface.test.js',
   'node tests/run-all.js',
-  'cd ecc2 && cargo test',
+  'cd ecc2 && cargo test'
 ];
 
 const REQUIRED_PUBLICATION_BLOCKERS = [
@@ -67,28 +65,22 @@ const REQUIRED_PUBLICATION_BLOCKERS = [
   'npm `ecc-universal@2.0.0-rc.1`',
   'Claude plugin tag',
   'Codex repo-marketplace distribution evidence',
-  'ECC Tools billing/product readiness',
-];
-
-const HERMES_BOUNDARY_MARKERS = [
-  'Public Release Candidate Scope',
-  'ECC v2.0.0-rc.1 documents the Hermes surface',
-  'Sanitization Checklist',
-  'Do not ship raw workspace exports',
-  'Output Contract',
+  'ECC Tools billing/product readiness'
 ];
 
 function usage() {
-  console.log([
-    'Usage: node scripts/preview-pack-smoke.js [--format <text|json>] [--root <dir>]',
-    '',
-    'Deterministic smoke gate for the ECC 2.0 rc.1 preview pack.',
-    '',
-    'Options:',
-    '  --format <text|json>  Output format (default: text)',
-    '  --root <dir>          Repository root to inspect (default: cwd)',
-    '  --help, -h            Show this help',
-  ].join('\n'));
+  console.log(
+    [
+      'Usage: node scripts/preview-pack-smoke.js [--format <text|json>] [--root <dir>]',
+      '',
+      'Deterministic smoke gate for the ECC 2.0 rc.1 preview pack.',
+      '',
+      'Options:',
+      '  --format <text|json>  Output format (default: text)',
+      '  --root <dir>          Repository root to inspect (default: cwd)',
+      '  --help, -h            Show this help'
+    ].join('\n')
+  );
 }
 
 function readArgValue(args, index, flagName) {
@@ -104,7 +96,7 @@ function parseArgs(argv) {
   const parsed = {
     format: 'text',
     help: false,
-    root: path.resolve(process.cwd()),
+    root: path.resolve(process.cwd())
   };
 
   for (let index = 0; index < args.length; index += 1) {
@@ -189,7 +181,7 @@ function findForbiddenContent(rootDir, relativePaths) {
       offenders.push({
         path: relativePath,
         line: lineNumberForIndex(text, match.index),
-        marker: match[0],
+        marker: match[0]
       });
     }
   }
@@ -202,7 +194,7 @@ function makeCheck(id, status, evidence, fix) {
     id,
     status,
     evidence,
-    fix: status === 'pass' ? '' : fix,
+    fix: status === 'pass' ? '' : fix
   };
 }
 
@@ -213,26 +205,16 @@ function buildReport(options = {}) {
   const packageFiles = Array.isArray(packageJson.files) ? packageJson.files : [];
   const manifestPath = `${RELEASE_DIR}/preview-pack-manifest.md`;
   const manifest = readText(rootDir, manifestPath);
-  const hermesSetup = readText(rootDir, 'docs/HERMES-SETUP.md');
-  const hermesSkill = readText(rootDir, 'skills/hermes-imports/SKILL.md');
-
   const missingArtifacts = REQUIRED_ARTIFACTS.filter(relativePath => !fileExists(rootDir, relativePath));
   const unlistedArtifacts = REQUIRED_ARTIFACTS.filter(relativePath => !manifest.includes(`\`${relativePath}\``));
   const missingCommands = REQUIRED_VERIFICATION_COMMANDS.filter(command => !manifest.includes(command));
   const missingBlockers = REQUIRED_PUBLICATION_BLOCKERS.filter(blocker => !manifest.includes(blocker));
-  const missingHermesMarkers = HERMES_BOUNDARY_MARKERS.filter(marker => !`${hermesSetup}\n${hermesSkill}`.includes(marker));
-  const forbiddenContent = findForbiddenContent(rootDir, [
-    ...REQUIRED_ARTIFACTS,
-    manifestPath,
-    'docs/business/social-launch-copy.md',
-  ]);
+  const forbiddenContent = findForbiddenContent(rootDir, [...REQUIRED_ARTIFACTS, manifestPath, 'docs/business/social-launch-copy.md']);
 
   const checks = [
     makeCheck(
       'preview-pack-script-registered',
-      packageScripts['preview-pack:smoke'] === 'node scripts/preview-pack-smoke.js'
-        && packageFiles.includes('scripts/preview-pack-smoke.js')
-        && fileExists(rootDir, 'scripts/preview-pack-smoke.js')
+      packageScripts['preview-pack:smoke'] === 'node scripts/preview-pack-smoke.js' && packageFiles.includes('scripts/preview-pack-smoke.js') && fileExists(rootDir, 'scripts/preview-pack-smoke.js')
         ? 'pass'
         : 'fail',
       'package script and npm package file entry for preview-pack smoke gate',
@@ -249,30 +231,21 @@ function buildReport(options = {}) {
     makeCheck(
       'final-verification-commands-listed',
       missingCommands.length === 0 ? 'pass' : 'fail',
-      missingCommands.length === 0
-        ? `${REQUIRED_VERIFICATION_COMMANDS.length} final verification commands are listed`
-        : `missing commands: ${missingCommands.join('; ')}`,
+      missingCommands.length === 0 ? `${REQUIRED_VERIFICATION_COMMANDS.length} final verification commands are listed` : `missing commands: ${missingCommands.join('; ')}`,
       'Add the missing final verification commands to preview-pack-manifest.md.'
     ),
     makeCheck(
-      'hermes-boundary-sanitized',
-      missingHermesMarkers.length === 0 && forbiddenContent.length === 0 ? 'pass' : 'fail',
-      missingHermesMarkers.length === 0 && forbiddenContent.length === 0
-        ? 'Hermes setup and import skill preserve the public sanitization boundary'
-        : `missing markers: ${missingHermesMarkers.join(', ') || 'none'}; forbidden content: ${forbiddenContent.map(item => `${item.path}:${item.line}`).join(', ') || 'none'}`,
-      'Restore Hermes sanitization language and remove private local paths from preview-pack docs.'
+      'preview-pack-boundary-sanitized',
+      forbiddenContent.length === 0 ? 'pass' : 'fail',
+      forbiddenContent.length === 0 ? 'preview-pack artifacts preserve the public sanitization boundary' : `forbidden content: ${forbiddenContent.map(item => `${item.path}:${item.line}`).join(', ')}`,
+      'Remove private local paths from preview-pack docs.'
     ),
     makeCheck(
       'publication-blockers-preserved',
-      missingBlockers.length === 0
-        && /approval-gated release, package, plugin, and\s+announcement steps/.test(manifest)
-        ? 'pass'
-        : 'fail',
-      missingBlockers.length === 0
-        ? 'publication remains explicitly approval-gated'
-        : `missing blockers: ${missingBlockers.join(', ')}`,
+      missingBlockers.length === 0 && /approval-gated release, package, plugin, and\s+announcement steps/.test(manifest) ? 'pass' : 'fail',
+      missingBlockers.length === 0 ? 'publication remains explicitly approval-gated' : `missing blockers: ${missingBlockers.join(', ')}`,
       'Keep publication blockers explicit until the live release, package, plugin, and billing surfaces exist.'
-    ),
+    )
   ];
 
   const failed = checks.filter(check => check.status !== 'pass');
@@ -290,21 +263,14 @@ function buildReport(options = {}) {
     summary: {
       passed: checks.length - failed.length,
       failed: failed.length,
-      total: checks.length,
+      total: checks.length
     },
-    checks,
+    checks
   };
 }
 
 function renderText(report) {
-  const lines = [
-    'ECC preview pack smoke',
-    `Release: ${report.release}`,
-    `Ready: ${report.ready ? 'yes' : 'no'}`,
-    `Digest: ${report.digest}`,
-    '',
-    'Checks:',
-  ];
+  const lines = ['ECC preview pack smoke', `Release: ${report.release}`, `Ready: ${report.ready ? 'yes' : 'no'}`, `Digest: ${report.digest}`, '', 'Checks:'];
 
   for (const check of report.checks) {
     lines.push(`- ${check.status} ${check.id}: ${check.evidence}`);
@@ -358,5 +324,5 @@ module.exports = {
   REQUIRED_VERIFICATION_COMMANDS,
   buildReport,
   parseArgs,
-  renderText,
+  renderText
 };

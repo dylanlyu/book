@@ -85,7 +85,7 @@ function runTests() {
     const projectRoot = createTempDir('uninstall-project-');
 
     try {
-      const installStdout = execFileSync('node', [INSTALL_SCRIPT, '--target', 'cursor', 'typescript'], {
+      const installStdout = execFileSync('node', [INSTALL_SCRIPT, '--target', 'antigravity', 'typescript'], {
         cwd: projectRoot,
         env: {
           ...process.env,
@@ -98,12 +98,12 @@ function runTests() {
       assert.ok(installStdout.includes('Done. Install-state written'));
 
       const normalizedProjectRoot = fs.realpathSync(projectRoot);
-      const managedPath = path.join(normalizedProjectRoot, '.cursor', 'hooks.json');
-      const statePath = path.join(normalizedProjectRoot, '.cursor', 'ecc-install-state.json');
-      const unrelatedPath = path.join(normalizedProjectRoot, '.cursor', 'custom-user-note.txt');
+      const managedPath = path.join(normalizedProjectRoot, '.agent', 'hooks.json');
+      const statePath = path.join(normalizedProjectRoot, '.agent', 'ecc-install-state.json');
+      const unrelatedPath = path.join(normalizedProjectRoot, '.agent', 'custom-user-note.txt');
       fs.writeFileSync(unrelatedPath, 'leave me alone');
 
-      const uninstallResult = run(['--target', 'cursor'], {
+      const uninstallResult = run(['--target', 'antigravity'], {
         cwd: projectRoot,
         homeDir,
       });
@@ -123,7 +123,7 @@ function runTests() {
     const projectRoot = createTempDir('uninstall-project-');
 
     try {
-      const targetRoot = path.join(projectRoot, '.cursor');
+      const targetRoot = path.join(projectRoot, '.agent');
       fs.mkdirSync(targetRoot, { recursive: true });
       const normalizedTargetRoot = fs.realpathSync(targetRoot);
       const statePath = path.join(normalizedTargetRoot, 'ecc-install-state.json');
@@ -139,7 +139,7 @@ function runTests() {
       fs.writeFileSync(unrelatedPath, 'leave me alone');
 
       writeState(statePath, {
-        adapter: { id: 'cursor-project', target: 'cursor', kind: 'project' },
+        adapter: { id: 'antigravity-project', target: 'antigravity', kind: 'project' },
         targetRoot: normalizedTargetRoot,
         installStatePath: statePath,
         request: {
@@ -167,7 +167,7 @@ function runTests() {
           {
             kind: 'merge-json',
             moduleId: 'platform-configs',
-            sourceRelativePath: '.cursor/hooks.json',
+            sourceRelativePath: '.agent/hooks.json',
             destinationPath: mergedPath,
             strategy: 'merge-json',
             ownership: 'managed',
@@ -182,7 +182,7 @@ function runTests() {
           {
             kind: 'remove',
             moduleId: 'platform-configs',
-            sourceRelativePath: '.cursor/legacy-note.txt',
+            sourceRelativePath: '.agent/legacy-note.txt',
             destinationPath: removedPath,
             strategy: 'remove',
             ownership: 'managed',
@@ -197,7 +197,7 @@ function runTests() {
         },
       });
 
-      const uninstallResult = run(['--target', 'cursor'], {
+      const uninstallResult = run(['--target', 'antigravity'], {
         cwd: projectRoot,
         homeDir,
       });
@@ -221,7 +221,7 @@ function runTests() {
     const projectRoot = createTempDir('uninstall-project-');
 
     try {
-      const targetRoot = path.join(projectRoot, '.cursor');
+      const targetRoot = path.join(projectRoot, '.agent');
       fs.mkdirSync(targetRoot, { recursive: true });
       const normalizedTargetRoot = fs.realpathSync(targetRoot);
       const statePath = path.join(normalizedTargetRoot, 'ecc-install-state.json');
@@ -229,7 +229,7 @@ function runTests() {
       fs.writeFileSync(renderedPath, '# generated\n');
 
       writeState(statePath, {
-        adapter: { id: 'cursor-project', target: 'cursor', kind: 'project' },
+        adapter: { id: 'antigravity-project', target: 'antigravity', kind: 'project' },
         targetRoot: normalizedTargetRoot,
         installStatePath: statePath,
         request: {
@@ -248,7 +248,7 @@ function runTests() {
           {
             kind: 'render-template',
             moduleId: 'platform-configs',
-            sourceRelativePath: '.cursor/generated.md.template',
+            sourceRelativePath: '.agent/generated.md.template',
             destinationPath: renderedPath,
             strategy: 'render-template',
             ownership: 'managed',
@@ -263,7 +263,7 @@ function runTests() {
         },
       });
 
-      const uninstallResult = run(['--target', 'cursor', '--dry-run', '--json'], {
+      const uninstallResult = run(['--target', 'antigravity', '--dry-run', '--json'], {
         cwd: projectRoot,
         homeDir,
       });

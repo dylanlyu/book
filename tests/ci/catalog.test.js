@@ -46,8 +46,8 @@ function writeEnglishReadme(root, counts, options = {}) {
   fs.writeFileSync(path.join(root, 'README.md'), `Access to ${counts.agents} agents, ${counts.skills} skills, and ${counts.commands} commands.
 - **Public surface synced to the live repo** - metadata, catalog counts, plugin manifests, and install-facing docs now match the actual OSS surface: ${counts.agents} agents, ${counts.skills} skills, and ${counts.commands} legacy command shims.
 |-- agents/           # ${counts.agents} specialized subagents for delegation
-| Feature | Claude Code | Cursor IDE | Codex CLI | OpenCode |
-| --- | --- | --- | --- | --- |
+| Feature | Claude Code | Codex CLI | OpenCode |
+| --- | --- | --- | --- |
 | Agents | PASS: ${tableCounts.agents} agents |
 | Commands | PASS: ${tableCounts.commands} commands |
 | Skills | PASS: ${tableCounts.skills} skills |
@@ -58,11 +58,11 @@ function writeEnglishReadme(root, counts, options = {}) {
 
 ## Cross-Tool Feature Parity
 
-| Feature | Claude Code | Cursor IDE | Codex CLI | OpenCode |
-| --- | --- | --- | --- | --- |
-| **Agents** | ${parityCounts.agents} | Shared (AGENTS.md) | Shared (AGENTS.md) | 12 |
-| **Commands** | ${parityCounts.commands} | Shared | Instruction-based | 31 |
-| **Skills** | ${parityCounts.skills} | Shared | 10 (native format) | 37 |
+| Feature | Claude Code | Codex CLI | OpenCode |
+| --- | --- | --- | --- |
+| **Agents** | ${parityCounts.agents} | Shared (AGENTS.md) | 12 |
+| **Commands** | ${parityCounts.commands} | Instruction-based | 31 |
+| **Skills** | ${parityCounts.skills} | 10 (native format) | 37 |
 `);
 }
 
@@ -119,11 +119,11 @@ function writeZhDocsReadme(root, counts, options = {}) {
 
 ## 跨工具功能对等
 
-| 功能特性 | Claude Code | Cursor IDE | Codex CLI | OpenCode |
-| --- | --- | --- | --- | --- |
-| **智能体** | ${parityCounts.agents} | 共享 (AGENTS.md) | 共享 (AGENTS.md) | 12 |
-| **命令** | ${parityCounts.commands} | 共享 | 基于指令 | 31 |
-| **技能** | ${parityCounts.skills} | 共享 | 10 (原生格式) | 37 |
+| 功能特性 | Claude Code | Codex CLI | OpenCode |
+| --- | --- | --- | --- |
+| **智能体** | ${parityCounts.agents} | 共享 (AGENTS.md) | 12 |
+| **命令** | ${parityCounts.commands} | 基于指令 | 31 |
+| **技能** | ${parityCounts.skills} | 10 (原生格式) | 37 |
 `);
 }
 

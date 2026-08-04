@@ -38,9 +38,9 @@
 
 Nicht nur Konfigurationen. Ein vollständiges System: Skills, Instincts, Speicheroptimierung, Continuous Learning, Security-Scanning und research-first-Entwicklung. Produktionsreife Agents, Skills, Hooks, Rules, MCP-Konfigurationen und Legacy-Command-Shims, die über mehr als 10 Monate intensiver täglicher Nutzung beim Bau echter Produkte entstanden sind.
 
-Funktioniert über **Claude Code**, **Codex**, **Cursor**, **OpenCode**, **Gemini**, **Zed**, **GitHub Copilot** und andere KI-Agent-Harnesses hinweg.
+Funktioniert über **Claude Code**, **Codex**, **OpenCode**, **Zed**, **GitHub Copilot** und andere KI-Agent-Harnesses hinweg.
 
-ECC v2.0.0-rc.1 ergänzt diese wiederverwendbare Schicht um die öffentliche Hermes-Operator-Story: Beginne mit dem [Hermes-Setup-Leitfaden](../../docs/HERMES-SETUP.md), prüfe anschließend die [rc.1-Release-Notes](../../docs/releases/2.0.0-rc.1/release-notes.md) und die [Cross-Harness-Architektur](../../docs/architecture/cross-harness.md).
+Beginne mit den [rc.1-Release-Notes](../../docs/releases/2.0.0-rc.1/release-notes.md) und der [Cross-Harness-Architektur](../../docs/architecture/cross-harness.md).
 
 ---
 
@@ -150,7 +150,7 @@ Dieses Repo enthält ausschließlich den rohen Code. Die Leitfäden erklären al
 - **Hook-Laufzeitsteuerung** — `ECC_HOOK_PROFILE=minimal|standard|strict` und `ECC_DISABLED_HOOKS=...` für Laufzeit-Gating ohne Bearbeitung von Hook-Dateien.
 - **Neue Harness-Befehle** — `/harness-audit`, `/loop-start`, `/loop-status`, `/quality-gate`, `/model-route`.
 - **NanoClaw v2** — Modell-Routing, Skill-Hot-Load, Session-Branch/-Search/-Export/-Compact/-Metriken.
-- **Cross-Harness-Parität** — Verhalten über Claude Code, Cursor, OpenCode und Codex-App/-CLI hinweg verschärft.
+- **Cross-Harness-Parität** — Verhalten über Claude Code, OpenCode und Codex-App/-CLI hinweg verschärft.
 - **997 interne Tests bestanden** — vollständige Suite grün nach Hook-/Laufzeit-Refactoring und Kompatibilitätsupdates.
 
 ### v1.7.0 — Cross-Platform-Erweiterung & Präsentations-Builder (Februar 2026)
@@ -158,7 +158,7 @@ Dieses Repo enthält ausschließlich den rohen Code. Die Leitfäden erklären al
 - **Codex-App- + CLI-Unterstützung** — Direkte `AGENTS.md`-basierte Codex-Unterstützung, Installer-Targeting und Codex-Dokumentation
 - **`frontend-slides`-Skill** — Abhängigkeitsfreier HTML-Präsentations-Builder mit Anleitung zur PPTX-Konvertierung und strengen Viewport-Fit-Regeln
 - **5 neue generische Business-/Content-Skills** — `article-writing`, `content-engine`, `market-research`, `investor-materials`, `investor-outreach`
-- **Breitere Tool-Abdeckung** — Cursor-, Codex- und OpenCode-Unterstützung verschärft, sodass dasselbe Repo sauber über alle großen Harnesses hinweg ausgeliefert wird
+- **Breitere Tool-Abdeckung** — Codex-, OpenCode- und Zed-Unterstützung verschärft, sodass dasselbe Repo sauber über alle großen Harnesses hinweg ausgeliefert wird
 - **992 interne Tests** — Erweiterte Validierung und Regressionsabdeckung über Plugin, Hooks, Skills und Packaging
 
 ### v1.6.0 — Codex CLI, AgentShield & Marketplace (Februar 2026)
@@ -429,7 +429,7 @@ python3 ./ecc_dashboard.py
 
 ## Cross-Platform-Unterstützung
 
-Dieses Plugin unterstützt nun vollständig **Windows, macOS und Linux**, neben enger Integration über große IDEs (Cursor, Zed, OpenCode, Antigravity) und CLI-Harnesses hinweg. Alle Hooks und Skripte wurden für maximale Kompatibilität in Node.js neu geschrieben.
+Dieses Plugin unterstützt nun vollständig **Windows, macOS und Linux**, neben enger Integration über große IDEs (Zed, OpenCode, Antigravity) und CLI-Harnesses hinweg. Alle Hooks und Skripte wurden für maximale Kompatibilität in Node.js neu geschrieben.
 
 ### Paketmanager-Erkennung
 
@@ -1143,11 +1143,10 @@ Jede Komponente ist vollständig unabhängig.
 </details>
 
 <details>
-<summary><b>Funktioniert das mit Cursor / OpenCode / Codex / Antigravity / GitHub Copilot?</b></summary>
+<summary><b>Funktioniert das mit OpenCode / Codex / Zed / Antigravity / GitHub Copilot?</b></summary>
 
 Ja. ECC ist Cross-Platform:
-- **Cursor**: Vorübersetzte Konfigurationen in `.cursor/`. Siehe [Cursor-IDE-Unterstützung](#cursor-ide-unterstützung).
-- **Gemini CLI**: Experimentelle projektlokale Unterstützung über `.gemini/GEMINI.md` und gemeinsam genutzte Installer-Verdrahtung.
+- **Zed**: Projektlokaler Adapter für Settings, abgeflachte Rules, Commands, Agents und Skills in `.zed/`. Siehe [Plattform-Unterstützung](#plattform-unterstützung).
 - **OpenCode**: Vollständige Plugin-Unterstützung in `.opencode/`. Siehe [OpenCode-Unterstützung](#opencode-unterstützung).
 - **Codex**: Erstklassige Unterstützung sowohl für die macOS-App als auch die CLI, mit Adapter-Drift-Guards und SessionStart-Fallback. Siehe PR [#257](https://github.com/affaan-m/ECC/pull/257).
 - **GitHub Copilot (VS Code)**: Instruction- und Prompt-Schicht über `.github/copilot-instructions.md`, `.vscode/settings.json` und `.github/prompts/`. Siehe [GitHub-Copilot-Unterstützung](#github-copilot-unterstützung).
@@ -1214,72 +1213,6 @@ Diese werden nicht mit ECC mitgeliefert und nicht von diesem Repo auditiert, abe
 - [claude-seo](https://github.com/AgriciDaniel/claude-seo) — SEO-fokussierte Skill- und Agent-Sammlung
 - [claude-ads](https://github.com/AgriciDaniel/claude-ads) — Sammlung von Ad-Audit- und Paid-Growth-Workflows
 - [claude-cybersecurity](https://github.com/AgriciDaniel/claude-cybersecurity) — sicherheitsorientierte Skill- und Agent-Sammlung
-
----
-
-## Cursor-IDE-Unterstützung
-
-ECC bietet Cursor-IDE-Unterstützung mit Hooks, Rules, Agents, Skills, Commands und MCP-Konfigurationen, die an Cursors Projektlayout angepasst sind.
-
-### Schnellstart (Cursor)
-
-```bash
-# macOS/Linux
-./install.sh --target cursor typescript
-./install.sh --target cursor python golang swift php
-```
-
-```powershell
-# Windows PowerShell
-.\install.ps1 --target cursor typescript
-.\install.ps1 --target cursor python golang swift php
-```
-
-### Was ist enthalten
-
-| Komponente | Anzahl | Details |
-|-----------|-------|---------|
-| Hook-Events | 15 | sessionStart, beforeShellExecution, afterFileEdit, beforeMCPExecution, beforeSubmitPrompt und 10 weitere |
-| Hook-Skripte | 16 | Schlanke Node.js-Skripte, die über einen gemeinsamen Adapter an `scripts/hooks/` delegieren |
-| Rules | 34 | 9 common (alwaysApply) + 25 sprachspezifisch (TypeScript, Python, Go, Swift, PHP) |
-| Agents | 48 | `.cursor/agents/ecc-*.md` bei Installation; präfixiert, um Kollisionen mit Benutzer- oder Marketplace-Agents zu vermeiden |
-| Skills | Gemeinsam + mitgeliefert | `.cursor/skills/` für übersetzte Ergänzungen |
-| Commands | Gemeinsam | `.cursor/commands/` falls installiert |
-| MCP-Konfiguration | Gemeinsam | `.cursor/mcp.json` falls installiert |
-
-### Hinweise zum Laden in Cursor
-
-ECC installiert keine Root-`AGENTS.md` in `.cursor/`. Cursor behandelt verschachtelte `AGENTS.md`-Dateien als Verzeichniskontext, daher würde das Kopieren von ECCs Repo-Identität in ein Host-Projekt dieses Projekt verunreinigen.
-
-Das Cursor-native Ladeverhalten kann je nach Cursor-Build variieren. ECC installiert Agents als `.cursor/agents/ecc-*.md`; falls dein Cursor-Build keine Projekt-Agents bereitstellt, funktionieren diese Dateien weiterhin als explizite Referenzdefinitionen statt als versteckter globaler Prompt-Kontext.
-
-### Hook-Architektur (DRY-Adapter-Muster)
-
-Cursor hat **mehr Hook-Events als Claude Code** (20 vs. 8). Das Modul `.cursor/hooks/adapter.js` transformiert Cursors stdin-JSON in das Format von Claude Code und erlaubt so die Wiederverwendung bestehender `scripts/hooks/*.js` ohne Duplizierung.
-
-```
-Cursor stdin JSON → adapter.js → transforms → scripts/hooks/*.js
-                                              (shared with Claude Code)
-```
-
-Wichtige Hooks:
-- **beforeShellExecution** — Blockiert Dev-Server außerhalb von tmux (exit 2), git-push-Review
-- **afterFileEdit** — Auto-Formatierung + TypeScript-Prüfung + console.log-Warnung
-- **beforeSubmitPrompt** — Erkennt Secrets (sk-, ghp_, AKIA-Muster) in Prompts
-- **beforeTabFileRead** — Blockiert, dass Tab .env-, .key-, .pem-Dateien liest (exit 2)
-- **beforeMCPExecution / afterMCPExecution** — MCP-Audit-Logging
-
-### Rules-Format
-
-Cursor-Rules verwenden YAML-Frontmatter mit `description`, `globs` und `alwaysApply`:
-
-```yaml
----
-description: "TypeScript coding style extending common rules"
-globs: ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx"]
-alwaysApply: false
----
-```
 
 ---
 
@@ -1584,25 +1517,24 @@ GitHub Copilot hat kein Hook-System und keine Subagent-API, daher sind ECCs Hook
 
 ECC ist das **erste Plugin, das jedes große KI-Coding-Tool ausreizt**. So vergleicht sich jeder Harness:
 
-| Feature | Claude Code | Cursor IDE | Codex CLI | OpenCode | GitHub Copilot |
-|---------|------------|------------|-----------|----------|----------------|
-| **Agents** | 60 | Gemeinsam (AGENTS.md) | Gemeinsam (AGENTS.md) | 12 | Nicht verfügbar |
-| **Commands** | 75 | Gemeinsam | Instruction-basiert | 35 | 5 Prompts |
-| **Skills** | 232 | Gemeinsam | 10 (natives Format) | 37 | Über Instructions |
-| **Hook-Events** | 8 Typen | 15 Typen | Noch keine | 11 Typen | Keine |
-| **Hook-Skripte** | 20+ Skripte | 16 Skripte (DRY-Adapter) | Nicht verfügbar | Plugin-Hooks | Nicht verfügbar |
-| **Rules** | 34 (common + Sprache) | 34 (YAML-Frontmatter) | Instruction-basiert | 13 Instructions | 1 stets aktive Datei |
-| **Custom Tools** | Über Hooks | Über Hooks | Nicht verfügbar | 6 native Tools | Nicht verfügbar |
-| **MCP-Server** | 14 | Gemeinsam (mcp.json) | 7 (automatisch gemergt über TOML-Parser) | Vollständig | Nicht verfügbar |
-| **Konfigurationsformat** | settings.json | hooks.json + rules/ | config.toml | opencode.json | copilot-instructions.md + settings.json |
-| **Kontextdatei** | CLAUDE.md + AGENTS.md | AGENTS.md | AGENTS.md | AGENTS.md | copilot-instructions.md |
-| **Secret-Erkennung** | Hook-basiert | beforeSubmitPrompt-Hook | Sandbox-basiert | Hook-basiert | Instruction-basiert |
-| **Auto-Formatierung** | PostToolUse-Hook | afterFileEdit-Hook | Nicht verfügbar | file.edited-Hook | Nicht verfügbar |
-| **Version** | Plugin | Plugin | Referenzkonfiguration | 2.0.0-rc.1 | Instruction-Schicht |
+| Feature | Claude Code | Codex CLI | OpenCode | GitHub Copilot |
+|---------|------------|-----------|----------|----------------|
+| **Agents** | 60 | Gemeinsam (AGENTS.md) | 12 | Nicht verfügbar |
+| **Commands** | 75 | Instruction-basiert | 35 | 5 Prompts |
+| **Skills** | 232 | 10 (natives Format) | 37 | Über Instructions |
+| **Hook-Events** | 8 Typen | Noch keine | 11 Typen | Keine |
+| **Hook-Skripte** | 20+ Skripte | Nicht verfügbar | Plugin-Hooks | Nicht verfügbar |
+| **Rules** | 34 (common + Sprache) | Instruction-basiert | 13 Instructions | 1 stets aktive Datei |
+| **Custom Tools** | Über Hooks | Nicht verfügbar | 6 native Tools | Nicht verfügbar |
+| **MCP-Server** | 14 | 7 (automatisch gemergt über TOML-Parser) | Vollständig | Nicht verfügbar |
+| **Konfigurationsformat** | settings.json | config.toml | opencode.json | copilot-instructions.md + settings.json |
+| **Kontextdatei** | CLAUDE.md + AGENTS.md | AGENTS.md | AGENTS.md | copilot-instructions.md |
+| **Secret-Erkennung** | Hook-basiert | Sandbox-basiert | Hook-basiert | Instruction-basiert |
+| **Auto-Formatierung** | PostToolUse-Hook | Nicht verfügbar | file.edited-Hook | Nicht verfügbar |
+| **Version** | Plugin | Referenzkonfiguration | 2.0.0-rc.1 | Instruction-Schicht |
 
 **Wesentliche architektonische Entscheidungen:**
-- **AGENTS.md** im Root ist die universelle Cross-Tool-Datei (gelesen von Claude Code, Cursor, Codex und OpenCode — GitHub Copilot verwendet stattdessen `.github/copilot-instructions.md`)
-- Das **DRY-Adapter-Muster** lässt Cursor die Hook-Skripte von Claude Code ohne Duplizierung wiederverwenden
+- **AGENTS.md** im Root ist die universelle Cross-Tool-Datei (gelesen von Claude Code, Codex und OpenCode — GitHub Copilot verwendet stattdessen `.github/copilot-instructions.md`)
 - Das **Skills-Format** (SKILL.md mit YAML-Frontmatter) funktioniert über Claude Code, Codex und OpenCode hinweg
 - Codex' fehlende Hooks werden durch `AGENTS.md`, optionale `model_instructions_file`-Overrides und Sandbox-Berechtigungen kompensiert
 

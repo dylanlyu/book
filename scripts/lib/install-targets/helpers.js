@@ -5,13 +5,8 @@ const path = require('path');
 const PLATFORM_SOURCE_PATH_OWNERS = Object.freeze({
   '.claude-plugin': 'claude',
   '.codex': 'codex',
-  '.cursor': 'cursor',
-  '.gemini': 'gemini',
-  '.hermes': 'hermes',
-  '.kimi': 'kimi',
   '.joycode': 'joycode',
   '.opencode': 'opencode',
-  '.openclaw': 'openclaw',
   '.qwen': 'qwen',
   '.zed': 'zed'
 });

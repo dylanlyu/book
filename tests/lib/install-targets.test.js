@@ -37,28 +37,12 @@ function runTests() {
       const targets = adapters.map(adapter => adapter.target);
       assert.ok(targets.includes('claude'), 'Should include claude target');
       assert.ok(targets.includes('claude-project'), 'Should include claude-project target');
-      assert.ok(targets.includes('cursor'), 'Should include cursor target');
       assert.ok(targets.includes('antigravity'), 'Should include antigravity target');
       assert.ok(targets.includes('codex'), 'Should include codex target');
-      assert.ok(targets.includes('gemini'), 'Should include gemini target');
       assert.ok(targets.includes('opencode'), 'Should include opencode target');
       assert.ok(targets.includes('joycode'), 'Should include joycode target');
       assert.ok(targets.includes('qwen'), 'Should include qwen target');
       assert.ok(targets.includes('zed'), 'Should include zed target');
-    })
-  )
-    passed++;
-  else failed++;
-
-  if (
-    test('resolves cursor adapter root and install-state path from project root', () => {
-      const adapter = getInstallTargetAdapter('cursor');
-      const projectRoot = '/workspace/app';
-      const root = adapter.resolveRoot({ projectRoot });
-      const statePath = adapter.getInstallStatePath({ projectRoot });
-
-      assert.strictEqual(root, path.join(projectRoot, '.cursor'));
-      assert.strictEqual(statePath, path.join(projectRoot, '.cursor', 'ecc-install-state.json'));
     })
   )
     passed++;
@@ -115,263 +99,6 @@ function runTests() {
   else failed++;
 
   if (
-    test('plans scaffold operations and flattens native target roots', () => {
-      const repoRoot = path.join(__dirname, '..', '..');
-      const projectRoot = '/workspace/app';
-      const modules = [
-        {
-          id: 'platform-configs',
-          paths: ['.cursor', 'mcp-configs']
-        },
-        {
-          id: 'rules-core',
-          paths: ['rules']
-        }
-      ];
-
-      const plan = planInstallTargetScaffold({
-        target: 'cursor',
-        repoRoot,
-        projectRoot,
-        modules
-      });
-
-      assert.strictEqual(plan.adapter.id, 'cursor-project');
-      assert.strictEqual(plan.targetRoot, path.join(projectRoot, '.cursor'));
-      assert.strictEqual(plan.installStatePath, path.join(projectRoot, '.cursor', 'ecc-install-state.json'));
-
-      const hooksJson = plan.operations.find(operation => normalizedRelativePath(operation.sourceRelativePath) === '.cursor/hooks.json');
-      const mcpJson = plan.operations.find(operation => normalizedRelativePath(operation.sourceRelativePath) === '.mcp.json');
-      const preserved = plan.operations.find(operation => normalizedRelativePath(operation.sourceRelativePath) === '.cursor/rules/common-coding-style.md');
-
-      assert.ok(hooksJson, 'Should preserve non-rule Cursor platform config files');
-      assert.strictEqual(hooksJson.strategy, 'preserve-relative-path');
-      assert.strictEqual(hooksJson.destinationPath, path.join(projectRoot, '.cursor', 'hooks.json'));
-      assert.ok(mcpJson, 'Should materialize a Cursor MCP config from the shared root MCP config');
-      assert.strictEqual(mcpJson.kind, 'merge-json');
-      assert.strictEqual(mcpJson.strategy, 'merge-json');
-      assert.strictEqual(mcpJson.destinationPath, path.join(projectRoot, '.cursor', 'mcp.json'));
-
-      assert.ok(preserved, 'Should include flattened Cursor rule scaffold operations');
-      assert.strictEqual(preserved.strategy, 'flatten-copy');
-      assert.strictEqual(preserved.destinationPath, path.join(projectRoot, '.cursor', 'rules', 'common-coding-style.mdc'));
-    })
-  )
-    passed++;
-  else failed++;
-
-  if (
-    test('plans cursor rules with flat namespaced filenames to avoid rule collisions', () => {
-      const repoRoot = path.join(__dirname, '..', '..');
-      const projectRoot = '/workspace/app';
-
-      const plan = planInstallTargetScaffold({
-        target: 'cursor',
-        repoRoot,
-        projectRoot,
-        modules: [
-          {
-            id: 'rules-core',
-            paths: ['rules']
-          }
-        ]
-      });
-
-      assert.ok(
-        plan.operations.some(
-          operation =>
-            normalizedRelativePath(operation.sourceRelativePath) === 'rules/common/coding-style.md' &&
-            operation.destinationPath === path.join(projectRoot, '.cursor', 'rules', 'common-coding-style.mdc')
-        ),
-        'Should flatten common rules into namespaced .mdc files'
-      );
-      assert.ok(
-        plan.operations.some(
-          operation =>
-            normalizedRelativePath(operation.sourceRelativePath) === 'rules/typescript/testing.md' && operation.destinationPath === path.join(projectRoot, '.cursor', 'rules', 'typescript-testing.mdc')
-        ),
-        'Should flatten language rules into namespaced .mdc files'
-      );
-      assert.ok(
-        !plan.operations.some(operation => operation.destinationPath === path.join(projectRoot, '.cursor', 'rules', 'common', 'coding-style.md')),
-        'Should not preserve nested rule directories for cursor installs'
-      );
-      assert.ok(!plan.operations.some(operation => operation.destinationPath === path.join(projectRoot, '.cursor', 'rules', 'common-coding-style.md')), 'Should not emit .md Cursor rule files');
-      assert.ok(!plan.operations.some(operation => normalizedRelativePath(operation.sourceRelativePath) === 'rules/README.md'), 'Should not install Cursor README docs as runtime rule files');
-    })
-  )
-    passed++;
-  else failed++;
-
-  if (
-    test('does not install root AGENTS.md into Cursor nested context', () => {
-      const repoRoot = path.join(__dirname, '..', '..');
-      const projectRoot = '/workspace/app';
-
-      const plan = planInstallTargetScaffold({
-        target: 'cursor',
-        repoRoot,
-        projectRoot,
-        modules: [
-          {
-            id: 'agents-core',
-            paths: ['.agents', 'agents', 'AGENTS.md']
-          }
-        ]
-      });
-
-      assert.ok(
-        !plan.operations.some(operation => normalizedRelativePath(operation.sourceRelativePath) === 'AGENTS.md'),
-        'Cursor installs should not copy ECC root AGENTS.md into host project context'
-      );
-      assert.ok(!plan.operations.some(operation => operation.destinationPath === path.join(projectRoot, '.cursor', 'AGENTS.md')), 'Cursor installs should not create .cursor/AGENTS.md');
-    })
-  )
-    passed++;
-  else failed++;
-
-  if (
-    test('plans cursor agents with ecc-prefixed filenames to avoid agent collisions', () => {
-      const repoRoot = path.join(__dirname, '..', '..');
-      const projectRoot = '/workspace/app';
-
-      const plan = planInstallTargetScaffold({
-        target: 'cursor',
-        repoRoot,
-        projectRoot,
-        modules: [
-          {
-            id: 'agents-core',
-            paths: ['agents']
-          }
-        ]
-      });
-
-      assert.ok(
-        plan.operations.some(
-          operation => normalizedRelativePath(operation.sourceRelativePath) === 'agents/architect.md' && operation.destinationPath === path.join(projectRoot, '.cursor', 'agents', 'ecc-architect.md')
-        ),
-        'Should prefix Cursor agent files with ecc-'
-      );
-      assert.ok(!plan.operations.some(operation => operation.destinationPath === path.join(projectRoot, '.cursor', 'agents', 'architect.md')), 'Should not write bare Cursor agent filenames');
-      assert.ok(
-        !plan.operations.some(operation => normalizedRelativePath(operation.sourceRelativePath) === 'agents' && operation.destinationPath === path.join(projectRoot, '.cursor', 'agents')),
-        'Should not plan a whole-directory Cursor agent copy'
-      );
-    })
-  )
-    passed++;
-  else failed++;
-
-  if (
-    test('plans cursor platform rule files as .mdc and excludes rule README docs', () => {
-      const repoRoot = path.join(__dirname, '..', '..');
-      const projectRoot = '/workspace/app';
-
-      const plan = planInstallTargetScaffold({
-        target: 'cursor',
-        repoRoot,
-        projectRoot,
-        modules: [
-          {
-            id: 'platform-configs',
-            paths: ['.cursor']
-          }
-        ]
-      });
-
-      assert.ok(
-        plan.operations.some(
-          operation =>
-            normalizedRelativePath(operation.sourceRelativePath) === '.cursor/rules/common-agents.md' && operation.destinationPath === path.join(projectRoot, '.cursor', 'rules', 'common-agents.mdc')
-        ),
-        'Should rename Cursor platform rule files to .mdc'
-      );
-      assert.ok(!plan.operations.some(operation => operation.destinationPath === path.join(projectRoot, '.cursor', 'rules', 'common-agents.md')), 'Should not preserve .md Cursor platform rule files');
-      assert.ok(
-        plan.operations.some(
-          operation => normalizedRelativePath(operation.sourceRelativePath) === '.cursor/hooks.json' && operation.destinationPath === path.join(projectRoot, '.cursor', 'hooks.json')
-        ),
-        'Should preserve non-rule Cursor platform config files'
-      );
-      assert.ok(
-        plan.operations.some(
-          operation =>
-            normalizedRelativePath(operation.sourceRelativePath) === '.mcp.json' && operation.kind === 'merge-json' && operation.destinationPath === path.join(projectRoot, '.cursor', 'mcp.json')
-        ),
-        'Should materialize a project-level Cursor MCP config'
-      );
-      assert.ok(!plan.operations.some(operation => operation.destinationPath === path.join(projectRoot, '.cursor', 'rules', 'README.mdc')), 'Should not emit Cursor rule README docs as .mdc files');
-    })
-  )
-    passed++;
-  else failed++;
-
-  if (
-    test('deduplicates cursor rule destinations when rules-core and platform-configs overlap', () => {
-      const repoRoot = path.join(__dirname, '..', '..');
-      const projectRoot = '/workspace/app';
-
-      const plan = planInstallTargetScaffold({
-        target: 'cursor',
-        repoRoot,
-        projectRoot,
-        modules: [
-          {
-            id: 'rules-core',
-            paths: ['rules']
-          },
-          {
-            id: 'platform-configs',
-            paths: ['.cursor']
-          }
-        ]
-      });
-
-      const commonAgentsDestinations = plan.operations.filter(operation => operation.destinationPath === path.join(projectRoot, '.cursor', 'rules', 'common-agents.mdc'));
-
-      assert.strictEqual(commonAgentsDestinations.length, 1, 'Should keep only one common-agents.mdc operation');
-      assert.strictEqual(
-        normalizedRelativePath(commonAgentsDestinations[0].sourceRelativePath),
-        '.cursor/rules/common-agents.md',
-        'Should prefer native .cursor/rules content when cursor platform rules would collide'
-      );
-    })
-  )
-    passed++;
-  else failed++;
-
-  if (
-    test('prefers native cursor hooks when hooks-runtime and platform-configs overlap', () => {
-      const repoRoot = path.join(__dirname, '..', '..');
-      const projectRoot = '/workspace/app';
-
-      const plan = planInstallTargetScaffold({
-        target: 'cursor',
-        repoRoot,
-        projectRoot,
-        modules: [
-          {
-            id: 'hooks-runtime',
-            paths: ['hooks', 'scripts/hooks', 'scripts/lib']
-          },
-          {
-            id: 'platform-configs',
-            paths: ['.cursor']
-          }
-        ]
-      });
-
-      const hooksDestinations = plan.operations.filter(operation => operation.destinationPath === path.join(projectRoot, '.cursor', 'hooks'));
-
-      assert.strictEqual(hooksDestinations.length, 1, 'Should keep only one .cursor/hooks scaffold operation');
-      assert.strictEqual(normalizedRelativePath(hooksDestinations[0].sourceRelativePath), '.cursor/hooks', 'Should prefer native Cursor hooks over generic hooks-runtime hooks');
-    })
-  )
-    passed++;
-  else failed++;
-
-  if (
     test('plans antigravity remaps for workflows, skills, and flat rules', () => {
       const repoRoot = path.join(__dirname, '..', '..');
       const projectRoot = '/workspace/app';
@@ -419,15 +146,15 @@ function runTests() {
   if (
     test('exposes validate and planOperations on adapters', () => {
       const claudeAdapter = getInstallTargetAdapter('claude');
-      const cursorAdapter = getInstallTargetAdapter('cursor');
+      const zedAdapter = getInstallTargetAdapter('zed');
 
       assert.strictEqual(typeof claudeAdapter.planOperations, 'function');
       assert.strictEqual(typeof claudeAdapter.validate, 'function');
       assert.deepStrictEqual(claudeAdapter.validate({ homeDir: '/Users/example', repoRoot: '/repo/ecc' }), []);
 
-      assert.strictEqual(typeof cursorAdapter.planOperations, 'function');
-      assert.strictEqual(typeof cursorAdapter.validate, 'function');
-      assert.deepStrictEqual(cursorAdapter.validate({ projectRoot: '/workspace/app', repoRoot: '/repo/ecc' }), []);
+      assert.strictEqual(typeof zedAdapter.planOperations, 'function');
+      assert.strictEqual(typeof zedAdapter.validate, 'function');
+      assert.deepStrictEqual(zedAdapter.validate({ projectRoot: '/workspace/app', repoRoot: '/repo/ecc' }), []);
     })
   )
     passed++;
@@ -436,23 +163,6 @@ function runTests() {
   if (
     test('throws on unknown target adapter', () => {
       assert.throws(() => getInstallTargetAdapter('ghost-target'), /Unknown install target adapter/);
-    })
-  )
-    passed++;
-  else failed++;
-
-  if (
-    test('resolves gemini adapter root and install-state path from project root', () => {
-      const adapter = getInstallTargetAdapter('gemini');
-      const projectRoot = '/workspace/app';
-      const root = adapter.resolveRoot({ projectRoot });
-      const statePath = adapter.getInstallStatePath({ projectRoot });
-
-      assert.strictEqual(adapter.id, 'gemini-project');
-      assert.strictEqual(adapter.target, 'gemini');
-      assert.strictEqual(adapter.kind, 'project');
-      assert.strictEqual(root, path.join(projectRoot, '.gemini'));
-      assert.strictEqual(statePath, path.join(projectRoot, '.gemini', 'ecc-install-state.json'));
     })
   )
     passed++;
@@ -635,7 +345,7 @@ function runTests() {
           },
           {
             id: 'platform-configs',
-            paths: ['.qwen', '.gemini', 'mcp-configs']
+            paths: ['.qwen', '.zed', 'mcp-configs']
           },
           {
             id: 'workflow-quality',
@@ -657,7 +367,7 @@ function runTests() {
         ),
         'Should sync Qwen native config into ~/.qwen'
       );
-      assert.ok(!plan.operations.some(operation => normalizedRelativePath(operation.sourceRelativePath) === '.gemini'), 'Should skip foreign platform config paths');
+      assert.ok(!plan.operations.some(operation => normalizedRelativePath(operation.sourceRelativePath) === '.zed'), 'Should skip foreign platform config paths');
       assert.ok(
         plan.operations.some(
           operation => normalizedRelativePath(operation.sourceRelativePath) === 'skills/tdd-workflow' && operation.destinationPath === path.join(homeDir, '.qwen', 'skills', 'tdd-workflow')
@@ -693,7 +403,7 @@ function runTests() {
           },
           {
             id: 'platform-configs',
-            paths: ['.zed', '.cursor', 'mcp-configs']
+            paths: ['.zed', '.codex', 'mcp-configs']
           },
           {
             id: 'workflow-quality',
@@ -732,7 +442,7 @@ function runTests() {
         ),
         'Should install skills under .zed/skills'
       );
-      assert.ok(!plan.operations.some(operation => normalizedRelativePath(operation.sourceRelativePath) === '.cursor'), 'Should skip foreign Cursor platform config paths');
+      assert.ok(!plan.operations.some(operation => normalizedRelativePath(operation.sourceRelativePath) === '.codex'), 'Should skip foreign Codex platform config paths');
     })
   )
     passed++;
@@ -866,7 +576,7 @@ function runTests() {
         modules: [
           {
             id: 'platform-configs',
-            paths: ['.cursor', '.zed', 'rules']
+            paths: ['.codex', '.zed', 'rules']
           }
         ]
       });
@@ -876,8 +586,8 @@ function runTests() {
         'Should still include non-foreign rules path (guards against empty-plan regression)'
       );
       assert.ok(
-        !plan.operations.some(operation => normalizedRelativePath(operation.sourceRelativePath) === '.cursor' || normalizedRelativePath(operation.sourceRelativePath).startsWith('.cursor/')),
-        'Should skip foreign Cursor platform paths'
+        !plan.operations.some(operation => normalizedRelativePath(operation.sourceRelativePath) === '.codex' || normalizedRelativePath(operation.sourceRelativePath).startsWith('.codex/')),
+        'Should skip foreign Codex platform paths'
       );
       assert.ok(
         !plan.operations.some(operation => normalizedRelativePath(operation.sourceRelativePath) === '.zed' || normalizedRelativePath(operation.sourceRelativePath).startsWith('.zed/')),

@@ -434,7 +434,7 @@ function normalizeWorkItemStatus(status) {
 
 // Heuristics for whether a work item's owner is an autonomous agent or a human.
 // Agent signals win when present so the board reflects who is *actively* on a card.
-const AGENT_OWNER_RE = /(agent|claude|codex|hermes|gemini|opencode|qwen|joycode|\bbot\b|gpt|sonnet|opus|haiku|fable)/i;
+const AGENT_OWNER_RE = /(agent|claude|codex|opencode|qwen|joycode|\bbot\b|gpt|sonnet|opus|haiku|fable)/i;
 const SESSION_ID_RE = /^(sid-|tx-|proj-|sess|session|run-|wt-)/i;
 
 /**

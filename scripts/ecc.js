@@ -9,84 +9,84 @@ const { createSafeItoInvocationEnvironment } = require('./lib/ito-environment');
 const COMMANDS = {
   install: {
     script: 'install-apply.js',
-    description: 'Install ECC content into a supported target',
+    description: 'Install ECC content into a supported target'
   },
   plan: {
     script: 'install-plan.js',
-    description: 'Inspect selective-install manifests and resolved plans',
+    description: 'Inspect selective-install manifests and resolved plans'
   },
   catalog: {
     script: 'catalog.js',
-    description: 'Discover install profiles and component IDs',
+    description: 'Discover install profiles and component IDs'
   },
   consult: {
     script: 'consult.js',
-    description: 'Recommend ECC components and profiles from a natural language query',
+    description: 'Recommend ECC components and profiles from a natural language query'
   },
   'control-pane': {
     script: 'control-pane.js',
-    description: 'Run the local ECC2 operator control pane',
+    description: 'Run the local ECC2 operator control pane'
   },
   ito: {
     script: 'ito.js',
-    description: 'Invoke the separately installed canonical Itô compute CLI',
+    description: 'Invoke the separately installed canonical Itô compute CLI'
   },
   memory: {
     script: 'memory.js',
-    description: 'Share durable context across Claude, Codex, Hermes, and other harnesses',
+    description: 'Share durable context across Claude, Codex, and other harnesses'
   },
   'install-plan': {
     script: 'install-plan.js',
-    description: 'Alias for plan',
+    description: 'Alias for plan'
   },
   'list-installed': {
     script: 'list-installed.js',
-    description: 'Inspect install-state files for the current context',
+    description: 'Inspect install-state files for the current context'
   },
   doctor: {
     script: 'doctor.js',
-    description: 'Diagnose missing or drifted ECC-managed files',
+    description: 'Diagnose missing or drifted ECC-managed files'
   },
   repair: {
     script: 'repair.js',
-    description: 'Restore drifted or missing ECC-managed files',
+    description: 'Restore drifted or missing ECC-managed files'
   },
   'auto-update': {
     script: 'auto-update.js',
-    description: 'Pull latest ECC changes and reinstall the current managed targets',
+    description: 'Pull latest ECC changes and reinstall the current managed targets'
   },
   status: {
     script: 'status.js',
-    description: 'Query the ECC SQLite state store status summary',
+    description: 'Query the ECC SQLite state store status summary'
   },
   'platform-audit': {
     script: 'platform-audit.js',
-    description: 'Audit GitHub queues, discussions, roadmap, release, and security evidence',
+    description: 'Audit GitHub queues, discussions, roadmap, release, and security evidence'
   },
   'security-ioc-scan': {
     script: 'ci/scan-supply-chain-iocs.js',
-    description: 'Scan dependency and AI-tool persistence surfaces for active supply-chain IOCs',
+    description: 'Scan dependency and AI-tool persistence surfaces for active supply-chain IOCs'
   },
   sessions: {
     script: 'sessions-cli.js',
-    description: 'List or inspect ECC sessions from the SQLite state store',
+    description: 'List or inspect ECC sessions from the SQLite state store'
   },
   'work-items': {
     script: 'work-items.js',
-    description: 'Track linked Linear, GitHub, handoff, and manual work items',
+    description: 'Track linked Linear, GitHub, handoff, and manual work items'
   },
   'session-inspect': {
     script: 'session-inspect.js',
-    description: 'Emit canonical ECC session snapshots from dmux or Claude history targets',
+    description: 'Emit canonical ECC session snapshots from dmux or Claude history targets'
   },
   'loop-status': {
     script: 'loop-status.js',
-    description: 'Inspect Claude transcripts for stale loop wakeups and pending tool results',
+    description: 'Inspect Claude transcripts for stale loop wakeups and pending tool results'
   },
   uninstall: {
     script: 'uninstall.js',
-    description: 'Remove ECC-managed files recorded in install-state',
-  },
+    description: 'Remove ECC-managed files recorded in install-state'
+  }
 };
 
 const PRIMARY_COMMANDS = [
@@ -108,7 +108,7 @@ const PRIMARY_COMMANDS = [
   'work-items',
   'session-inspect',
   'loop-status',
-  'uninstall',
+  'uninstall'
 ];
 
 function showHelp(exitCode = 0) {
@@ -137,7 +137,7 @@ Compute:
 Examples:
   ecc typescript
   ecc install --profile developer --target claude
-  ecc plan --profile core --target cursor
+  ecc plan --profile core --target zed
   ecc catalog profiles
   ecc catalog components --family language
   ecc catalog show framework:nextjs
@@ -149,9 +149,9 @@ Examples:
   ecc ito evals --cluster clu_prod_example --live-sixtytwo --nodes gpu-01,gpu-02 --config-dir /absolute/path/to/qualification-config
   ecc memory init
   ecc memory handoff --from codex --target claude --title "Continue migration" --stdin
-  ecc memory search "migration blockers" --target-harness hermes
+  ecc memory search "migration blockers" --target-harness codex
   ecc list-installed --json
-  ecc doctor --target cursor
+  ecc doctor --target zed
   ecc repair --dry-run
   ecc auto-update --dry-run
   ecc status --json
@@ -201,7 +201,7 @@ function resolveCommand(argv) {
   if (firstArg === 'help') {
     return {
       mode: 'help-command',
-      command: restArgs[0] || null,
+      command: restArgs[0] || null
     };
   }
 
@@ -209,15 +209,12 @@ function resolveCommand(argv) {
     return {
       mode: 'command',
       command: firstArg,
-      args: restArgs,
+      args: restArgs
     };
   }
 
   const knownLegacyLanguages = listAvailableLanguages();
-  const shouldTreatAsImplicitInstall = (
-    firstArg.startsWith('-')
-    || knownLegacyLanguages.includes(firstArg)
-  );
+  const shouldTreatAsImplicitInstall = firstArg.startsWith('-') || knownLegacyLanguages.includes(firstArg);
 
   if (!shouldTreatAsImplicitInstall) {
     throw new Error(`Unknown command: ${firstArg}`);
@@ -226,7 +223,7 @@ function resolveCommand(argv) {
   return {
     mode: 'command',
     command: 'install',
-    args,
+    args
   };
 }
 
@@ -235,25 +232,20 @@ function runCommand(commandName, args) {
   if (!command) {
     throw new Error(`Unknown command: ${commandName}`);
   }
-  const result = spawnSync(
-    process.execPath,
-    [path.join(__dirname, command.script), ...args],
-    {
-      cwd: process.cwd(),
-      env: commandName === 'ito'
+  const result = spawnSync(process.execPath, [path.join(__dirname, command.script), ...args], {
+    cwd: process.cwd(),
+    env:
+      commandName === 'ito'
         ? {
-          ...createSafeItoInvocationEnvironment(process.env, args, {
-            includeControls: true,
-          }),
-        }
+            ...createSafeItoInvocationEnvironment(process.env, args, {
+              includeControls: true
+            })
+          }
         : process.env,
-      stdio: commandName === 'memory'
-        ? ['inherit', 'pipe', 'pipe']
-        : ['pipe', 'pipe', 'pipe'],
-      encoding: 'utf8',
-      maxBuffer: 10 * 1024 * 1024,
-    }
-  );
+    stdio: commandName === 'memory' ? ['inherit', 'pipe', 'pipe'] : ['pipe', 'pipe', 'pipe'],
+    encoding: 'utf8',
+    maxBuffer: 10 * 1024 * 1024
+  });
 
   if (result.error) {
     throw result.error;

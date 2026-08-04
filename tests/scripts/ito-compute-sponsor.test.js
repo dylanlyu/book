@@ -228,7 +228,7 @@ function main() {
       assert.match(sponsors, /\| Strategic Sponsor \| \$3,700 \|/);
       assert.doesNotMatch(sponsors, /Supporters — \$5\/mo|\| Supporter \| \$5 \|/);
     }],
-    ['README shows the verified local Kimi via Ito path without claiming managed serving', () => {
+    ['README shows the verified local model via Ito path without claiming managed serving', () => {
       const readme = read('README.md');
       const localModelPath = extractNamedTable(readme, 'Local Kimi model path');
 
@@ -236,111 +236,9 @@ function main() {
       assert.ok(localModelPath.includes('assets/images/sponsors/ito-transparent.png'));
       assert.ok(localModelPath.includes('assets/images/sponsors/moonshot.png'));
       assert.ok(localModelPath.includes('assets/images/community/ecc-tools-mark.svg'));
-      assert.match(readme, /install\.sh --target kimi --profile minimal/);
-      assert.match(readme, /npx ecc doctor --target kimi/);
-      assert.match(readme, /\.kimi\/AGENTS\.md/);
-      assert.match(readme, /\.kimi\/skills\//);
-      assertExactHref(
-        readme,
-        'https://moonshotai.github.io/kimi-cli/en/configuration/providers.html'
-      );
+      assert.match(readme, /install\.sh --target zed --profile minimal/);
+      assert.match(readme, /npx ecc doctor --target zed/);
       assertHonestComputeCopy(readme);
-    }],
-    ['Kimi install stays inside its project root and passes doctor with native instruction surfaces', () => {
-      const homeDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ecc-kimi-home-'));
-      const projectDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ecc-kimi-project-'));
-
-      try {
-        const result = spawnSync(
-          process.execPath,
-          [
-            path.join(REPO_ROOT, 'scripts', 'install-apply.js'),
-            '--target',
-            'kimi',
-            '--profile',
-            'minimal',
-            '--dry-run',
-            '--json',
-          ],
-          {
-            cwd: projectDir,
-            env: { ...process.env, HOME: homeDir },
-            encoding: 'utf8',
-            maxBuffer: 20 * 1024 * 1024,
-          }
-        );
-        assert.strictEqual(result.status, 0, result.stderr);
-
-        const plan = JSON.parse(result.stdout).plan;
-        const targetRoot = path.resolve(plan.targetRoot);
-        const destinations = plan.operations.map(operation => (
-          path.resolve(operation.destinationPath)
-        ));
-        const relativeDestinations = destinations.map(destination => (
-          path.relative(targetRoot, destination).replaceAll(path.sep, '/')
-        ));
-
-        assert.strictEqual(plan.target, 'kimi');
-        assert.strictEqual(plan.adapter.id, 'kimi-project');
-        assert.strictEqual(plan.adapter.kind, 'project');
-        assert.deepStrictEqual(plan.warnings, []);
-        assert.ok(plan.operations.length > 0);
-        assert.ok(destinations.every(destination => (
-          destination === targetRoot || destination.startsWith(`${targetRoot}${path.sep}`)
-        )));
-        assert.ok(relativeDestinations.includes('AGENTS.md'));
-        assert.ok(relativeDestinations.some(destination => destination.startsWith('skills/')));
-        assert.ok(relativeDestinations.every(destination => (
-          !/^\.(?:claude|codex|cursor|gemini|hermes|opencode|openclaw|qwen|zed)\//.test(destination)
-        )));
-
-        const apply = spawnSync(
-          process.execPath,
-          [
-            path.join(REPO_ROOT, 'scripts', 'install-apply.js'),
-            '--target',
-            'kimi',
-            '--profile',
-            'minimal',
-            '--json',
-          ],
-          {
-            cwd: projectDir,
-            env: { ...process.env, HOME: homeDir },
-            encoding: 'utf8',
-            maxBuffer: 30 * 1024 * 1024,
-          }
-        );
-        assert.strictEqual(apply.status, 0, apply.stderr);
-        assert.strictEqual(JSON.parse(apply.stdout).result.target, 'kimi');
-        assert.ok(fs.existsSync(path.join(projectDir, '.kimi', 'AGENTS.md')));
-        assert.ok(fs.readdirSync(path.join(projectDir, '.kimi', 'skills')).length > 0);
-
-        const doctor = spawnSync(
-          process.execPath,
-          [
-            path.join(REPO_ROOT, 'scripts', 'doctor.js'),
-            '--target',
-            'kimi',
-            '--json',
-          ],
-          {
-            cwd: projectDir,
-            env: { ...process.env, HOME: homeDir },
-            encoding: 'utf8',
-            maxBuffer: 30 * 1024 * 1024,
-          }
-        );
-        assert.strictEqual(doctor.status, 0, doctor.stderr);
-        const doctorResult = JSON.parse(doctor.stdout).results.find(result => (
-          result.adapter.target === 'kimi'
-        ));
-        assert.ok(doctorResult);
-        assert.strictEqual(doctorResult.exists, true);
-      } finally {
-        fs.rmSync(homeDir, { recursive: true, force: true });
-        fs.rmSync(projectDir, { recursive: true, force: true });
-      }
     }],
     ['sponsor roster keeps Itô and Moonshot distinct from node tooling', () => {
       const sponsors = read('SPONSORS.md');
@@ -358,7 +256,6 @@ function main() {
     }],
     ['harness docs route generic open-source model intent without lock-in', () => {
       assertHonestComputeCopy(read('.claude-plugin/README.md'));
-      assertHonestComputeCopy(read('.kimi/README.md'));
     }],
     ['integration record keeps the thesis and real client boundary honest', () => {
       const record = read('docs/design/ecc-ito-compute-integration.md');

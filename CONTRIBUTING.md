@@ -403,26 +403,24 @@ Skills and agents can use **MCP (Model Context Protocol)** tools to pull in up-t
 - **Context7** is an MCP server that exposes `resolve-library-id` and `query-docs`. Use it when the user asks about libraries, frameworks, or APIs so answers reflect current docs and code examples.
 - When contributing **skills** that depend on live docs (e.g. setup, API usage), describe how to use the relevant MCP tools (e.g. resolve the library ID, then query docs) and point to the `documentation-lookup` skill or Context7 as the pattern.
 - When contributing **agents** that answer docs/API questions, include the Context7 MCP tool names (e.g. `mcp__context7__resolve-library-id`, `mcp__context7__query-docs`) in the agent's tools and document the resolve → query workflow.
-- **mcp-configs/mcp-servers.json** includes a Context7 entry; users enable it in their harness (e.g. Claude Code, Cursor) to use the documentation-lookup skill (in `skills/documentation-lookup/`) and the `/docs` command.
+- **mcp-configs/mcp-servers.json** includes a Context7 entry; users enable it in their harness (e.g. Claude Code, Codex) to use the documentation-lookup skill (in `skills/documentation-lookup/`) and the `/docs` command.
 
 ---
 
 ## Cross-Harness and Translations
 
-### Skill subsets (Codex and Cursor)
+### Skill subsets (Codex)
 
 ECC ships skill subsets for other harnesses:
 
 - **Codex:** `.agents/skills/` — skills listed in `agents/openai.yaml` are loaded by Codex.
-- **Cursor:** `.cursor/skills/` — a subset of skills is bundled for Cursor.
 
-When you **add a new skill** that should be available on Codex or Cursor:
+When you **add a new skill** that should be available on Codex:
 
 1. Add the skill under `skills/your-skill-name/` as usual.
 2. If it should be available on **Codex**, add it to `.agents/skills/` (copy the skill directory or add a reference) and ensure it is referenced in `agents/openai.yaml` if required.
-3. If it should be available on **Cursor**, add it under `.cursor/skills/` per Cursor's layout.
 
-Check existing skills in those directories for the expected structure. Keeping these subsets in sync is manual; mention in your PR if you updated them.
+Check existing skills in that directory for the expected structure. Keeping these subsets in sync is manual; mention in your PR if you updated them.
 
 ### Translations
 

@@ -18,8 +18,7 @@ const { assertWithinTrustedRoot } = require('./path-safety');
 
 const AGENT_DATA_HOME_ENV = 'ECC_AGENT_DATA_HOME';
 const DEFAULT_CLAUDE_DIR_NAME = '.claude';
-const DEFAULT_CURSOR_ECC_DIR_SEGMENTS = ['.cursor', 'ecc'];
-const PROJECT_CONFIG_RELATIVE = path.join('.cursor', 'ecc-agent-data.json');
+const PROJECT_CONFIG_RELATIVE = path.join('.claude', 'ecc-agent-data.json');
 
 /**
  * Home directory for tilde expansion and default agent-data paths.
@@ -27,7 +26,7 @@ const PROJECT_CONFIG_RELATIVE = path.join('.cursor', 'ecc-agent-data.json');
  * Intentionally mirrors `getHomeDir()` in `scripts/lib/utils.js` (HOME/USERPROFILE,
  * then `os.homedir()`). Do not import `utils.getHomeDir` here: `utils.js` already
  * requires this module (`resolveAgentDataHome`), which would create a circular
- * dependency and risk divergent defaults for `~/.cursor/ecc` vs `~/.claude`.
+ * dependency and risk divergent defaults for the agent data home.
  *
  * If consolidation is needed later, prefer one of:
  *
@@ -56,39 +55,19 @@ function expandHomePath(value, baseDir) {
   if (path.isAbsolute(trimmed)) {
     return path.resolve(trimmed);
   }
-  const base = baseDir && String(baseDir).trim()
-    ? path.resolve(baseDir)
-    : process.cwd();
+  const base = baseDir && String(baseDir).trim() ? path.resolve(baseDir) : process.cwd();
   return path.resolve(base, trimmed);
 }
 
 /**
- * Project root for a config file under .cursor/ecc-agent-data.json.
+ * Project root for a config file under .claude/ecc-agent-data.json.
  */
 function resolveProjectRootFromConfigPath(configPath) {
   const configDir = path.dirname(path.resolve(configPath));
-  if (path.basename(configDir) === '.cursor') {
+  if (path.basename(configDir) === DEFAULT_CLAUDE_DIR_NAME) {
     return path.dirname(configDir);
   }
   return configDir;
-}
-
-/**
- * True when the current process is a Cursor hook subprocess.
- * Cursor documents CURSOR_VERSION and CURSOR_PROJECT_DIR for hook scripts.
- */
-function isCursorHookRuntime() {
-  if (process.env.CURSOR_VERSION && String(process.env.CURSOR_VERSION).trim()) {
-    return true;
-  }
-  if (process.env.CURSOR_PROJECT_DIR && String(process.env.CURSOR_PROJECT_DIR).trim()) {
-    return true;
-  }
-  return false;
-}
-
-function getDefaultCursorAgentDataHome() {
-  return path.join(getHomeDirFromEnv(), ...DEFAULT_CURSOR_ECC_DIR_SEGMENTS);
 }
 
 function getDefaultClaudeAgentDataHome() {
@@ -97,9 +76,7 @@ function getDefaultClaudeAgentDataHome() {
 
 function warnUnsafeProjectConfig() {
   console.error(
-    '[ECC] Ignoring unsafe agent data project config: agentDataHome must stay ' +
-    'within the default Cursor or Claude data directories. Use ' +
-    'ECC_AGENT_DATA_HOME for an explicit trusted override.'
+    '[ECC] Ignoring unsafe agent data project config: agentDataHome must stay ' + 'within the default Claude data directory. Use ' + 'ECC_AGENT_DATA_HOME for an explicit trusted override.'
   );
 }
 
@@ -111,18 +88,11 @@ function isSafeProjectConfigSyntax(candidate) {
 }
 
 function resolveAllowedProjectConfigHome(candidate) {
-  const allowedRoots = [
-    getDefaultCursorAgentDataHome(),
-    getDefaultClaudeAgentDataHome(),
-  ];
+  const allowedRoots = [getDefaultClaudeAgentDataHome()];
 
   for (const allowedRoot of allowedRoots) {
     try {
-      return assertWithinTrustedRoot(
-        candidate,
-        allowedRoot,
-        'use project agent data home'
-      );
+      return assertWithinTrustedRoot(candidate, allowedRoot, 'use project agent data home');
     } catch {
       // Try the next explicitly allowed default root.
     }
@@ -152,9 +122,7 @@ function readProjectConfigAt(configPath) {
     }
     return allowedHome;
   } catch (error) {
-    console.error(
-      `[ECC] Failed to read or parse agent data config at ${configPath}: ${error.message}`
-    );
+    console.error(`[ECC] Failed to read or parse agent data config at ${configPath}: ${error.message}`);
     return null;
   }
 }
@@ -165,16 +133,12 @@ function readProjectConfig(projectDir) {
 }
 
 function resolveProjectDir() {
-  const candidates = [
-    process.env.CURSOR_PROJECT_DIR,
-    process.env.CLAUDE_PROJECT_DIR,
-    process.cwd(),
-  ];
+  const candidates = [process.env.CLAUDE_PROJECT_DIR, process.cwd()];
 
   for (const candidate of candidates) {
     if (!candidate || typeof candidate !== 'string') continue;
     const resolved = path.resolve(candidate);
-    if (fs.existsSync(path.join(resolved, '.cursor'))) {
+    if (fs.existsSync(path.join(resolved, DEFAULT_CLAUDE_DIR_NAME))) {
       return resolved;
     }
   }
@@ -193,10 +157,6 @@ function resolveAgentDataHome(options = {}) {
   const fromProject = readProjectConfig(projectDir);
   if (fromProject) return fromProject;
 
-  if (options.preferCursorDefault === true || isCursorHookRuntime()) {
-    return getDefaultCursorAgentDataHome();
-  }
-
   return getDefaultClaudeAgentDataHome();
 }
 
@@ -212,34 +172,16 @@ function ensureAgentDataHomeEnv(options = {}) {
   return resolved;
 }
 
-/**
- * Build Cursor sessionStart hook output env payload.
- */
-function getCursorSessionEnvPayload(options = {}) {
-  const agentDataHome = resolveAgentDataHome({
-    ...options,
-    preferCursorDefault: true,
-  });
-
-  return {
-    ECC_AGENT_DATA_HOME: agentDataHome,
-  };
-}
-
 module.exports = {
   AGENT_DATA_HOME_ENV,
   DEFAULT_CLAUDE_DIR_NAME,
-  DEFAULT_CURSOR_ECC_DIR_SEGMENTS,
   PROJECT_CONFIG_RELATIVE,
   expandHomePath,
   resolveProjectRootFromConfigPath,
-  isCursorHookRuntime,
-  getDefaultCursorAgentDataHome,
   getDefaultClaudeAgentDataHome,
   readProjectConfig,
   readProjectConfigAt,
   resolveProjectDir,
   resolveAgentDataHome,
-  ensureAgentDataHomeEnv,
-  getCursorSessionEnvPayload,
+  ensureAgentDataHomeEnv
 };

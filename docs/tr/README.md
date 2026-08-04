@@ -33,7 +33,7 @@
 
 Sadece konfigürasyon dosyaları değil. Tam bir sistem: skill'ler, instinct'ler, memory optimizasyonu, sürekli öğrenme, güvenlik taraması ve araştırma odaklı geliştirme. 10+ ay boyunca gerçek ürünler inşa ederken yoğun günlük kullanımla evrimleşmiş production-ready agent'lar, hook'lar, command'lar, rule'lar ve MCP konfigürasyonları.
 
-**Claude Code**, **Codex**, **Cursor**, **OpenCode**, **Gemini** ve diğer AI agent harness'larında çalışır.
+**Claude Code**, **Codex**, **OpenCode**, **Zed** ve diğer AI agent harness'larında çalışır.
 
 ---
 
@@ -111,7 +111,7 @@ Bu repository yalnızca ham kodu içerir. Rehberler her şeyi açıklıyor.
 - **Hook runtime kontrolleri** — `ECC_HOOK_PROFILE=minimal|standard|strict` ve `ECC_DISABLED_HOOKS=...` hook dosyalarını düzenlemeden runtime gating için.
 - **Yeni harness command'ları** — `/harness-audit`, `/loop-start`, `/loop-status`, `/quality-gate`, `/model-route`.
 - **NanoClaw v2** — Model routing, skill hot-load, session branch/search/export/compact/metrics.
-- **Çapraz harness paritesi** — Claude Code, Cursor, OpenCode ve Codex app/CLI arasında davranış sıkılaştırıldı.
+- **Çapraz harness paritesi** — Claude Code, OpenCode ve Codex app/CLI arasında davranış sıkılaştırıldı.
 - **997 internal test geçiyor** — Hook/runtime refactor ve uyumluluk güncellemelerinden sonra tam suite yeşil.
 
 [Tam değişiklik günlüğü için Releases bölümüne bakın](https://github.com/affaan-m/everything-claude-code/releases).
@@ -147,7 +147,7 @@ npm install        # veya: pnpm install | yarn install | bun install
 # macOS/Linux
 ./install.sh typescript    # veya python veya golang veya swift veya php
 # ./install.sh typescript python golang swift php
-# ./install.sh --target cursor typescript
+# ./install.sh --target zed typescript
 # ./install.sh --target antigravity typescript
 ```
 
@@ -155,7 +155,7 @@ npm install        # veya: pnpm install | yarn install | bun install
 # Windows PowerShell
 .\install.ps1 typescript   # veya python veya golang veya swift veya php
 # .\install.ps1 typescript python golang swift php
-# .\install.ps1 --target cursor typescript
+# .\install.ps1 --target zed typescript
 # .\install.ps1 --target antigravity typescript
 
 # npm-installed uyumluluk entry point'i de çapraz platform çalışır
@@ -183,7 +183,7 @@ Manuel kurulum talimatları için `rules/` klasöründeki README'ye bakın.
 
 ## Çapraz Platform Desteği
 
-Bu plugin artık **Windows, macOS ve Linux**'u tam olarak destekliyor, ana IDE'ler (Cursor, OpenCode, Antigravity) ve CLI harness'lar arasında sıkı entegrasyon ile birlikte. Tüm hook'lar ve script'ler maksimum uyumluluk için Node.js ile yeniden yazıldı.
+Bu plugin artık **Windows, macOS ve Linux**'u tam olarak destekliyor, ana IDE'ler (Zed, OpenCode, Antigravity) ve CLI harness'lar arasında sıkı entegrasyon ile birlikte. Tüm hook'lar ve script'ler maksimum uyumluluk için Node.js ile yeniden yazıldı.
 
 ### Paket Yöneticisi Algılama
 
@@ -401,10 +401,10 @@ Her component tamamen bağımsızdır.
 </details>
 
 <details>
-<summary><b>Bu Cursor / OpenCode / Codex / Antigravity ile çalışır mı?</b></summary>
+<summary><b>Bu OpenCode / Codex / Zed / Antigravity ile çalışır mı?</b></summary>
 
 Evet. ECC çapraz platformdur:
-- **Cursor**: `.cursor/` içinde önceden çevrilmiş config'ler. [Cursor IDE Desteği](../../README.md#cursor-ide-support) bölümüne bakın.
+- **Zed**: `.zed/` içinde proje ayarları, düzleştirilmiş kurallar, komutlar, agent'lar ve skill'ler. [Platform Desteği](../../README.md#platform-support) bölümüne bakın.
 - **OpenCode**: `.opencode/` içinde tam plugin desteği. [OpenCode Desteği](../../README.md#opencode-support) bölümüne bakın.
 - **Codex**: macOS app ve CLI için birinci sınıf destek. PR [#257](https://github.com/affaan-m/everything-claude-code/pull/257)'ye bakın.
 - **Antigravity**: İş akışları, skill'ler ve `.agent/` içinde düzleştirilmiş rule'lar için sıkı entegre kurulum.

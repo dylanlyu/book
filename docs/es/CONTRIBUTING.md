@@ -369,24 +369,22 @@ Las skills y los agentes pueden usar herramientas **MCP (Model Context Protocol)
 - **Context7** es un servidor MCP que expone `resolve-library-id` y `query-docs`. Úsalo cuando el usuario pregunte sobre bibliotecas, frameworks o APIs para que las respuestas reflejen la documentación y ejemplos de código actuales.
 - Al contribuir **skills** que dependen de documentación en vivo (por ejemplo, configuración, uso de API), describe cómo usar las herramientas MCP relevantes (por ejemplo, resolver el ID de la biblioteca, luego consultar documentos) y apunta a la skill `documentation-lookup` o Context7 como el patrón.
 - Al contribuir **agentes** que responden preguntas de documentación/API, incluye los nombres de herramientas MCP de Context7 (por ejemplo, `mcp__context7__resolve-library-id`, `mcp__context7__query-docs`) en las herramientas del agente y documenta el flujo de trabajo resolver → consultar.
-- **mcp-configs/mcp-servers.json** incluye una entrada de Context7; los usuarios la habilitan en su harness (por ejemplo, Claude Code, Cursor) para usar la skill de búsqueda de documentación (en `skills/documentation-lookup/`) y el comando `/docs`.
+- **mcp-configs/mcp-servers.json** incluye una entrada de Context7; los usuarios la habilitan en su harness (por ejemplo, Claude Code, Codex) para usar la skill de búsqueda de documentación (en `skills/documentation-lookup/`) y el comando `/docs`.
 
 ---
 
 ## Cross-Harness y Traducciones
 
-### Subconjuntos de Skills (Codex y Cursor)
+### Subconjuntos de Skills (Codex)
 
 ECC incluye subconjuntos de skills para otros harnesses:
 
 - **Codex:** `.agents/skills/` — las skills listadas en `agents/openai.yaml` son cargadas por Codex.
-- **Cursor:** `.cursor/skills/` — un subconjunto de skills está empaquetado para Cursor.
 
-Cuando **añades una nueva skill** que debería estar disponible en Codex o Cursor:
+Cuando **añades una nueva skill** que debería estar disponible en Codex:
 
 1. Añade la skill bajo `skills/nombre-de-tu-skill/` como de costumbre.
 2. Si debería estar disponible en **Codex**, añádela a `.agents/skills/` (copia el directorio de la skill o añade una referencia) y asegúrate de que esté referenciada en `agents/openai.yaml` si es necesario.
-3. Si debería estar disponible en **Cursor**, añádela bajo `.cursor/skills/` según el diseño de Cursor.
 
 Consulta las skills existentes en esos directorios para la estructura esperada. Mantener estos subconjuntos sincronizados es manual; menciona en tu PR si los actualizaste.
 

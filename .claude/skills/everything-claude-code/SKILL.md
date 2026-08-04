@@ -348,23 +348,22 @@ Optionally update other documentation files
 
 ### Add Cross Harness Skill Copies
 
-Adds skill copies for different agent harnesses (e.g., Codex, Cursor, Antigravity) to ensure compatibility across platforms.
+Adds skill copies for different agent harnesses (e.g., Codex, Zed, Antigravity) to ensure compatibility across platforms.
 
 **Frequency**: ~2 times per month
 
 **Steps**:
-1. Copy or adapt SKILL.md to .agents/skills/{skill}/SKILL.md and/or .cursor/skills/{skill}/SKILL.md
+1. Copy or adapt SKILL.md to .agents/skills/{skill}/SKILL.md
 2. Optionally add harness-specific openai.yaml or config files
 3. Address review feedback to align with CONTRIBUTING template
 
 **Files typically involved**:
 - `.agents/skills/*/SKILL.md`
-- `.cursor/skills/*/SKILL.md`
 - `.agents/skills/*/agents/openai.yaml`
 
 **Example commit sequence**:
 ```
-Copy or adapt SKILL.md to .agents/skills/{skill}/SKILL.md and/or .cursor/skills/{skill}/SKILL.md
+Copy or adapt SKILL.md to .agents/skills/{skill}/SKILL.md
 Optionally add harness-specific openai.yaml or config files
 Address review feedback to align with CONTRIBUTING template
 ```
@@ -385,7 +384,6 @@ Adds or updates git or bash hooks to enforce workflow, quality, or security poli
 - `hooks/hooks.json`
 - `scripts/hooks/*.js`
 - `tests/hooks/*.test.js`
-- `.cursor/hooks.json`
 
 **Example commit sequence**:
 ```
@@ -410,7 +408,6 @@ Addresses code review feedback by updating documentation, scripts, or configurat
 - `agents/*.md`
 - `commands/*.md`
 - `.agents/skills/*/SKILL.md`
-- `.cursor/skills/*/SKILL.md`
 
 **Example commit sequence**:
 ```

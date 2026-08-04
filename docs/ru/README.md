@@ -37,9 +37,9 @@
 
 Не просто конфиги. Это полноценная система: навыки, инстинкты, оптимизация памяти, непрерывное обучение, сканирование безопасности и разработка с приоритетом исследований. Готовые к рабочему использованию агенты, навыки, хуки, правила, конфигурации MCP и устаревшие совместимые заглушки команд, отточенные за 10+ месяцев интенсивного ежедневного использования при создании реальных продуктов.
 
-Работает в **Claude Code**, **Codex**, **Cursor**, **OpenCode**, **Gemini** и других средах агентного ИИ.
+Работает в **Claude Code**, **Codex**, **OpenCode**, **Zed** и других средах агентного ИИ.
 
-ECC v2.0.0-rc.1 добавляет публичную историю оператора Hermes поверх этого переиспользуемого слоя: начните с [руководства по настройке Hermes](../HERMES-SETUP.md), затем прочитайте [примечания к выпуску rc.1](../releases/2.0.0-rc.1/release-notes.md) и [архитектуру для разных сред](../architecture/cross-harness.md).
+Начните с [примечаний к выпуску rc.1](../releases/2.0.0-rc.1/release-notes.md) и [архитектуры для разных сред](../architecture/cross-harness.md).
 
 ---
 
@@ -114,7 +114,7 @@ ECC v2.0.0-rc.1 добавляет публичную историю опера�
 - **Управление хуками во время выполнения** — `ECC_HOOK_PROFILE=minimal|standard|strict` и `ECC_DISABLED_HOOKS=...` для runtime-ограничений без редактирования файлов хуков.
 - **Новые команды для сред** — `/harness-audit`, `/loop-start`, `/loop-status`, `/quality-gate`, `/model-route`.
 - **NanoClaw v2** — маршрутизация моделей, горячая загрузка навыков, ветвление/поиск/экспорт/компактификация/метрики сессий.
-- **Паритет между средами** — поведение ужесточено для Claude Code, Cursor, OpenCode и Codex app/CLI.
+- **Паритет между средами** — поведение ужесточено для Claude Code, OpenCode и Codex app/CLI.
 - **997 внутренних тестов проходят** — весь набор зелёный после рефакторинга hooks/runtime и обновлений совместимости.
 
 ### v1.7.0 — Расширение на другие платформы и конструктор презентаций (февраль 2026)
@@ -122,7 +122,7 @@ ECC v2.0.0-rc.1 добавляет публичную историю опера�
 - **Поддержка Codex app + CLI** — прямая поддержка Codex через `AGENTS.md`, выбор цели установщика и документация по Codex
 - **Навык `frontend-slides`** — HTML-конструктор презентаций без зависимостей, с рекомендациями по конвертации PPTX и строгими правилами подгонки под viewport
 - **5 новых общих бизнес- и контент-навыков** — `article-writing`, `content-engine`, `market-research`, `investor-materials`, `investor-outreach`
-- **Более широкое покрытие инструментов** — поддержка Cursor, Codex и OpenCode усилена так, чтобы один репозиторий аккуратно поставлялся во все основные среды
+- **Более широкое покрытие инструментов** — поддержка Codex, OpenCode и Zed усилена так, чтобы один репозиторий аккуратно поставлялся во все основные среды
 - **992 внутренних теста** — расширенная валидация и регрессионное покрытие для плагина, хуков, навыков и упаковки
 
 ### v1.6.0 — Codex CLI, AgentShield и Marketplace (февраль 2026)
@@ -386,7 +386,7 @@ python3 ./ecc_dashboard.py
 
 ## Кроссплатформенная поддержка
 
-Плагин теперь полностью поддерживает **Windows, macOS и Linux**, а также плотно интегрирован с основными IDE (Cursor, OpenCode, Antigravity) и CLI-средами. Все хуки и скрипты переписаны на Node.js для максимальной совместимости.
+Плагин теперь полностью поддерживает **Windows, macOS и Linux**, а также плотно интегрирован с основными IDE (Zed, OpenCode, Antigravity) и CLI-средами. Все хуки и скрипты переписаны на Node.js для максимальной совместимости.
 
 ### Определение пакетного менеджера
 
@@ -1075,11 +1075,10 @@ cp -r everything-claude-code/rules/common ~/.claude/rules/ecc/
 </details>
 
 <details>
-<summary><b>Работает ли это с Cursor / OpenCode / Codex / Antigravity?</b></summary>
+<summary><b>Работает ли это с OpenCode / Codex / Zed / Antigravity?</b></summary>
 
 Да. ECC кроссплатформенный:
-- **Cursor**: предварительно адаптированные конфиги в `.cursor/`. См. [Поддержка Cursor IDE](#поддержка-cursor-ide).
-- **Gemini CLI**: экспериментальная project-local поддержка через `.gemini/GEMINI.md` и общий plumbing установщика.
+- **Zed**: project-local адаптер для настроек, плоских правил, команд, агентов и навыков в `.zed/`. См. [Поддержка платформ](#поддержка-платформ).
 - **OpenCode**: полная поддержка плагина в `.opencode/`. См. [Поддержка OpenCode](#поддержка-opencode).
 - **Codex**: первоклассная поддержка macOS app и CLI, с guards против adapter drift и SessionStart fallback. См. PR [#257](https://github.com/affaan-m/everything-claude-code/pull/257).
 - **Antigravity**: плотная настройка для workflows, skills и flattened rules в `.agent/`. См. [Antigravity Guide](../ANTIGRAVITY-GUIDE.md).
@@ -1142,72 +1141,6 @@ node tests/hooks/hooks.test.js
 - [claude-seo](https://github.com/AgriciDaniel/claude-seo) — SEO-focused коллекция skills и agents
 - [claude-ads](https://github.com/AgriciDaniel/claude-ads) — коллекция ad-audit и paid-growth workflows
 - [claude-cybersecurity](https://github.com/AgriciDaniel/claude-cybersecurity) — security-oriented коллекция skills и agents
-
----
-
-## Поддержка Cursor IDE
-
-ECC предоставляет поддержку Cursor IDE с хуками, правилами, агентами, навыками, командами и MCP-конфигами, адаптированными под layout проекта Cursor.
-
-### Быстрый старт (Cursor)
-
-```bash
-# macOS/Linux
-./install.sh --target cursor typescript
-./install.sh --target cursor python golang swift php
-```
-
-```powershell
-# Windows PowerShell
-.\install.ps1 --target cursor typescript
-.\install.ps1 --target cursor python golang swift php
-```
-
-### Что включено
-
-| Компонент | Количество | Детали |
-|-----------|------------|--------|
-| Hook Events | 15 | sessionStart, beforeShellExecution, afterFileEdit, beforeMCPExecution, beforeSubmitPrompt и ещё 10 |
-| Hook Scripts | 16 | Тонкие Node.js скрипты, делегирующие в `scripts/hooks/` через общий adapter |
-| Rules | 34 | 9 common (alwaysApply) + 25 language-specific (TypeScript, Python, Go, Swift, PHP) |
-| Agents | 50 | `.cursor/agents/ecc-*.md` при установке; с префиксом, чтобы избежать конфликтов с user или marketplace agents |
-| Skills | Shared + Bundled | `.cursor/skills/` для адаптированных дополнений |
-| Commands | Shared | `.cursor/commands/` при установке |
-| MCP Config | Shared | `.cursor/mcp.json` при установке |
-
-### Заметки о загрузке Cursor
-
-ECC не устанавливает root `AGENTS.md` в `.cursor/`. Cursor воспринимает вложенные `AGENTS.md` как directory context, поэтому копирование identity ECC-репозитория в host project загрязняло бы этот проект.
-
-Cursor-native loading behavior может различаться между сборками Cursor. ECC устанавливает агентов как `.cursor/agents/ecc-*.md`; если ваша сборка Cursor не показывает project agents, эти файлы всё равно работают как явные reference definitions, а не скрытый global prompt context.
-
-### Архитектура хуков (DRY adapter pattern)
-
-В Cursor **больше hook events, чем в Claude Code** (20 против 8). Модуль `.cursor/hooks/adapter.js` преобразует stdin JSON Cursor в формат Claude Code, позволяя переиспользовать существующие `scripts/hooks/*.js` без дублирования.
-
-```
-Cursor stdin JSON → adapter.js → transforms → scripts/hooks/*.js
-                                              (shared with Claude Code)
-```
-
-Ключевые хуки:
-- **beforeShellExecution** — блокирует dev servers вне tmux (exit 2), review перед git push
-- **afterFileEdit** — auto-format + TypeScript check + предупреждение о console.log
-- **beforeSubmitPrompt** — обнаруживает секреты (паттерны sk-, ghp_, AKIA) в prompts
-- **beforeTabFileRead** — блокирует чтение Tab файлов .env, .key, .pem (exit 2)
-- **beforeMCPExecution / afterMCPExecution** — MCP audit logging
-
-### Формат правил
-
-Правила Cursor используют YAML frontmatter с `description`, `globs` и `alwaysApply`:
-
-```yaml
----
-description: "TypeScript coding style extending common rules"
-globs: ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx"]
-alwaysApply: false
----
-```
 
 ---
 
@@ -1440,25 +1373,24 @@ npm install ecc-universal
 
 ECC — **первый плагин, который помогает максимально использовать каждый крупный инструмент AI-кодинга**. Вот как сравниваются среды:
 
-| Возможность | Claude Code | Cursor IDE | Codex CLI | OpenCode |
-|-------------|-------------|------------|-----------|----------|
-| **Agents** | 50 | Shared (AGENTS.md) | Shared (AGENTS.md) | 12 |
-| **Commands** | 68 | Shared | Instruction-based | 31 |
-| **Skills** | 185 | Shared | 10 (native format) | 37 |
-| **Hook Events** | 8 типов | 15 типов | Пока нет | 11 типов |
-| **Hook Scripts** | 20+ scripts | 16 scripts (DRY adapter) | N/A | Plugin hooks |
-| **Rules** | 34 (common + lang) | 34 (YAML frontmatter) | Instruction-based | 13 instructions |
-| **Custom Tools** | Через hooks | Через hooks | N/A | 6 native tools |
-| **MCP Servers** | 14 | Shared (mcp.json) | 7 (auto-merged через TOML parser) | Full |
-| **Config Format** | settings.json | hooks.json + rules/ | config.toml | opencode.json |
-| **Context File** | CLAUDE.md + AGENTS.md | AGENTS.md | AGENTS.md | AGENTS.md |
-| **Secret Detection** | Hook-based | beforeSubmitPrompt hook | Sandbox-based | Hook-based |
-| **Auto-Format** | PostToolUse hook | afterFileEdit hook | N/A | file.edited hook |
-| **Version** | Plugin | Plugin | Reference config | 2.0.0-rc.1 |
+| Возможность | Claude Code | Codex CLI | OpenCode |
+|-------------|-------------|-----------|----------|
+| **Agents** | 50 | Shared (AGENTS.md) | 12 |
+| **Commands** | 68 | Instruction-based | 31 |
+| **Skills** | 185 | 10 (native format) | 37 |
+| **Hook Events** | 8 типов | Пока нет | 11 типов |
+| **Hook Scripts** | 20+ scripts | N/A | Plugin hooks |
+| **Rules** | 34 (common + lang) | Instruction-based | 13 instructions |
+| **Custom Tools** | Через hooks | N/A | 6 native tools |
+| **MCP Servers** | 14 | 7 (auto-merged через TOML parser) | Full |
+| **Config Format** | settings.json | config.toml | opencode.json |
+| **Context File** | CLAUDE.md + AGENTS.md | AGENTS.md | AGENTS.md |
+| **Secret Detection** | Hook-based | Sandbox-based | Hook-based |
+| **Auto-Format** | PostToolUse hook | N/A | file.edited hook |
+| **Version** | Plugin | Reference config | 2.0.0-rc.1 |
 
 **Ключевые архитектурные решения:**
 - **AGENTS.md** в корне — универсальный cross-tool файл (читается всеми 4 инструментами)
-- **DRY adapter pattern** позволяет Cursor переиспользовать hook scripts Claude Code без дублирования
 - **Формат Skills** (SKILL.md с YAML frontmatter) работает в Claude Code, Codex и OpenCode
 - Отсутствие хуков в Codex компенсируется `AGENTS.md`, опциональными overrides `model_instructions_file` и sandbox permissions
 

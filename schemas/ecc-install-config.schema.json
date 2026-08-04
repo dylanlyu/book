@@ -20,17 +20,12 @@
       "enum": [
         "claude",
         "claude-project",
-        "cursor",
         "antigravity",
         "codex",
-        "gemini",
         "opencode",
         "joycode",
         "qwen",
-        "zed",
-        "hermes",
-        "openclaw",
-        "kimi"
+        "zed"
       ]
     },
     "profile": {

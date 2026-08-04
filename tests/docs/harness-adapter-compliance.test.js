@@ -4,12 +4,7 @@ const assert = require('assert');
 const { execFileSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
-const {
-  ADAPTER_RECORDS,
-  extractMatrixBlock,
-  renderMarkdownTable,
-  validateAdapterRecords,
-} = require('../../scripts/lib/harness-adapter-compliance');
+const { ADAPTER_RECORDS, extractMatrixBlock, renderMarkdownTable, validateAdapterRecords } = require('../../scripts/lib/harness-adapter-compliance');
 
 const repoRoot = path.resolve(__dirname, '..', '..');
 const scriptPath = path.join(repoRoot, 'scripts', 'harness-adapter-compliance.js');
@@ -37,19 +32,7 @@ console.log('\n=== Testing harness adapter compliance docs ===\n');
 
 test('adapter compliance matrix covers the required harness surfaces', () => {
   const source = read('docs/architecture/harness-adapter-compliance.md');
-  for (const harness of [
-    'Claude Code',
-    'Codex',
-    'OpenCode',
-    'Cursor',
-    'Gemini',
-    'Zed',
-    'dmux',
-    'Orca',
-    'Superset',
-    'Ghast',
-    'Terminal-only'
-  ]) {
+  for (const harness of ['Claude Code', 'Codex', 'OpenCode', 'Zed', 'dmux', 'Orca', 'Superset', 'Ghast', 'Terminal-only']) {
     assert.ok(source.includes(harness), `Expected matrix to include ${harness}`);
   }
 });
@@ -60,10 +43,7 @@ test('adapter compliance source data validates required evidence fields', () => 
   const zedRecord = ADAPTER_RECORDS.find(record => record.id === 'zed');
   assert.ok(zedRecord, 'Expected Zed adapter record');
   assert.strictEqual(zedRecord.state, 'Adapter-backed');
-  assert.ok(
-    zedRecord.install_or_onramp.includes('`./install.sh --profile minimal --target zed`'),
-    'Expected Zed installer onramp'
-  );
+  assert.ok(zedRecord.install_or_onramp.includes('`./install.sh --profile minimal --target zed`'), 'Expected Zed installer onramp');
 
   for (const record of ADAPTER_RECORDS) {
     assert.ok(record.install_or_onramp.length > 0, `${record.id} needs an install or onramp`);
@@ -79,21 +59,13 @@ test('adapter compliance matrix is generated from source data', () => {
 });
 
 test('adapter compliance matrix extraction tolerates Windows line endings', () => {
-  const source = read('docs/architecture/harness-adapter-compliance.md')
-    .replace(/\r\n/g, '\n')
-    .replace(/\n/g, '\r\n');
+  const source = read('docs/architecture/harness-adapter-compliance.md').replace(/\r\n/g, '\n').replace(/\n/g, '\r\n');
   assert.strictEqual(extractMatrixBlock(source), renderMarkdownTable());
 });
 
 test('adapter compliance matrix includes the required evidence columns', () => {
   const source = read('docs/architecture/harness-adapter-compliance.md');
-  for (const heading of [
-    'Supported assets',
-    'Unsupported or different surfaces',
-    'Install or onramp',
-    'Verification command',
-    'Risk notes'
-  ]) {
+  for (const heading of ['Supported assets', 'Unsupported or different surfaces', 'Install or onramp', 'Verification command', 'Risk notes']) {
     assert.ok(source.includes(heading), `Expected matrix to include ${heading}`);
   }
 });
@@ -114,7 +86,7 @@ test('scorecard onramp names the local verification commands', () => {
 test('adapter compliance CLI check passes against the committed doc', () => {
   const output = execFileSync('node', [scriptPath, '--check'], {
     cwd: repoRoot,
-    encoding: 'utf8',
+    encoding: 'utf8'
   });
 
   assert.ok(output.includes('Harness Adapter Compliance: PASS'));
@@ -124,7 +96,7 @@ test('adapter compliance CLI check passes against the committed doc', () => {
 test('adapter compliance CLI emits machine-readable scorecard data', () => {
   const output = execFileSync('node', [scriptPath, '--format=json'], {
     cwd: repoRoot,
-    encoding: 'utf8',
+    encoding: 'utf8'
   });
   const parsed = JSON.parse(output);
 

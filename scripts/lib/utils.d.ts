@@ -17,7 +17,7 @@ export function getHomeDir(): string;
 
 /**
  * ECC agent data root for memory persistence and related state.
- * Defaults to ~/.claude; override with ECC_AGENT_DATA_HOME (e.g. ~/.cursor/ecc).
+ * Defaults to ~/.claude; override with ECC_AGENT_DATA_HOME.
  */
 export function getAgentDataHome(): string;
 

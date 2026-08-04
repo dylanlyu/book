@@ -134,7 +134,7 @@ const HELP = [
 const handlers = {
   ecc: () => [
     '**Everything Claude Code (ECC)** — the agent harness performance system.',
-    'Skills, agents, rules, hooks, MCP conventions, and operator workflows that move across Claude Code, Codex, OpenCode, Cursor, Gemini, and Zed.',
+    'Skills, agents, rules, hooks, MCP conventions, and operator workflows that move across Claude Code, Codex, OpenCode, and Zed.',
     '',
     `- repo: ${REPO_URL}`,
     '- site: https://ecc.tools',

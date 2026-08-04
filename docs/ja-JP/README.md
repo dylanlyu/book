@@ -613,36 +613,6 @@ node tests/hooks/hooks.test.js
 
 ---
 
-## Cursor IDE サポート
-
-ecc-universal は [Cursor IDE](https://cursor.com) の事前翻訳設定を含みます。`.cursor/` ディレクトリには、Cursor フォーマット向けに適応されたルール、エージェント、スキル、コマンド、MCP 設定が含まれています。
-
-### クイックスタート (Cursor)
-
-```bash
-# パッケージをインストール
-npm install ecc-universal
-
-# 言語をインストール
-./install.sh --target cursor typescript
-./install.sh --target cursor python golang
-```
-
-### 翻訳内容
-
-| コンポーネント | Claude Code → Cursor | パリティ |
-|-----------|---------------------|--------|
-| Rules | YAML フロントマター追加、パスフラット化 | 完全 |
-| Agents | モデル ID 展開、ツール → 読み取り専用フラグ | 完全 |
-| Skills | 変更不要（同一の標準） | 同一 |
-| Commands | パス参照更新、multi-* スタブ化 | 部分的 |
-| MCP Config | 環境補間構文更新 | 完全 |
-| Hooks | Cursor相当なし | 別の方法を参照 |
-
-詳細は[.cursor/README.md](.cursor/README.md)および完全な移行ガイドは[.cursor/MIGRATION.md](.cursor/MIGRATION.md)を参照してください。
-
----
-
 ## OpenCodeサポート
 
 ECCは**フルOpenCodeサポート**をプラグインとフック含めて提供。

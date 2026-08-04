@@ -357,24 +357,22 @@ Skill'ler ve agent'lar, sadece eğitim verilerine güvenmek yerine güncel veril
 - **Context7**, `resolve-library-id` ve `query-docs`'u açığa çıkaran bir MCP server'ıdır. Kullanıcı kütüphaneler, framework'ler veya API'ler hakkında sorduğunda, cevapların güncel dokümantasyonu ve kod örneklerini yansıtması için kullanın.
 - Canlı dokümantasyona bağlı **skill'lere** katkıda bulunurken (örn. kurulum, API kullanımı), ilgili MCP tool'larının nasıl kullanılacağını açıklayın (örn. kütüphane ID'sini çözümle, ardından dokümantasyonu sorgula) ve pattern olarak `documentation-lookup` skill'ine veya Context7'ye işaret edin.
 - Dokümantasyon/API sorularını yanıtlayan **agent'lara** katkıda bulunurken, agent'ın tool'larına Context7 MCP tool isimlerini ekleyin (örn. `mcp__context7__resolve-library-id`, `mcp__context7__query-docs`) ve çözümle → sorgula workflow'unu belgeleyin.
-- **mcp-configs/mcp-servers.json** bir Context7 girişi içerir; kullanıcılar `documentation-lookup` skill'ini (`skills/documentation-lookup/` içinde) ve `/docs` command'ını kullanmak için bunu harness'lerinde (örn. Claude Code, Cursor) etkinleştirir.
+- **mcp-configs/mcp-servers.json** bir Context7 girişi içerir; kullanıcılar `documentation-lookup` skill'ini (`skills/documentation-lookup/` içinde) ve `/docs` command'ını kullanmak için bunu harness'lerinde (örn. Claude Code, Codex) etkinleştirir.
 
 ---
 
 ## Cross-Harness ve Çeviriler
 
-### Skill alt kümeleri (Codex ve Cursor)
+### Skill alt kümeleri (Codex)
 
 ECC, diğer harness'ler için skill alt kümeleri içerir:
 
 - **Codex:** `.agents/skills/` — `agents/openai.yaml` içinde listelenen skill'ler Codex tarafından yüklenir.
-- **Cursor:** `.cursor/skills/` — Cursor için bir skill alt kümesi paketlenmiştir.
 
-Codex veya Cursor'da kullanılabilir olması gereken **yeni bir skill eklediğinizde**:
+Codex'te kullanılabilir olması gereken **yeni bir skill eklediğinizde**:
 
 1. Skill'i her zamanki gibi `skills/your-skill-name/` altına ekleyin.
 2. **Codex**'te kullanılabilir olması gerekiyorsa, `.agents/skills/` altına ekleyin (skill dizinini kopyalayın veya referans ekleyin) ve gerekirse `agents/openai.yaml` içinde referans verildiğinden emin olun.
-3. **Cursor**'da kullanılabilir olması gerekiyorsa, Cursor'un düzenine göre `.cursor/skills/` altına ekleyin.
 
 Beklenen yapı için bu dizinlerdeki mevcut skill'leri kontrol edin. Bu alt kümeleri senkronize tutmak manuel bir işlemdir; bunları güncellediyseniz PR'ınızda belirtin.
 
