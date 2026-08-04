@@ -13,7 +13,6 @@
         "claude-project",
         "cursor",
         "antigravity",
-        "codebuddy",
         "joycode",
         "qwen",
         "zed",
@@ -41,7 +40,6 @@
         "cursor",
         "antigravity",
         "codex",
-        "codebuddy",
         "joycode",
         "qwen",
         "zed",
@@ -69,7 +67,6 @@
         "cursor",
         "antigravity",
         "opencode",
-        "codebuddy",
         "joycode",
         "qwen",
         "zed",
@@ -95,8 +92,7 @@
         "claude",
         "claude-project",
         "cursor",
-        "opencode",
-        "codebuddy"
+        "opencode"
       ],
       "dependencies": [],
       "defaultInstall": true,
@@ -130,7 +126,6 @@
         "codex",
         "gemini",
         "opencode",
-        "codebuddy",
         "joycode",
         "qwen",
         "zed",
@@ -225,7 +220,6 @@
         "antigravity",
         "codex",
         "opencode",
-        "codebuddy",
         "joycode",
         "qwen",
         "zed"
@@ -260,7 +254,6 @@
         "antigravity",
         "codex",
         "opencode",
-        "codebuddy",
         "joycode",
         "qwen",
         "zed"
@@ -287,7 +280,6 @@
         "codex",
         "gemini",
         "opencode",
-        "codebuddy",
         "joycode",
         "qwen",
         "zed",
@@ -358,7 +350,6 @@
         "antigravity",
         "codex",
         "opencode",
-        "codebuddy",
         "joycode",
         "qwen",
         "zed",
@@ -394,7 +385,6 @@
         "antigravity",
         "codex",
         "opencode",
-        "codebuddy",
         "joycode",
         "qwen",
         "zed"
@@ -440,7 +430,6 @@
         "antigravity",
         "codex",
         "opencode",
-        "codebuddy",
         "joycode",
         "qwen",
         "zed"
@@ -474,7 +463,6 @@
         "antigravity",
         "codex",
         "opencode",
-        "codebuddy",
         "joycode",
         "qwen",
         "zed"
@@ -513,7 +501,6 @@
         "antigravity",
         "codex",
         "opencode",
-        "codebuddy",
         "joycode",
         "qwen",
         "zed"
@@ -557,7 +544,6 @@
         "antigravity",
         "codex",
         "opencode",
-        "codebuddy",
         "joycode",
         "qwen",
         "zed"
@@ -588,7 +574,6 @@
         "antigravity",
         "codex",
         "opencode",
-        "codebuddy",
         "joycode",
         "qwen",
         "zed"
@@ -617,7 +602,6 @@
         "codex",
         "gemini",
         "opencode",
-        "codebuddy",
         "joycode",
         "qwen",
         "zed",
@@ -648,7 +632,6 @@
         "antigravity",
         "codex",
         "opencode",
-        "codebuddy",
         "joycode",
         "qwen",
         "zed"
@@ -680,7 +663,6 @@
         "cursor",
         "codex",
         "opencode",
-        "codebuddy",
         "joycode",
         "qwen",
         "zed"
@@ -738,7 +720,6 @@
         "antigravity",
         "codex",
         "opencode",
-        "codebuddy",
         "joycode",
         "qwen",
         "zed"
@@ -799,7 +780,6 @@
         "antigravity",
         "codex",
         "opencode",
-        "codebuddy",
         "joycode",
         "qwen",
         "zed"
@@ -840,7 +820,6 @@
         "antigravity",
         "codex",
         "opencode",
-        "codebuddy",
         "joycode",
         "qwen",
         "zed"
@@ -869,7 +848,6 @@
         "antigravity",
         "codex",
         "opencode",
-        "codebuddy",
         "joycode",
         "qwen",
         "zed"
@@ -906,7 +884,6 @@
         "antigravity",
         "codex",
         "opencode",
-        "codebuddy",
         "joycode",
         "qwen",
         "zed"
@@ -933,7 +910,6 @@
         "antigravity",
         "codex",
         "opencode",
-        "codebuddy",
         "joycode",
         "qwen",
         "zed"

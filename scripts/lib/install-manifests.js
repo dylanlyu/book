@@ -4,7 +4,7 @@ const path = require('path');
 const { getInstallTargetAdapter, planInstallTargetScaffold } = require('./install-targets/registry');
 
 const DEFAULT_REPO_ROOT = path.join(__dirname, '../..');
-const SUPPORTED_INSTALL_TARGETS = ['claude', 'claude-project', 'cursor', 'antigravity', 'codex', 'gemini', 'opencode', 'codebuddy', 'joycode', 'qwen', 'zed', 'hermes', 'openclaw', 'kimi'];
+const SUPPORTED_INSTALL_TARGETS = ['claude', 'claude-project', 'cursor', 'antigravity', 'codex', 'gemini', 'opencode', 'joycode', 'qwen', 'zed', 'hermes', 'openclaw', 'kimi'];
 const COMPONENT_FAMILY_PREFIXES = {
   baseline: 'baseline:',
   language: 'lang:',
@@ -12,88 +12,39 @@ const COMPONENT_FAMILY_PREFIXES = {
   capability: 'capability:',
   agent: 'agent:',
   skill: 'skill:',
-  locale: 'locale:',
+  locale: 'locale:'
 };
 const SUPPORTED_LOCALES = Object.freeze(['ja', 'zh-CN', 'ko-KR', 'pt-BR', 'ru', 'tr', 'vi-VN', 'zh-TW', 'de-DE']);
 const LOCALE_ALIAS_TO_COMPONENT_ID = Object.freeze({
-  'ja': 'locale:ja',
+  ja: 'locale:ja',
   'ja-JP': 'locale:ja',
   'zh-CN': 'locale:zh-cn',
-  'zh': 'locale:zh-cn',
+  zh: 'locale:zh-cn',
   'ko-KR': 'locale:ko-kr',
-  'ko': 'locale:ko-kr',
+  ko: 'locale:ko-kr',
   'pt-BR': 'locale:pt-br',
-  'pt': 'locale:pt-br',
-  'ru': 'locale:ru',
-  'tr': 'locale:tr',
+  pt: 'locale:pt-br',
+  ru: 'locale:ru',
+  tr: 'locale:tr',
   'vi-VN': 'locale:vi-vn',
-  'vi': 'locale:vi-vn',
+  vi: 'locale:vi-vn',
   'zh-TW': 'locale:zh-tw',
   'de-DE': 'locale:de-de',
-  'de': 'locale:de-de',
+  de: 'locale:de-de'
 });
 
 function listSupportedLocales() {
   return [...SUPPORTED_LOCALES];
 }
 const LEGACY_COMPAT_BASE_MODULE_IDS_BY_TARGET = Object.freeze({
-  claude: [
-    'rules-core',
-    'agents-core',
-    'commands-core',
-    'hooks-runtime',
-    'platform-configs',
-    'workflow-quality',
-  ],
-  'claude-project': [
-    'rules-core',
-    'agents-core',
-    'commands-core',
-    'hooks-runtime',
-    'platform-configs',
-    'workflow-quality',
-  ],
-  cursor: [
-    'rules-core',
-    'agents-core',
-    'commands-core',
-    'hooks-runtime',
-    'platform-configs',
-    'workflow-quality',
-  ],
-  antigravity: [
-    'rules-core',
-    'agents-core',
-    'commands-core',
-  ],
-  zed: [
-    'rules-core',
-    'agents-core',
-    'commands-core',
-    'platform-configs',
-    'workflow-quality',
-  ],
-  hermes: [
-    'rules-core',
-    'agents-core',
-    'commands-core',
-    'platform-configs',
-    'workflow-quality',
-  ],
-  openclaw: [
-    'rules-core',
-    'agents-core',
-    'commands-core',
-    'platform-configs',
-    'workflow-quality',
-  ],
-  kimi: [
-    'rules-core',
-    'agents-core',
-    'commands-core',
-    'platform-configs',
-    'workflow-quality',
-  ],
+  claude: ['rules-core', 'agents-core', 'commands-core', 'hooks-runtime', 'platform-configs', 'workflow-quality'],
+  'claude-project': ['rules-core', 'agents-core', 'commands-core', 'hooks-runtime', 'platform-configs', 'workflow-quality'],
+  cursor: ['rules-core', 'agents-core', 'commands-core', 'hooks-runtime', 'platform-configs', 'workflow-quality'],
+  antigravity: ['rules-core', 'agents-core', 'commands-core'],
+  zed: ['rules-core', 'agents-core', 'commands-core', 'platform-configs', 'workflow-quality'],
+  hermes: ['rules-core', 'agents-core', 'commands-core', 'platform-configs', 'workflow-quality'],
+  openclaw: ['rules-core', 'agents-core', 'commands-core', 'platform-configs', 'workflow-quality'],
+  kimi: ['rules-core', 'agents-core', 'commands-core', 'platform-configs', 'workflow-quality']
 });
 const LEGACY_LANGUAGE_ALIAS_TO_CANONICAL = Object.freeze({
   c: 'c',
@@ -114,7 +65,7 @@ const LEGACY_LANGUAGE_ALIAS_TO_CANONICAL = Object.freeze({
   ruby: 'ruby',
   rust: 'rust',
   swift: 'swift',
-  typescript: 'typescript',
+  typescript: 'typescript'
 });
 const LEGACY_LANGUAGE_EXTRA_MODULE_IDS = Object.freeze({
   c: ['framework-language'],
@@ -130,19 +81,19 @@ const LEGACY_LANGUAGE_EXTRA_MODULE_IDS = Object.freeze({
   ruby: ['framework-language', 'security'],
   rust: ['framework-language'],
   swift: [],
-  typescript: ['framework-language'],
+  typescript: ['framework-language']
 });
 const TARGET_DEFAULT_PROFILE_IDS = Object.freeze({
-  opencode: 'opencode',
+  opencode: 'opencode'
 });
 const TARGET_DEFAULT_EXCLUSIONS = Object.freeze({
   opencode: [
     {
       moduleId: 'hooks-runtime',
       reason: 'OpenCode defaults intentionally exclude hooks-runtime until users opt in.',
-      optInCommand: './install.sh --target opencode --modules hooks-runtime',
-    },
-  ],
+      optInCommand: './install.sh --target opencode --modules hooks-runtime'
+    }
+  ]
 });
 
 function readJson(filePath, label) {
@@ -163,7 +114,8 @@ function listSkillDirectoryIds(repoRoot) {
     return [];
   }
 
-  return fs.readdirSync(skillsRoot, { withFileTypes: true })
+  return fs
+    .readdirSync(skillsRoot, { withFileTypes: true })
     .filter(entry => entry.isDirectory())
     .map(entry => entry.name)
     .sort();
@@ -191,7 +143,7 @@ function addSyntheticSkillComponents({ repoRoot, modules, components }) {
         defaultInstall: false,
         cost: 'light',
         stability: 'stable',
-        synthetic: true,
+        synthetic: true
       });
       moduleIds.add(moduleId);
     }
@@ -201,18 +153,14 @@ function addSyntheticSkillComponents({ repoRoot, modules, components }) {
       family: 'skill',
       description: `Install only the ${skillId} skill directory.`,
       modules: [moduleId],
-      synthetic: true,
+      synthetic: true
     });
     componentIds.add(componentId);
   }
 }
 
 function readOptionalStringOption(options, key) {
-  if (
-    !Object.prototype.hasOwnProperty.call(options, key)
-    || options[key] === null
-    || options[key] === undefined
-  ) {
+  if (!Object.prototype.hasOwnProperty.call(options, key) || options[key] === null || options[key] === undefined) {
     return null;
   }
 
@@ -231,9 +179,7 @@ function readModuleTargetsOrThrow(module) {
     throw new Error(`Install module ${moduleId} has invalid targets; expected an array of supported target ids`);
   }
 
-  const normalizedTargets = targets.map(target => (
-    typeof target === 'string' ? target.trim() : ''
-  ));
+  const normalizedTargets = targets.map(target => (typeof target === 'string' ? target.trim() : ''));
 
   if (normalizedTargets.some(target => target.length === 0)) {
     throw new Error(`Install module ${moduleId} has invalid targets; expected an array of supported target ids`);
@@ -241,17 +187,14 @@ function readModuleTargetsOrThrow(module) {
 
   const unsupportedTargets = normalizedTargets.filter(target => !SUPPORTED_INSTALL_TARGETS.includes(target));
   if (unsupportedTargets.length > 0) {
-    throw new Error(
-      `Install module ${moduleId} has unsupported targets: ${unsupportedTargets.join(', ')}`
-    );
+    throw new Error(`Install module ${moduleId} has unsupported targets: ${unsupportedTargets.join(', ')}`);
   }
 
   return normalizedTargets;
 }
 
 function assertKnownModuleIds(moduleIds, manifests) {
-  const unknownModuleIds = dedupeStrings(moduleIds)
-    .filter(moduleId => !manifests.modulesById.has(moduleId));
+  const unknownModuleIds = dedupeStrings(moduleIds).filter(moduleId => !manifests.modulesById.has(moduleId));
 
   if (unknownModuleIds.length === 1) {
     throw new Error(`Unknown install module: ${unknownModuleIds[0]}`);
@@ -267,16 +210,14 @@ function intersectTargets(modules) {
     return [];
   }
 
-  return SUPPORTED_INSTALL_TARGETS.filter(target => (
-    modules.every(module => Array.isArray(module.targets) && module.targets.includes(target))
-  ));
+  return SUPPORTED_INSTALL_TARGETS.filter(target => modules.every(module => Array.isArray(module.targets) && module.targets.includes(target)));
 }
 
 function getManifestPaths(repoRoot = DEFAULT_REPO_ROOT) {
   return {
     modulesPath: path.join(repoRoot, 'manifests', 'install-modules.json'),
     profilesPath: path.join(repoRoot, 'manifests', 'install-profiles.json'),
-    componentsPath: path.join(repoRoot, 'manifests', 'install-components.json'),
+    componentsPath: path.join(repoRoot, 'manifests', 'install-components.json')
   };
 }
 
@@ -290,13 +231,9 @@ function loadInstallManifests(options = {}) {
 
   const modulesData = readJson(modulesPath, 'install-modules.json');
   const profilesData = readJson(profilesPath, 'install-profiles.json');
-  const componentsData = fs.existsSync(componentsPath)
-    ? readJson(componentsPath, 'install-components.json')
-    : { version: null, components: [] };
+  const componentsData = fs.existsSync(componentsPath) ? readJson(componentsPath, 'install-components.json') : { version: null, components: [] };
   const modules = Array.isArray(modulesData.modules) ? modulesData.modules.slice() : [];
-  const profiles = profilesData && typeof profilesData.profiles === 'object'
-    ? profilesData.profiles
-    : {};
+  const profiles = profilesData && typeof profilesData.profiles === 'object' ? profilesData.profiles : {};
   const components = Array.isArray(componentsData.components) ? componentsData.components.slice() : [];
 
   addSyntheticSkillComponents({ repoRoot, modules, components });
@@ -320,7 +257,7 @@ function loadInstallManifests(options = {}) {
     componentsById,
     modulesVersion: modulesData.version,
     profilesVersion: profilesData.version,
-    componentsVersion: componentsData.version,
+    componentsVersion: componentsData.version
   };
 }
 
@@ -329,7 +266,7 @@ function listInstallProfiles(options = {}) {
   return Object.entries(manifests.profiles).map(([id, profile]) => ({
     id,
     description: profile.description,
-    moduleCount: Array.isArray(profile.modules) ? profile.modules.length : 0,
+    moduleCount: Array.isArray(profile.modules) ? profile.modules.length : 0
   }));
 }
 
@@ -343,7 +280,7 @@ function listInstallModules(options = {}) {
     defaultInstall: module.defaultInstall,
     cost: module.cost,
     stability: module.stability,
-    dependencyCount: Array.isArray(module.dependencies) ? module.dependencies.length : 0,
+    dependencyCount: Array.isArray(module.dependencies) ? module.dependencies.length : 0
   }));
 }
 
@@ -364,24 +301,18 @@ function listInstallComponents(options = {}) {
   const target = options.target || null;
 
   if (family && !Object.hasOwn(COMPONENT_FAMILY_PREFIXES, family)) {
-    throw new Error(
-      `Unknown component family: ${family}. Expected one of ${Object.keys(COMPONENT_FAMILY_PREFIXES).join(', ')}`
-    );
+    throw new Error(`Unknown component family: ${family}. Expected one of ${Object.keys(COMPONENT_FAMILY_PREFIXES).join(', ')}`);
   }
 
   if (target && !SUPPORTED_INSTALL_TARGETS.includes(target)) {
-    throw new Error(
-      `Unknown install target: ${target}. Expected one of ${SUPPORTED_INSTALL_TARGETS.join(', ')}`
-    );
+    throw new Error(`Unknown install target: ${target}. Expected one of ${SUPPORTED_INSTALL_TARGETS.join(', ')}`);
   }
 
   return manifests.components
     .filter(component => !family || component.family === family)
     .map(component => {
       const moduleIds = dedupeStrings(component.modules);
-      const modules = moduleIds
-        .map(moduleId => manifests.modulesById.get(moduleId))
-        .filter(Boolean);
+      const modules = moduleIds.map(moduleId => manifests.modulesById.get(moduleId)).filter(Boolean);
       const targets = intersectTargets(modules);
 
       return {
@@ -390,7 +321,7 @@ function listInstallComponents(options = {}) {
         description: component.description,
         moduleIds,
         moduleCount: moduleIds.length,
-        targets,
+        targets
       };
     })
     .filter(component => !target || component.targets.includes(target));
@@ -421,7 +352,7 @@ function getInstallComponent(componentId, options = {}) {
       defaultInstall: module.defaultInstall,
       cost: module.cost,
       stability: module.stability,
-      dependencies: dedupeStrings(module.dependencies),
+      dependencies: dedupeStrings(module.dependencies)
     }));
 
   return {
@@ -431,7 +362,7 @@ function getInstallComponent(componentId, options = {}) {
     moduleIds,
     moduleCount: moduleIds.length,
     targets: intersectTargets(modules),
-    modules,
+    modules
   };
 }
 
@@ -460,9 +391,7 @@ function getTargetDefaultExclusions(target, manifests) {
     return [];
   }
 
-  return exclusions
-    .filter(exclusion => manifests.modulesById.has(exclusion.moduleId))
-    .map(exclusion => ({ ...exclusion }));
+  return exclusions.filter(exclusion => manifests.modulesById.has(exclusion.moduleId)).map(exclusion => ({ ...exclusion }));
 }
 
 function resolveLegacyCompatibilitySelection(options = {}) {
@@ -470,51 +399,36 @@ function resolveLegacyCompatibilitySelection(options = {}) {
   const target = options.target || null;
 
   if (target && !SUPPORTED_INSTALL_TARGETS.includes(target)) {
-    throw new Error(
-      `Unknown install target: ${target}. Expected one of ${SUPPORTED_INSTALL_TARGETS.join(', ')}`
-    );
+    throw new Error(`Unknown install target: ${target}. Expected one of ${SUPPORTED_INSTALL_TARGETS.join(', ')}`);
   }
 
-  const legacyLanguages = dedupeStrings(options.legacyLanguages)
-    .map(language => language.toLowerCase());
+  const legacyLanguages = dedupeStrings(options.legacyLanguages).map(language => language.toLowerCase());
   const normalizedLegacyLanguages = dedupeStrings(legacyLanguages);
 
   if (normalizedLegacyLanguages.length === 0) {
     throw new Error('No legacy languages were provided');
   }
 
-  const unknownLegacyLanguages = normalizedLegacyLanguages
-    .filter(language => !Object.hasOwn(LEGACY_LANGUAGE_ALIAS_TO_CANONICAL, language));
+  const unknownLegacyLanguages = normalizedLegacyLanguages.filter(language => !Object.hasOwn(LEGACY_LANGUAGE_ALIAS_TO_CANONICAL, language));
 
   if (unknownLegacyLanguages.length === 1) {
-    throw new Error(
-      `Unknown legacy language: ${unknownLegacyLanguages[0]}. Expected one of ${listLegacyCompatibilityLanguages().join(', ')}`
-    );
+    throw new Error(`Unknown legacy language: ${unknownLegacyLanguages[0]}. Expected one of ${listLegacyCompatibilityLanguages().join(', ')}`);
   }
 
   if (unknownLegacyLanguages.length > 1) {
-    throw new Error(
-      `Unknown legacy languages: ${unknownLegacyLanguages.join(', ')}. Expected one of ${listLegacyCompatibilityLanguages().join(', ')}`
-    );
+    throw new Error(`Unknown legacy languages: ${unknownLegacyLanguages.join(', ')}. Expected one of ${listLegacyCompatibilityLanguages().join(', ')}`);
   }
 
-  const canonicalLegacyLanguages = normalizedLegacyLanguages
-    .map(language => LEGACY_LANGUAGE_ALIAS_TO_CANONICAL[language]);
-  const baseModuleIds = LEGACY_COMPAT_BASE_MODULE_IDS_BY_TARGET[target || 'claude']
-    || LEGACY_COMPAT_BASE_MODULE_IDS_BY_TARGET.claude;
-  const moduleIds = dedupeStrings([
-    ...baseModuleIds,
-    ...(target === 'antigravity'
-      ? []
-      : canonicalLegacyLanguages.flatMap(language => LEGACY_LANGUAGE_EXTRA_MODULE_IDS[language] || [])),
-  ]);
+  const canonicalLegacyLanguages = normalizedLegacyLanguages.map(language => LEGACY_LANGUAGE_ALIAS_TO_CANONICAL[language]);
+  const baseModuleIds = LEGACY_COMPAT_BASE_MODULE_IDS_BY_TARGET[target || 'claude'] || LEGACY_COMPAT_BASE_MODULE_IDS_BY_TARGET.claude;
+  const moduleIds = dedupeStrings([...baseModuleIds, ...(target === 'antigravity' ? [] : canonicalLegacyLanguages.flatMap(language => LEGACY_LANGUAGE_EXTRA_MODULE_IDS[language] || []))]);
 
   assertKnownModuleIds(moduleIds, manifests);
 
   return {
     legacyLanguages: normalizedLegacyLanguages,
     canonicalLegacyLanguages,
-    moduleIds,
+    moduleIds
   };
 }
 
@@ -528,21 +442,13 @@ function resolveInstallPlan(options = {}) {
   const target = options.target || null;
 
   if (target && !SUPPORTED_INSTALL_TARGETS.includes(target)) {
-    throw new Error(
-      `Unknown install target: ${target}. Expected one of ${SUPPORTED_INSTALL_TARGETS.join(', ')}`
-    );
+    throw new Error(`Unknown install target: ${target}. Expected one of ${SUPPORTED_INSTALL_TARGETS.join(', ')}`);
   }
 
-  const shouldUseTargetDefaultProfile = !requestedProfileId
-    && explicitModuleIds.length === 0
-    && includedComponentIds.length === 0;
-  const targetDefaultProfileId = shouldUseTargetDefaultProfile
-    ? getTargetDefaultProfileId(target, manifests)
-    : null;
+  const shouldUseTargetDefaultProfile = !requestedProfileId && explicitModuleIds.length === 0 && includedComponentIds.length === 0;
+  const targetDefaultProfileId = shouldUseTargetDefaultProfile ? getTargetDefaultProfileId(target, manifests) : null;
   const profileId = requestedProfileId || targetDefaultProfileId;
-  const targetDefaultExclusions = targetDefaultProfileId
-    ? getTargetDefaultExclusions(target, manifests)
-    : [];
+  const targetDefaultExclusions = targetDefaultProfileId ? getTargetDefaultExclusions(target, manifests) : [];
 
   if (profileId) {
     const profile = manifests.profiles[profileId];
@@ -578,16 +484,14 @@ function resolveInstallPlan(options = {}) {
   const validatedHomeDir = readOptionalStringOption(options, 'homeDir');
   const targetPlanningInput = target
     ? {
-      repoRoot: manifests.repoRoot,
-      projectRoot: validatedProjectRoot || manifests.repoRoot,
-      homeDir: validatedHomeDir || os.homedir(),
-    }
+        repoRoot: manifests.repoRoot,
+        projectRoot: validatedProjectRoot || manifests.repoRoot,
+        homeDir: validatedHomeDir || os.homedir()
+      }
     : null;
   const targetAdapter = target ? getInstallTargetAdapter(target) : null;
 
-  const effectiveRequestedIds = dedupeStrings(
-    requestedModuleIds.filter(moduleId => !excludedModuleOwners.has(moduleId))
-  );
+  const effectiveRequestedIds = dedupeStrings(requestedModuleIds.filter(moduleId => !excludedModuleOwners.has(moduleId)));
 
   if (requestedModuleIds.length === 0) {
     throw new Error('No install profile, module IDs, or included component IDs were provided');
@@ -599,10 +503,7 @@ function resolveInstallPlan(options = {}) {
 
   const selectedIds = new Set();
   const skippedTargetIds = new Set();
-  const excludedIds = new Set([
-    ...excludedModuleIds,
-    ...targetDefaultExclusions.map(exclusion => exclusion.moduleId),
-  ]);
+  const excludedIds = new Set([...excludedModuleIds, ...targetDefaultExclusions.map(exclusion => exclusion.moduleId)]);
   const visitingIds = new Set();
   const resolvedIds = new Set();
 
@@ -615,18 +516,12 @@ function resolveInstallPlan(options = {}) {
     if (excludedModuleOwners.has(moduleId)) {
       if (dependencyOf) {
         const owners = excludedModuleOwners.get(moduleId) || [];
-        throw new Error(
-          `Module ${dependencyOf} depends on excluded module ${moduleId}${owners.length > 0 ? ` (excluded by ${owners.join(', ')})` : ''}`
-        );
+        throw new Error(`Module ${dependencyOf} depends on excluded module ${moduleId}${owners.length > 0 ? ` (excluded by ${owners.join(', ')})` : ''}`);
       }
       return;
     }
 
-    const supportsTarget = !target
-      || (
-        readModuleTargetsOrThrow(module).includes(target)
-        && (!targetAdapter || targetAdapter.supportsModule(module, targetPlanningInput))
-      );
+    const supportsTarget = !target || (readModuleTargetsOrThrow(module).includes(target) && (!targetAdapter || targetAdapter.supportsModule(module, targetPlanningInput)));
 
     if (!supportsTarget) {
       if (dependencyOf) {
@@ -647,11 +542,7 @@ function resolveInstallPlan(options = {}) {
 
     visitingIds.add(moduleId);
     for (const dependencyId of module.dependencies) {
-      const dependencyResolved = resolveModule(
-        dependencyId,
-        moduleId,
-        rootRequesterId || moduleId
-      );
+      const dependencyResolved = resolveModule(dependencyId, moduleId, rootRequesterId || moduleId);
       if (!dependencyResolved) {
         visitingIds.delete(moduleId);
         if (!dependencyOf) {
@@ -675,13 +566,13 @@ function resolveInstallPlan(options = {}) {
   const excludedModules = manifests.modules.filter(module => excludedIds.has(module.id));
   const scaffoldPlan = target
     ? planInstallTargetScaffold({
-      target,
-      repoRoot: targetPlanningInput.repoRoot,
-      projectRoot: targetPlanningInput.projectRoot,
-      homeDir: targetPlanningInput.homeDir,
-      modules: selectedModules,
-      exemptValidationCodes: options.exemptValidationCodes || [],
-    })
+        target,
+        repoRoot: targetPlanningInput.repoRoot,
+        projectRoot: targetPlanningInput.projectRoot,
+        homeDir: targetPlanningInput.homeDir,
+        modules: selectedModules,
+        exemptValidationCodes: options.exemptValidationCodes || []
+      })
     : null;
 
   return {
@@ -694,10 +585,7 @@ function resolveInstallPlan(options = {}) {
     excludedComponentIds,
     targetDefaultProfileId,
     targetDefaultExclusions,
-    warnings: targetDefaultExclusions.map(exclusion => (
-      `${exclusion.moduleId} is intentionally excluded from the OpenCode default. `
-        + `Opt in with: ${exclusion.optInCommand}`
-    )),
+    warnings: targetDefaultExclusions.map(exclusion => `${exclusion.moduleId} is intentionally excluded from the OpenCode default. ` + `Opt in with: ${exclusion.optInCommand}`),
     selectedModuleIds: selectedModules.map(module => module.id),
     skippedModuleIds: skippedModules.map(module => module.id),
     excludedModuleIds: excludedModules.map(module => module.id),
@@ -707,7 +595,7 @@ function resolveInstallPlan(options = {}) {
     targetAdapterId: scaffoldPlan ? scaffoldPlan.adapter.id : null,
     targetRoot: scaffoldPlan ? scaffoldPlan.targetRoot : null,
     installStatePath: scaffoldPlan ? scaffoldPlan.installStatePath : null,
-    operations: scaffoldPlan ? scaffoldPlan.operations : [],
+    operations: scaffoldPlan ? scaffoldPlan.operations : []
   };
 }
 
@@ -726,5 +614,5 @@ module.exports = {
   listInstallProfiles,
   resolveInstallPlan,
   resolveLegacyCompatibilitySelection,
-  validateInstallModuleIds,
+  validateInstallModuleIds
 };

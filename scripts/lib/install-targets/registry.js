@@ -1,7 +1,6 @@
 const antigravityProject = require('./antigravity-project');
 const claudeHome = require('./claude-home');
 const claudeProject = require('./claude-project');
-const codebuddyProject = require('./codebuddy-project');
 const codexHome = require('./codex-home');
 const cursorProject = require('./cursor-project');
 const geminiProject = require('./gemini-project');
@@ -23,11 +22,10 @@ const ADAPTERS = Object.freeze([
   hermesHome,
   opencodeHome,
   openclawHome,
-  codebuddyProject,
   joycodeProject,
   kimiProject,
   qwenHome,
-  zedProject,
+  zedProject
 ]);
 
 function listInstallTargetAdapters() {
@@ -51,12 +49,10 @@ function planInstallTargetScaffold(options = {}) {
   const planningInput = {
     repoRoot: options.repoRoot,
     projectRoot: options.projectRoot || options.repoRoot,
-    homeDir: options.homeDir,
+    homeDir: options.homeDir
   };
   const validationIssues = adapter.validate(planningInput);
-  const blockingIssues = validationIssues.filter(issue => (
-    issue.severity === 'error' && !exemptValidationCodes.has(issue.code)
-  ));
+  const blockingIssues = validationIssues.filter(issue => issue.severity === 'error' && !exemptValidationCodes.has(issue.code));
   if (blockingIssues.length > 0) {
     throw new Error(blockingIssues.map(issue => issue.message).join('; '));
   }
@@ -64,24 +60,24 @@ function planInstallTargetScaffold(options = {}) {
   const installStatePath = adapter.getInstallStatePath(planningInput);
   const operations = adapter.planOperations({
     ...planningInput,
-    modules,
+    modules
   });
 
   return {
     adapter: {
       id: adapter.id,
       target: adapter.target,
-      kind: adapter.kind,
+      kind: adapter.kind
     },
     targetRoot,
     installStatePath,
     validationIssues,
-    operations,
+    operations
   };
 }
 
 module.exports = {
   getInstallTargetAdapter,
   listInstallTargetAdapters,
-  planInstallTargetScaffold,
+  planInstallTargetScaffold
 };

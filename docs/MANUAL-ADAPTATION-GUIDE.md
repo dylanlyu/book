@@ -20,7 +20,6 @@ Prefer a first-class ECC target whenever one exists:
 - Codex
 - Cursor
 - OpenCode
-- CodeBuddy
 - Antigravity
 
 Use this guide only when you need ECC behavior in a non-native harness.

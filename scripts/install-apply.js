@@ -7,16 +7,8 @@
  */
 
 const os = require('os');
-const {
-  SUPPORTED_INSTALL_TARGETS,
-  listLegacyCompatibilityLanguages,
-  listSupportedLocales,
-} = require('./lib/install-manifests');
-const {
-  LEGACY_INSTALL_TARGETS,
-  normalizeInstallRequest,
-  parseInstallArgs,
-} = require('./lib/install/request');
+const { SUPPORTED_INSTALL_TARGETS, listLegacyCompatibilityLanguages, listSupportedLocales } = require('./lib/install-manifests');
+const { LEGACY_INSTALL_TARGETS, normalizeInstallRequest, parseInstallArgs } = require('./lib/install/request');
 const { getComputeSponsorCopy } = require('./lib/compute-sponsor');
 
 function getHelpText() {
@@ -39,7 +31,6 @@ Targets:
   codex        - Install shared agents/config into ~/.codex/
   gemini       - Install project-local Gemini config into ./.gemini/
   opencode     - Install shared commands/hooks/config into ~/.opencode/
-  codebuddy    - Install commands, agents, skills, and flattened rules into ./.codebuddy/
   joycode      - Install commands, agents, skills, and flattened rules into ./.joycode/
   qwen         - Install commands, agents, skills, rules, and Qwen config into ~/.qwen/
   zed          - Install project settings, commands, agents, skills, and flattened rules into ./.zed/
@@ -141,29 +132,19 @@ function main() {
       showHelp(0);
     }
 
-    const {
-      findDefaultInstallConfigPath,
-      loadInstallConfig,
-    } = require('./lib/install/config');
-    const {
-      applyInstallPlan,
-      previewInstallPlan,
-    } = require('./lib/install-executor');
+    const { findDefaultInstallConfigPath, loadInstallConfig } = require('./lib/install/config');
+    const { applyInstallPlan, previewInstallPlan } = require('./lib/install-executor');
     const { createInstallPlanFromRequest } = require('./lib/install/runtime');
-    const defaultConfigPath = options.configPath || options.languages.length > 0
-      ? null
-      : findDefaultInstallConfigPath({ cwd: process.cwd() });
-    const config = options.configPath
-      ? loadInstallConfig(options.configPath, { cwd: process.cwd() })
-      : (defaultConfigPath ? loadInstallConfig(defaultConfigPath, { cwd: process.cwd() }) : null);
+    const defaultConfigPath = options.configPath || options.languages.length > 0 ? null : findDefaultInstallConfigPath({ cwd: process.cwd() });
+    const config = options.configPath ? loadInstallConfig(options.configPath, { cwd: process.cwd() }) : defaultConfigPath ? loadInstallConfig(defaultConfigPath, { cwd: process.cwd() }) : null;
     const request = normalizeInstallRequest({
       ...options,
-      config,
+      config
     });
     const rawPlan = createInstallPlanFromRequest(request, {
       projectRoot: process.cwd(),
       homeDir: process.env.HOME || os.homedir(),
-      claudeRulesDir: process.env.CLAUDE_RULES_DIR || null,
+      claudeRulesDir: process.env.CLAUDE_RULES_DIR || null
     });
 
     if (options.dryRun) {

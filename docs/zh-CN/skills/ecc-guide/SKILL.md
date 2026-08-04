@@ -134,7 +134,7 @@ node scripts/install-apply.js --skills <skill-id> --target claude --dry-run
 先询问目标运行环境和安装路径，然后检查：
 
 - 插件安装元数据
-- `.claude/`、`.cursor/`、`.codex/`、`.gemini/`、`.opencode/`、`.codebuddy/`、`.joycode/` 或 `.qwen/`
+- `.claude/`、`.cursor/`、`.codex/`、`.gemini/`、`.opencode/`、`.joycode/` 或 `.qwen/`
 - `hooks/hooks.json`
 - 安装状态文件
 - 相关的命令/skill 文件

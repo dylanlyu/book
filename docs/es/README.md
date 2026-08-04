@@ -1010,7 +1010,7 @@ Sí. ECC es multiplataforma:
 - **Codex**: Soporte de primera clase para la app macOS y CLI, con guardias de deriva del adaptador y fallback de SessionStart. Consulta PR [#257](https://github.com/affaan-m/ECC/pull/257).
 - **GitHub Copilot (VS Code)**: Capa de instrucciones y prompts mediante `.github/copilot-instructions.md`, `.vscode/settings.json` y `.github/prompts/`. Consulta [Soporte para GitHub Copilot](#soporte-para-github-copilot).
 - **Antigravity**: Configuración estrechamente integrada para flujos de trabajo, skills y reglas aplanadas en `.agent/`. Consulta la [Guía de Antigravity](../ANTIGRAVITY-GUIDE.md).
-- **JoyCode / CodeBuddy**: Adaptadores de instalación selectiva locales al proyecto para comandos, agentes, skills y reglas aplanadas. Consulta la [Guía del Adaptador JoyCode](../JOYCODE-GUIDE.md).
+- **JoyCode**: Adaptador de instalación selectiva local al proyecto para comandos, agentes, skills y reglas aplanadas. Consulta la [Guía del Adaptador JoyCode](../JOYCODE-GUIDE.md).
 - **Qwen CLI**: Adaptador de instalación selectiva en el directorio home para comandos, agentes, skills, reglas y configuración de Qwen. Consulta la [Guía del Adaptador Qwen CLI](../QWEN-GUIDE.md).
 - **Zed**: Adaptador de instalación selectiva local al proyecto para `.zed/settings.json`, reglas aplanadas, comandos, agentes y skills.
 - **Harnesses no nativos**: Ruta de respaldo manual para Grok e interfaces similares. Consulta la [Guía de Adaptación Manual](../MANUAL-ADAPTATION-GUIDE.md).
