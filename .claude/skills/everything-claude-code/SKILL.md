@@ -108,8 +108,6 @@ This project uses **hybrid** module organization.
 - `.github/workflows/reusable-release.yml`
 - `.github/workflows/reusable-test.yml`
 - `.github/workflows/reusable-validate.yml`
-- `.opencode/package.json`
-- `.opencode/tsconfig.json`
 - `.prettierrc`
 - `eslint.config.js`
 - `package.json`
@@ -348,7 +346,7 @@ Optionally update other documentation files
 
 ### Add Cross Harness Skill Copies
 
-Adds skill copies for different agent harnesses (e.g., Codex, Zed, Antigravity) to ensure compatibility across platforms.
+Adds skill copies for different agent harnesses (e.g., Codex, Antigravity) to ensure compatibility across platforms.
 
 **Frequency**: ~2 times per month
 

@@ -16,41 +16,36 @@ const CATEGORIES = [
   'Vercel Integration',
   'Netlify Integration',
   'Cloudflare Integration',
-  'Fly Integration',
+  'Fly Integration'
 ];
 
 const RUBRIC_VERSION = '2026-05-19';
 
 const PROVIDERS = {
   Vercel: {
-    detect: (rootDir) =>
-      fileExists(rootDir, 'vercel.json') ||
-      fileExists(rootDir, '.vercel/project.json') ||
-      fileExists(rootDir, '.vercel'),
+    detect: rootDir => fileExists(rootDir, 'vercel.json') || fileExists(rootDir, '.vercel/project.json') || fileExists(rootDir, '.vercel'),
     keyPattern: /vercel/i,
     buildPattern: /vercel/i,
-    workflowPattern: /(vercel-action|vercel\s+(deploy|--prod))/i,
+    workflowPattern: /(vercel-action|vercel\s+(deploy|--prod))/i
   },
   Netlify: {
-    detect: (rootDir) =>
-      fileExists(rootDir, 'netlify.toml') || fileExists(rootDir, '.netlify'),
+    detect: rootDir => fileExists(rootDir, 'netlify.toml') || fileExists(rootDir, '.netlify'),
     keyPattern: /netlify/i,
     buildPattern: /netlify/i,
-    workflowPattern: /(netlify\/actions|netlify\s+deploy)/i,
+    workflowPattern: /(netlify\/actions|netlify\s+deploy)/i
   },
   Cloudflare: {
-    detect: (rootDir) =>
-      fileExists(rootDir, 'wrangler.toml') || fileExists(rootDir, 'wrangler.jsonc'),
+    detect: rootDir => fileExists(rootDir, 'wrangler.toml') || fileExists(rootDir, 'wrangler.jsonc'),
     keyPattern: /\b(cloudflare|wrangler)\b/i,
     buildPattern: /(wrangler|cloudflare)/i,
-    workflowPattern: /(cloudflare\/wrangler-action|wrangler\s+(deploy|publish))/i,
+    workflowPattern: /(cloudflare\/wrangler-action|wrangler\s+(deploy|publish))/i
   },
   Fly: {
-    detect: (rootDir) => fileExists(rootDir, 'fly.toml'),
+    detect: rootDir => fileExists(rootDir, 'fly.toml'),
     keyPattern: /fly[_-]?(api|io)/i,
     buildPattern: /fly\s+(deploy|launch)/i,
-    workflowPattern: /(superfly\/flyctl-actions|flyctl\s+deploy|fly\s+deploy)/i,
-  },
+    workflowPattern: /(superfly\/flyctl-actions|flyctl\s+deploy|fly\s+deploy)/i
+  }
 };
 
 function getApplicableProviders(rootDir) {
@@ -73,7 +68,7 @@ function parseArgs(argv) {
     scope: 'repo',
     format: 'text',
     help: false,
-    root: path.resolve(process.env.AUDIT_ROOT || process.cwd()),
+    root: path.resolve(process.env.AUDIT_ROOT || process.cwd())
   };
 
   for (let index = 0; index < args.length; index += 1) {
@@ -205,7 +200,7 @@ function hasFileWithExtension(rootDir, relativeDir, extensions) {
         continue;
       }
 
-      if (allowed.some((extension) => entry.name.endsWith(extension))) {
+      if (allowed.some(extension => entry.name.endsWith(extension))) {
         return true;
       }
     }
@@ -220,29 +215,16 @@ function detectTargetMode(rootDir) {
     return 'repo';
   }
 
-  if (
-    fileExists(rootDir, 'scripts/harness-audit.js') &&
-    fileExists(rootDir, '.claude-plugin/plugin.json') &&
-    fileExists(rootDir, 'agents') &&
-    fileExists(rootDir, 'skills')
-  ) {
+  if (fileExists(rootDir, 'scripts/harness-audit.js') && fileExists(rootDir, '.claude-plugin/plugin.json') && fileExists(rootDir, 'agents') && fileExists(rootDir, 'skills')) {
     return 'repo';
   }
 
   return 'consumer';
 }
 
-const ECC_PLUGIN_KEY_PATTERNS = [
-  /^ecc@/i,
-  /^everything-claude-code@/i,
-];
+const ECC_PLUGIN_KEY_PATTERNS = [/^ecc@/i, /^everything-claude-code@/i];
 
-const ECC_LEGACY_PLUGIN_DIRS = [
-  'ecc',
-  'ecc@ecc',
-  'everything-claude-code',
-  'everything-claude-code@everything-claude-code',
-];
+const ECC_LEGACY_PLUGIN_DIRS = ['ecc', 'ecc@ecc', 'everything-claude-code', 'everything-claude-code@everything-claude-code'];
 
 const ECC_CACHE_MARKETPLACES = ['everything-claude-code', 'ecc'];
 const ECC_CACHE_PLUGIN_NAMES = ['ecc', 'everything-claude-code'];
@@ -252,8 +234,12 @@ function uniquePaths(paths) {
 }
 
 function compareVersionDesc(a, b) {
-  const partsA = String(a).split('.').map(part => parseInt(part, 10) || 0);
-  const partsB = String(b).split('.').map(part => parseInt(part, 10) || 0);
+  const partsA = String(a)
+    .split('.')
+    .map(part => parseInt(part, 10) || 0);
+  const partsB = String(b)
+    .split('.')
+    .map(part => parseInt(part, 10) || 0);
   const length = Math.max(partsA.length, partsB.length);
 
   for (let index = 0; index < length; index += 1) {
@@ -299,9 +285,7 @@ function findPluginInstallFromManifest(installedPluginsPaths) {
           continue;
         }
 
-        const installRoot = path.isAbsolute(entry.installPath)
-          ? entry.installPath
-          : path.resolve(path.dirname(installedPath), entry.installPath);
+        const installRoot = path.isAbsolute(entry.installPath) ? entry.installPath : path.resolve(path.dirname(installedPath), entry.installPath);
         const hit = findPluginJsonUnder(installRoot);
         if (hit) {
           return hit;
@@ -360,35 +344,20 @@ function findPluginInstallMarketplaceCache(candidateRoots) {
 }
 
 function findPluginInstall(rootDir) {
-  const homeDirs = uniquePaths([
-    process.env.HOME,
-    process.env.USERPROFILE,
-    os.homedir(),
-  ]);
-  const pluginRoots = uniquePaths([
-    path.join(rootDir, '.claude', 'plugins'),
-    ...homeDirs.map(homeDir => path.join(homeDir, '.claude', 'plugins')),
-  ]);
+  const homeDirs = uniquePaths([process.env.HOME, process.env.USERPROFILE, os.homedir()]);
+  const pluginRoots = uniquePaths([path.join(rootDir, '.claude', 'plugins'), ...homeDirs.map(homeDir => path.join(homeDir, '.claude', 'plugins'))]);
   const installedPluginsPaths = uniquePaths([
     path.join(rootDir, '.claude', 'plugins', 'installed_plugins.json'),
-    ...homeDirs.map(homeDir => path.join(homeDir, '.claude', 'plugins', 'installed_plugins.json')),
+    ...homeDirs.map(homeDir => path.join(homeDir, '.claude', 'plugins', 'installed_plugins.json'))
   ]);
-  const flatRoots = uniquePaths([
-    ...pluginRoots,
-    ...pluginRoots.map(pluginsDir => path.join(pluginsDir, 'marketplaces')),
-  ]);
+  const flatRoots = uniquePaths([...pluginRoots, ...pluginRoots.map(pluginsDir => path.join(pluginsDir, 'marketplaces'))]);
 
-  return (
-    findPluginInstallFromManifest(installedPluginsPaths)
-    || findPluginInstallFlatLayout(flatRoots)
-    || findPluginInstallMarketplaceCache(pluginRoots)
-  );
+  return findPluginInstallFromManifest(installedPluginsPaths) || findPluginInstallFlatLayout(flatRoots) || findPluginInstallMarketplaceCache(pluginRoots);
 }
 
 function getRepoChecks(rootDir) {
   const packageJson = safeParseJson(safeRead(rootDir, 'package.json'));
   const commandPrimary = safeRead(rootDir, 'commands/harness-audit.md').trim();
-  const commandParity = safeRead(rootDir, '.opencode/commands/harness-audit.md').trim();
   const hooksJson = safeRead(rootDir, 'hooks/hooks.json');
 
   return [
@@ -400,7 +369,7 @@ function getRepoChecks(rootDir) {
       path: 'hooks/hooks.json',
       description: 'Hook configuration file exists',
       pass: fileExists(rootDir, 'hooks/hooks.json'),
-      fix: 'Create hooks/hooks.json and define baseline hook events.',
+      fix: 'Create hooks/hooks.json and define baseline hook events.'
     },
     {
       id: 'tool-hooks-impl-count',
@@ -410,7 +379,7 @@ function getRepoChecks(rootDir) {
       path: 'scripts/hooks/',
       description: 'At least 8 hook implementation scripts exist',
       pass: countFiles(rootDir, 'scripts/hooks', '.js') >= 8,
-      fix: 'Add missing hook implementations in scripts/hooks/.',
+      fix: 'Add missing hook implementations in scripts/hooks/.'
     },
     {
       id: 'tool-agent-count',
@@ -420,7 +389,7 @@ function getRepoChecks(rootDir) {
       path: 'agents/',
       description: 'At least 10 agent definitions exist',
       pass: countFiles(rootDir, 'agents', '.md') >= 10,
-      fix: 'Add or restore agent definitions under agents/.',
+      fix: 'Add or restore agent definitions under agents/.'
     },
     {
       id: 'tool-skill-count',
@@ -430,17 +399,17 @@ function getRepoChecks(rootDir) {
       path: 'skills/',
       description: 'At least 20 skill definitions exist',
       pass: countFiles(rootDir, 'skills', 'SKILL.md') >= 20,
-      fix: 'Add missing skill directories with SKILL.md definitions.',
+      fix: 'Add missing skill directories with SKILL.md definitions.'
     },
     {
       id: 'tool-command-parity',
       category: 'Tool Coverage',
       points: 2,
       scopes: ['repo', 'commands'],
-      path: '.opencode/commands/harness-audit.md',
-      description: 'Harness-audit command parity exists between primary and OpenCode command docs',
-      pass: commandPrimary.length > 0 && commandPrimary === commandParity,
-      fix: 'Sync commands/harness-audit.md and .opencode/commands/harness-audit.md.',
+      path: 'commands/harness-audit.md',
+      description: 'Harness-audit command documentation exists',
+      pass: commandPrimary.length > 0,
+      fix: 'Add or restore commands/harness-audit.md.'
     },
     {
       id: 'context-strategic-compact',
@@ -450,7 +419,7 @@ function getRepoChecks(rootDir) {
       path: 'skills/strategic-compact/SKILL.md',
       description: 'Strategic compaction guidance is present',
       pass: fileExists(rootDir, 'skills/strategic-compact/SKILL.md'),
-      fix: 'Add strategic context compaction guidance at skills/strategic-compact/SKILL.md.',
+      fix: 'Add strategic context compaction guidance at skills/strategic-compact/SKILL.md.'
     },
     {
       id: 'context-suggest-compact-hook',
@@ -460,7 +429,7 @@ function getRepoChecks(rootDir) {
       path: 'scripts/hooks/suggest-compact.js',
       description: 'Suggest-compact automation hook exists',
       pass: fileExists(rootDir, 'scripts/hooks/suggest-compact.js'),
-      fix: 'Implement scripts/hooks/suggest-compact.js for context pressure hints.',
+      fix: 'Implement scripts/hooks/suggest-compact.js for context pressure hints.'
     },
     {
       id: 'context-model-route',
@@ -470,7 +439,7 @@ function getRepoChecks(rootDir) {
       path: 'commands/model-route.md',
       description: 'Model routing command exists',
       pass: fileExists(rootDir, 'commands/model-route.md'),
-      fix: 'Add model-route command guidance in commands/model-route.md.',
+      fix: 'Add model-route command guidance in commands/model-route.md.'
     },
     {
       id: 'context-token-doc',
@@ -480,7 +449,7 @@ function getRepoChecks(rootDir) {
       path: 'docs/token-optimization.md',
       description: 'Token optimization documentation exists',
       pass: fileExists(rootDir, 'docs/token-optimization.md'),
-      fix: 'Add docs/token-optimization.md with concrete context-cost controls.',
+      fix: 'Add docs/token-optimization.md with concrete context-cost controls.'
     },
     {
       id: 'quality-test-runner',
@@ -490,7 +459,7 @@ function getRepoChecks(rootDir) {
       path: 'tests/run-all.js',
       description: 'Central test runner exists',
       pass: fileExists(rootDir, 'tests/run-all.js'),
-      fix: 'Add tests/run-all.js to enforce complete suite execution.',
+      fix: 'Add tests/run-all.js to enforce complete suite execution.'
     },
     {
       id: 'quality-ci-validations',
@@ -500,7 +469,7 @@ function getRepoChecks(rootDir) {
       path: 'package.json',
       description: 'Test script runs validator chain before tests',
       pass: typeof packageJson?.scripts?.test === 'string' && packageJson?.scripts?.test.includes('validate-commands.js') && packageJson?.scripts?.test.includes('tests/run-all.js'),
-      fix: 'Update package.json test script to run validators plus tests/run-all.js.',
+      fix: 'Update package.json test script to run validators plus tests/run-all.js.'
     },
     {
       id: 'quality-hook-tests',
@@ -510,7 +479,7 @@ function getRepoChecks(rootDir) {
       path: 'tests/hooks/hooks.test.js',
       description: 'Hook coverage test file exists',
       pass: fileExists(rootDir, 'tests/hooks/hooks.test.js'),
-      fix: 'Add tests/hooks/hooks.test.js for hook behavior validation.',
+      fix: 'Add tests/hooks/hooks.test.js for hook behavior validation.'
     },
     {
       id: 'quality-doctor-script',
@@ -520,7 +489,7 @@ function getRepoChecks(rootDir) {
       path: 'scripts/doctor.js',
       description: 'Installation drift doctor script exists',
       pass: fileExists(rootDir, 'scripts/doctor.js'),
-      fix: 'Add scripts/doctor.js for install-state integrity checks.',
+      fix: 'Add scripts/doctor.js for install-state integrity checks.'
     },
     {
       id: 'memory-hooks-dir',
@@ -530,7 +499,7 @@ function getRepoChecks(rootDir) {
       path: 'hooks/memory-persistence/',
       description: 'Memory persistence hooks directory exists',
       pass: fileExists(rootDir, 'hooks/memory-persistence'),
-      fix: 'Add hooks/memory-persistence with lifecycle hook definitions.',
+      fix: 'Add hooks/memory-persistence with lifecycle hook definitions.'
     },
     {
       id: 'memory-session-hooks',
@@ -540,7 +509,7 @@ function getRepoChecks(rootDir) {
       path: 'scripts/hooks/session-start.js',
       description: 'Session start/end persistence scripts exist',
       pass: fileExists(rootDir, 'scripts/hooks/session-start.js') && fileExists(rootDir, 'scripts/hooks/session-end.js'),
-      fix: 'Implement scripts/hooks/session-start.js and scripts/hooks/session-end.js.',
+      fix: 'Implement scripts/hooks/session-start.js and scripts/hooks/session-end.js.'
     },
     {
       id: 'memory-learning-skill',
@@ -550,7 +519,7 @@ function getRepoChecks(rootDir) {
       path: 'skills/continuous-learning-v2/SKILL.md',
       description: 'Continuous learning v2 skill exists',
       pass: fileExists(rootDir, 'skills/continuous-learning-v2/SKILL.md'),
-      fix: 'Add skills/continuous-learning-v2/SKILL.md for memory evolution flow.',
+      fix: 'Add skills/continuous-learning-v2/SKILL.md for memory evolution flow.'
     },
     {
       id: 'eval-skill',
@@ -560,7 +529,7 @@ function getRepoChecks(rootDir) {
       path: 'skills/eval-harness/SKILL.md',
       description: 'Eval harness skill exists',
       pass: fileExists(rootDir, 'skills/eval-harness/SKILL.md'),
-      fix: 'Add skills/eval-harness/SKILL.md for pass/fail regression evaluation.',
+      fix: 'Add skills/eval-harness/SKILL.md for pass/fail regression evaluation.'
     },
     {
       id: 'eval-commands',
@@ -570,7 +539,7 @@ function getRepoChecks(rootDir) {
       path: 'commands/checkpoint.md',
       description: 'Checkpoint command and eval/verification skills exist',
       pass: fileExists(rootDir, 'commands/checkpoint.md') && fileExists(rootDir, 'skills/eval-harness/SKILL.md') && fileExists(rootDir, 'skills/verification-loop/SKILL.md'),
-      fix: 'Add checkpoint command plus eval-harness and verification-loop skills to standardize verification loops.',
+      fix: 'Add checkpoint command plus eval-harness and verification-loop skills to standardize verification loops.'
     },
     {
       id: 'eval-tests-presence',
@@ -580,7 +549,7 @@ function getRepoChecks(rootDir) {
       path: 'tests/',
       description: 'At least 10 test files exist',
       pass: countFiles(rootDir, 'tests', '.test.js') >= 10,
-      fix: 'Increase automated test coverage across scripts/hooks/lib.',
+      fix: 'Increase automated test coverage across scripts/hooks/lib.'
     },
     {
       id: 'security-review-skill',
@@ -590,7 +559,7 @@ function getRepoChecks(rootDir) {
       path: 'skills/security-review/SKILL.md',
       description: 'Security review skill exists',
       pass: fileExists(rootDir, 'skills/security-review/SKILL.md'),
-      fix: 'Add skills/security-review/SKILL.md for security checklist coverage.',
+      fix: 'Add skills/security-review/SKILL.md for security checklist coverage.'
     },
     {
       id: 'security-agent',
@@ -600,7 +569,7 @@ function getRepoChecks(rootDir) {
       path: 'agents/security-reviewer.md',
       description: 'Security reviewer agent exists',
       pass: fileExists(rootDir, 'agents/security-reviewer.md'),
-      fix: 'Add agents/security-reviewer.md for delegated security audits.',
+      fix: 'Add agents/security-reviewer.md for delegated security audits.'
     },
     {
       id: 'security-prompt-hook',
@@ -610,7 +579,7 @@ function getRepoChecks(rootDir) {
       path: 'hooks/hooks.json',
       description: 'Hooks include prompt submission guardrail event references',
       pass: hooksJson.includes('beforeSubmitPrompt') || hooksJson.includes('PreToolUse'),
-      fix: 'Add prompt/tool preflight security guards in hooks/hooks.json.',
+      fix: 'Add prompt/tool preflight security guards in hooks/hooks.json.'
     },
     {
       id: 'security-scan-command',
@@ -620,7 +589,7 @@ function getRepoChecks(rootDir) {
       path: 'commands/security-scan.md',
       description: 'Security scan command exists',
       pass: fileExists(rootDir, 'commands/security-scan.md'),
-      fix: 'Add commands/security-scan.md with scan and remediation workflow.',
+      fix: 'Add commands/security-scan.md with scan and remediation workflow.'
     },
     {
       id: 'cost-skill',
@@ -630,7 +599,7 @@ function getRepoChecks(rootDir) {
       path: 'skills/cost-aware-llm-pipeline/SKILL.md',
       description: 'Cost-aware LLM skill exists',
       pass: fileExists(rootDir, 'skills/cost-aware-llm-pipeline/SKILL.md'),
-      fix: 'Add skills/cost-aware-llm-pipeline/SKILL.md for budget-aware routing.',
+      fix: 'Add skills/cost-aware-llm-pipeline/SKILL.md for budget-aware routing.'
     },
     {
       id: 'cost-doc',
@@ -640,7 +609,7 @@ function getRepoChecks(rootDir) {
       path: 'docs/token-optimization.md',
       description: 'Cost optimization documentation exists',
       pass: fileExists(rootDir, 'docs/token-optimization.md'),
-      fix: 'Create docs/token-optimization.md with target settings and tradeoffs.',
+      fix: 'Create docs/token-optimization.md with target settings and tradeoffs.'
     },
     {
       id: 'cost-model-route-command',
@@ -650,9 +619,9 @@ function getRepoChecks(rootDir) {
       path: 'commands/model-route.md',
       description: 'Model route command exists for complexity-aware routing',
       pass: fileExists(rootDir, 'commands/model-route.md'),
-      fix: 'Add commands/model-route.md and route policies for cheap-default execution.',
+      fix: 'Add commands/model-route.md and route policies for cheap-default execution.'
     },
-    ...buildGithubChecks(rootDir),
+    ...buildGithubChecks(rootDir)
   ];
 }
 
@@ -668,7 +637,7 @@ function buildGithubChecks(rootDir) {
       path: '.github/workflows/',
       description: 'GitHub Actions workflows are checked in',
       pass: hasFileWithExtension(rootDir, '.github/workflows', ['.yml', '.yaml']),
-      fix: 'Add at least one workflow under .github/workflows/ so CI runs on every PR.',
+      fix: 'Add at least one workflow under .github/workflows/ so CI runs on every PR.'
     },
     {
       id: 'github-pr-template',
@@ -677,10 +646,8 @@ function buildGithubChecks(rootDir) {
       scopes: ['repo'],
       path: '.github/PULL_REQUEST_TEMPLATE.md',
       description: 'A pull request template is configured',
-      pass:
-        fileExists(rootDir, '.github/PULL_REQUEST_TEMPLATE.md') ||
-        fileExists(rootDir, '.github/pull_request_template.md'),
-      fix: 'Add .github/PULL_REQUEST_TEMPLATE.md so PR descriptions follow a consistent shape.',
+      pass: fileExists(rootDir, '.github/PULL_REQUEST_TEMPLATE.md') || fileExists(rootDir, '.github/pull_request_template.md'),
+      fix: 'Add .github/PULL_REQUEST_TEMPLATE.md so PR descriptions follow a consistent shape.'
     },
     {
       id: 'github-issue-templates',
@@ -690,7 +657,7 @@ function buildGithubChecks(rootDir) {
       path: '.github/ISSUE_TEMPLATE/',
       description: 'Issue templates are configured',
       pass: hasFileWithExtension(rootDir, '.github/ISSUE_TEMPLATE', ['.md', '.yml', '.yaml']),
-      fix: 'Add at least one issue template under .github/ISSUE_TEMPLATE/.',
+      fix: 'Add at least one issue template under .github/ISSUE_TEMPLATE/.'
     },
     {
       id: 'github-codeowners',
@@ -699,11 +666,8 @@ function buildGithubChecks(rootDir) {
       scopes: ['repo'],
       path: '.github/CODEOWNERS',
       description: 'A CODEOWNERS file routes reviews',
-      pass:
-        fileExists(rootDir, 'CODEOWNERS') ||
-        fileExists(rootDir, '.github/CODEOWNERS') ||
-        fileExists(rootDir, 'docs/CODEOWNERS'),
-      fix: 'Add a CODEOWNERS file so PRs auto-request the right reviewers.',
+      pass: fileExists(rootDir, 'CODEOWNERS') || fileExists(rootDir, '.github/CODEOWNERS') || fileExists(rootDir, 'docs/CODEOWNERS'),
+      fix: 'Add a CODEOWNERS file so PRs auto-request the right reviewers.'
     },
     {
       id: 'github-dep-updates',
@@ -718,8 +682,8 @@ function buildGithubChecks(rootDir) {
         fileExists(rootDir, 'renovate.json') ||
         fileExists(rootDir, '.github/renovate.json') ||
         fileExists(rootDir, '.renovaterc'),
-      fix: 'Add a Dependabot or Renovate config so dependency updates land automatically.',
-    },
+      fix: 'Add a Dependabot or Renovate config so dependency updates land automatically.'
+    }
   ];
 }
 
@@ -768,7 +732,7 @@ function buildProviderChecks(rootDir, provider, sharedContext) {
       path: `${provider} config`,
       description: `${provider} deployment config is checked in`,
       pass: spec.detect(rootDir),
-      fix: `Commit ${provider} configuration so deploys are reproducible from source.`,
+      fix: `Commit ${provider} configuration so deploys are reproducible from source.`
     },
     {
       id: `${provider.toLowerCase()}-build-script`,
@@ -778,7 +742,7 @@ function buildProviderChecks(rootDir, provider, sharedContext) {
       path: 'package.json scripts',
       description: `package.json scripts reference ${provider}`,
       pass: spec.buildPattern.test(scriptsText),
-      fix: `Add a build or deploy script in package.json that runs ${provider}.`,
+      fix: `Add a build or deploy script in package.json that runs ${provider}.`
     },
     {
       id: `${provider.toLowerCase()}-env-doc`,
@@ -788,7 +752,7 @@ function buildProviderChecks(rootDir, provider, sharedContext) {
       path: '.env.example',
       description: `${provider} env keys are documented in .env.example`,
       pass: spec.keyPattern.test(sharedContext.envExample),
-      fix: `Document ${provider} environment variables in .env.example.`,
+      fix: `Document ${provider} environment variables in .env.example.`
     },
     {
       id: `${provider.toLowerCase()}-workflow-uses`,
@@ -798,8 +762,8 @@ function buildProviderChecks(rootDir, provider, sharedContext) {
       path: '.github/workflows/',
       description: `A GitHub workflow uses the ${provider} action or CLI`,
       pass: spec.workflowPattern.test(sharedContext.workflowsText),
-      fix: `Reference the ${provider} action or CLI from a workflow under .github/workflows/.`,
-    },
+      fix: `Reference the ${provider} action or CLI from a workflow under .github/workflows/.`
+    }
   ];
 }
 
@@ -812,7 +776,7 @@ function collectProviderChecks(rootDir, packageJson) {
   const sharedContext = {
     packageJson: packageJson || {},
     envExample: `${safeRead(rootDir, '.env.example')}\n${safeRead(rootDir, '.env.sample')}`,
-    workflowsText: readAllWorkflowsText(rootDir),
+    workflowsText: readAllWorkflowsText(rootDir)
   };
 
   return providers.flatMap(provider => buildProviderChecks(rootDir, provider, sharedContext));
@@ -833,7 +797,7 @@ function getConsumerChecks(rootDir) {
       path: '~/.claude/plugins/ecc/ (legacy everything-claude-code paths also supported)',
       description: 'Everything Claude Code is installed for the active user or project',
       pass: Boolean(pluginInstall),
-      fix: 'Install the ECC plugin for this user or project before auditing project-specific harness quality.',
+      fix: 'Install the ECC plugin for this user or project before auditing project-specific harness quality.'
     },
     {
       id: 'consumer-project-overrides',
@@ -842,12 +806,13 @@ function getConsumerChecks(rootDir) {
       scopes: ['repo', 'hooks', 'skills', 'commands', 'agents'],
       path: '.claude/',
       description: 'Project-specific harness overrides exist under .claude/',
-      pass: countFiles(rootDir, '.claude/agents', '.md') > 0 ||
+      pass:
+        countFiles(rootDir, '.claude/agents', '.md') > 0 ||
         countFiles(rootDir, '.claude/skills', 'SKILL.md') > 0 ||
         countFiles(rootDir, '.claude/commands', '.md') > 0 ||
         fileExists(rootDir, '.claude/settings.json') ||
         fileExists(rootDir, '.claude/hooks.json'),
-      fix: 'Add project-local .claude hooks, commands, skills, or settings that tailor ECC to this repo.',
+      fix: 'Add project-local .claude hooks, commands, skills, or settings that tailor ECC to this repo.'
     },
     {
       id: 'consumer-instructions',
@@ -857,7 +822,7 @@ function getConsumerChecks(rootDir) {
       path: 'AGENTS.md',
       description: 'The project has explicit agent or instruction context',
       pass: fileExists(rootDir, 'AGENTS.md') || fileExists(rootDir, 'CLAUDE.md') || fileExists(rootDir, '.claude/CLAUDE.md'),
-      fix: 'Add AGENTS.md or CLAUDE.md so the harness has project-specific instructions.',
+      fix: 'Add AGENTS.md or CLAUDE.md so the harness has project-specific instructions.'
     },
     {
       id: 'consumer-project-config',
@@ -867,7 +832,7 @@ function getConsumerChecks(rootDir) {
       path: '.mcp.json',
       description: 'The project declares local MCP or Claude settings',
       pass: fileExists(rootDir, '.mcp.json') || fileExists(rootDir, '.claude/settings.json') || fileExists(rootDir, '.claude/settings.local.json'),
-      fix: 'Add .mcp.json or .claude/settings.json so project-local tool configuration is explicit.',
+      fix: 'Add .mcp.json or .claude/settings.json so project-local tool configuration is explicit.'
     },
     {
       id: 'consumer-test-suite',
@@ -877,7 +842,7 @@ function getConsumerChecks(rootDir) {
       path: 'tests/',
       description: 'The project has an automated test entrypoint',
       pass: typeof packageJson?.scripts?.test === 'string' || countFiles(rootDir, 'tests', '.test.js') > 0 || hasFileWithExtension(rootDir, '.', ['.spec.js', '.spec.ts', '.test.ts']),
-      fix: 'Add a test script or checked-in tests so harness recommendations can be verified automatically.',
+      fix: 'Add a test script or checked-in tests so harness recommendations can be verified automatically.'
     },
     {
       id: 'consumer-ci-workflow',
@@ -887,7 +852,7 @@ function getConsumerChecks(rootDir) {
       path: '.github/workflows/',
       description: 'The project has CI workflows checked in',
       pass: hasFileWithExtension(rootDir, '.github/workflows', ['.yml', '.yaml']),
-      fix: 'Add at least one CI workflow so harness and test checks run outside local development.',
+      fix: 'Add at least one CI workflow so harness and test checks run outside local development.'
     },
     {
       id: 'consumer-memory-notes',
@@ -897,7 +862,7 @@ function getConsumerChecks(rootDir) {
       path: '.claude/memory.md',
       description: 'Project memory or durable notes are checked in',
       pass: fileExists(rootDir, '.claude/memory.md') || countFiles(rootDir, 'docs/adr', '.md') > 0,
-      fix: 'Add durable project memory such as .claude/memory.md or ADRs under docs/adr/.',
+      fix: 'Add durable project memory such as .claude/memory.md or ADRs under docs/adr/.'
     },
     {
       id: 'consumer-eval-coverage',
@@ -907,7 +872,7 @@ function getConsumerChecks(rootDir) {
       path: 'evals/',
       description: 'The project has evals or multiple automated tests',
       pass: countFiles(rootDir, 'evals', null) > 0 || countFiles(rootDir, 'tests', '.test.js') >= 3,
-      fix: 'Add eval fixtures or at least a few focused automated tests for critical flows.',
+      fix: 'Add eval fixtures or at least a few focused automated tests for critical flows.'
     },
     {
       id: 'consumer-security-policy',
@@ -917,7 +882,7 @@ function getConsumerChecks(rootDir) {
       path: 'SECURITY.md',
       description: 'The project exposes a security policy or automated dependency scanning',
       pass: fileExists(rootDir, 'SECURITY.md') || fileExists(rootDir, '.github/dependabot.yml') || fileExists(rootDir, '.github/codeql.yml'),
-      fix: 'Add SECURITY.md or dependency/code scanning configuration to document the project security posture.',
+      fix: 'Add SECURITY.md or dependency/code scanning configuration to document the project security posture.'
     },
     {
       id: 'consumer-secret-hygiene',
@@ -927,7 +892,7 @@ function getConsumerChecks(rootDir) {
       path: '.gitignore',
       description: 'The project ignores common secret env files',
       pass: gitignore.includes('.env'),
-      fix: 'Ignore .env-style files in .gitignore so secrets do not land in the repo.',
+      fix: 'Ignore .env-style files in .gitignore so secrets do not land in the repo.'
     },
     {
       id: 'consumer-hook-guardrails',
@@ -937,10 +902,10 @@ function getConsumerChecks(rootDir) {
       path: '.claude/settings.json',
       description: 'Project-local hook settings reference tool/prompt guardrails',
       pass: projectHooks.includes('PreToolUse') || projectHooks.includes('beforeSubmitPrompt') || fileExists(rootDir, '.claude/hooks.json'),
-      fix: 'Add project-local hook settings or hook definitions for prompt/tool guardrails.',
+      fix: 'Add project-local hook settings or hook definitions for prompt/tool guardrails.'
     },
     ...buildGithubChecks(rootDir),
-    ...collectProviderChecks(rootDir, packageJson),
+    ...collectProviderChecks(rootDir, packageJson)
   ];
 }
 
@@ -949,15 +914,13 @@ function summarizeCategoryScores(checks) {
   for (const category of CATEGORIES) {
     const inCategory = checks.filter(check => check.category === category);
     const max = inCategory.reduce((sum, check) => sum + check.points, 0);
-    const earned = inCategory
-      .filter(check => check.pass)
-      .reduce((sum, check) => sum + check.points, 0);
+    const earned = inCategory.filter(check => check.pass).reduce((sum, check) => sum + check.points, 0);
 
     const normalized = max === 0 ? 0 : Math.round((earned / max) * 10);
     scores[category] = {
       score: normalized,
       earned,
-      max,
+      max
     };
   }
 
@@ -967,13 +930,10 @@ function summarizeCategoryScores(checks) {
 function buildReport(scope, options = {}) {
   const rootDir = path.resolve(options.rootDir || process.cwd());
   const targetMode = options.targetMode || detectTargetMode(rootDir);
-  const checks = (targetMode === 'repo' ? getRepoChecks(rootDir) : getConsumerChecks(rootDir))
-    .filter(check => check.scopes.includes(scope));
+  const checks = (targetMode === 'repo' ? getRepoChecks(rootDir) : getConsumerChecks(rootDir)).filter(check => check.scopes.includes(scope));
   const categoryScores = summarizeCategoryScores(checks);
   const maxScore = checks.reduce((sum, check) => sum + check.points, 0);
-  const overallScore = checks
-    .filter(check => check.pass)
-    .reduce((sum, check) => sum + check.points, 0);
+  const overallScore = checks.filter(check => check.pass).reduce((sum, check) => sum + check.points, 0);
   const applicableCategories = CATEGORIES.filter(name => categoryScores[name]?.max > 0);
 
   const failedChecks = checks.filter(check => !check.pass);
@@ -984,7 +944,7 @@ function buildReport(scope, options = {}) {
       action: check.fix,
       path: check.path,
       category: check.category,
-      points: check.points,
+      points: check.points
     }));
 
   return {
@@ -1004,9 +964,9 @@ function buildReport(scope, options = {}) {
       points: check.points,
       path: check.path,
       description: check.description,
-      pass: check.pass,
+      pass: check.pass
     })),
-    top_actions: topActions,
+    top_actions: topActions
   };
 }
 
@@ -1078,5 +1038,5 @@ module.exports = {
   buildReport,
   parseArgs,
   findPluginInstall,
-  compareVersionDesc,
+  compareVersionDesc
 };

@@ -3,11 +3,8 @@ const claudeHome = require('./claude-home');
 const claudeProject = require('./claude-project');
 const codexHome = require('./codex-home');
 const joycodeProject = require('./joycode-project');
-const opencodeHome = require('./opencode-home');
-const qwenHome = require('./qwen-home');
-const zedProject = require('./zed-project');
 
-const ADAPTERS = Object.freeze([claudeHome, claudeProject, antigravityProject, codexHome, opencodeHome, joycodeProject, qwenHome, zedProject]);
+const ADAPTERS = Object.freeze([claudeHome, claudeProject, antigravityProject, codexHome, joycodeProject]);
 
 function listInstallTargetAdapters() {
   return ADAPTERS.slice();

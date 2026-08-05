@@ -25,7 +25,7 @@ function usage() {
     'Usage: mcp-inventory [options]',
     '',
     'Read MCP server configs across every installed harness (Claude Code,',
-    'Codex, OpenCode), normalize them to ecc.mcp.v1, and report which servers',
+    'Codex), normalize them to ecc.mcp.v1, and report which servers',
     'are configured in more than one harness. Secrets are never printed; only',
     'env key names are shown.',
     '',
@@ -42,10 +42,10 @@ function formatHumanReport(inventory, options = {}) {
 
   lines.push('MCP Inventory (ecc.mcp.v1)');
   lines.push(
-    `  ${aggregates.serverCount} servers across ${aggregates.harnessCount} harnesses, `
-    + `${aggregates.duplicateServerCount} configured in 2+ harnesses `
-    + `(${aggregates.inconsistentServerCount} inconsistent), `
-    + `${aggregates.serversWithSecrets} carry secrets`
+    `  ${aggregates.serverCount} servers across ${aggregates.harnessCount} harnesses, ` +
+      `${aggregates.duplicateServerCount} configured in 2+ harnesses ` +
+      `(${aggregates.inconsistentServerCount} inconsistent), ` +
+      `${aggregates.serversWithSecrets} carry secrets`
   );
   lines.push('');
 
@@ -64,9 +64,7 @@ function formatHumanReport(inventory, options = {}) {
   if (!options.fragmentedOnly) {
     lines.push('All servers:');
     for (const server of servers) {
-      const transport = server.transport === 'stdio'
-        ? `stdio:${[server.command, ...server.args].filter(Boolean).join(' ')}`
-        : `${server.transport}:${server.url || ''}`;
+      const transport = server.transport === 'stdio' ? `stdio:${[server.command, ...server.args].filter(Boolean).join(' ')}` : `${server.transport}:${server.url || ''}`;
       const secretFlag = server.hasSecrets ? ' (secrets)' : '';
       const disabledFlag = server.enabled ? '' : ' (disabled)';
       lines.push(`  ${server.name}  ->  ${transport}${secretFlag}${disabledFlag}`);

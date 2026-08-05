@@ -170,25 +170,6 @@ function addRecursiveCopyOperations(operations, options) {
   return relativeFiles.length;
 }
 
-function addFileCopyOperation(operations, options) {
-  const sourcePath = path.join(options.sourceRoot, options.sourceRelativePath);
-  if (!fs.existsSync(sourcePath)) {
-    return false;
-  }
-
-  operations.push(
-    buildCopyFileOperation({
-      moduleId: options.moduleId,
-      sourcePath,
-      sourceRelativePath: options.sourceRelativePath,
-      destinationPath: options.destinationPath,
-      strategy: options.strategy || 'preserve-relative-path'
-    })
-  );
-
-  return true;
-}
-
 function readJsonObject(filePath, label) {
   let parsed;
   try {
@@ -202,26 +183,6 @@ function readJsonObject(filePath, label) {
   }
 
   return parsed;
-}
-
-function addJsonMergeOperation(operations, options) {
-  const sourcePath = path.join(options.sourceRoot, options.sourceRelativePath);
-  if (!fs.existsSync(sourcePath)) {
-    return false;
-  }
-
-  operations.push({
-    kind: 'merge-json',
-    moduleId: options.moduleId,
-    sourceRelativePath: options.sourceRelativePath,
-    destinationPath: options.destinationPath,
-    strategy: 'merge-json',
-    ownership: 'managed',
-    scaffoldOnly: false,
-    mergePayload: readJsonObject(sourcePath, options.sourceRelativePath)
-  });
-
-  return true;
 }
 
 function addMatchingRuleOperations(operations, options) {
@@ -559,7 +520,7 @@ function materializeScaffoldOperation(sourceRoot, operation) {
 function dedupeCopyFileOperations(operations) {
   // A `copy-file` operation fully overwrites its destination, so when several
   // of them target the same path (e.g. a generic `commands/<name>.md` shadowed
-  // by an OpenCode `.opencode/commands/<name>.md` override) only the last one
+  // by a harness-specific command override) only the last one
   // actually determines the installed content. Recording the shadowed earlier
   // writes in install-state makes `doctor` report perpetual drift and drives
   // `repair` to clobber the override with the generic source (issue #2414).

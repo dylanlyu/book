@@ -34,7 +34,7 @@
 不止是配置文件，而是一整套完整系统：技能体系、本能行为、记忆优化、持续学习、安全扫描，以及研究优先的开发模式。
 包含可直接用于生产环境的智能体、技能模块、钩子、规则、MCP 配置，以及兼容传统命令的适配层——所有内容均经过 10 个多月高强度日常使用与真实产品开发迭代打磨而成。
 
-可在 **Claude Code**、**Codex**、**OpenCode**、**Zed** 及其他 AI 智能体框架中通用。
+可在 **Claude Code**、**Codex** 及其他 AI 智能体框架中通用。
 
 ---
 
@@ -96,7 +96,7 @@
 ### 当前开发 — 统一记忆库
 
 `ecc memory` 使用可检查的 `ecc.memory.v1` Markdown 文档，在 Claude、
-Codex、OpenCode 等 harness 之间传递上下文。常规搜索只召回 `project` 和
+Codex 等 harness 之间传递上下文。常规搜索只召回 `project` 和
 `team` 范围内状态为 active 的条目，按 ID 直接读取仍可用于检查非 active
 条目；`user` 范围必须显式请求。首个版本中的所有记忆都保持 unreviewed，
 接受后的知识应进入受治理的项目文档，
@@ -212,7 +212,7 @@ Copy-Item -Recurse rules/typescript "$HOME/.claude/rules/"
 
 ## 跨平台支持
 
-该插件现已**全面支持 Windows、macOS 和 Linux**，并与主流 IDE（Zed、OpenCode、Antigravity）及命令行工具深度集成。所有钩子与脚本均已使用 Node.js 重写，以实现最佳兼容性。
+该插件现已**全面支持 Windows、macOS 和 Linux**，并与主流 IDE（Antigravity、JoyCode）及命令行工具深度集成。所有钩子与脚本均已使用 Node.js 重写，以实现最佳兼容性。
 
 ### 包管理器检测
 

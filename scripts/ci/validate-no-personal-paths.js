@@ -14,29 +14,11 @@ const fs = require('fs');
 const path = require('path');
 
 const ROOT = path.join(__dirname, '../..');
-const TARGETS = [
-  'README.md',
-  'skills',
-  'commands',
-  'agents',
-  'docs',
-  '.opencode/commands',
-];
+const TARGETS = ['README.md', 'skills', 'commands', 'agents', 'docs'];
 
-const EXEMPT_PREFIXES = [
-  'docs/fixes/',
-];
+const EXEMPT_PREFIXES = ['docs/fixes/'];
 
-const PLACEHOLDER_USERNAMES = new Set([
-  'example',
-  'me',
-  'user',
-  'username',
-  'you',
-  'yourname',
-  'yourusername',
-  'your-username',
-]);
+const PLACEHOLDER_USERNAMES = new Set(['example', 'me', 'user', 'username', 'you', 'yourname', 'yourusername', 'your-username']);
 
 const POSIX_USER_RE = /\/Users\/([a-zA-Z][a-zA-Z0-9._-]*)/g;
 const WIN_USER_RE = /C:\\Users\\([a-zA-Z][a-zA-Z0-9._-]*)/gi;

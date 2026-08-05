@@ -71,7 +71,7 @@ test('README links to the current release notes', () => {
 
 test('cross-harness architecture doc exists and names core harnesses', () => {
   const source = read('docs/architecture/cross-harness.md');
-  for (const harness of ['Claude Code', 'Codex', 'OpenCode', 'Zed']) {
+  for (const harness of ['Claude Code', 'Codex']) {
     assert.ok(source.includes(harness), `Expected cross-harness doc to mention ${harness}`);
   }
 });
@@ -247,7 +247,7 @@ test('cross-harness doc includes a worked skill portability example', () => {
   const source = read('docs/architecture/cross-harness.md');
   assert.ok(source.includes('## Worked Example'));
   assert.ok(source.includes('same skill source'));
-  for (const harness of ['Claude Code', 'Codex', 'OpenCode']) {
+  for (const harness of ['Claude Code', 'Codex']) {
     assert.ok(source.includes(harness), `Expected worked example to mention ${harness}`);
   }
 });
@@ -385,7 +385,7 @@ test('publication readiness checklist gates public release actions on evidence',
     assert.ok(source.includes(field), `publication readiness missing ${field}`);
   }
 
-  for (const surface of ['GitHub release', 'npm package', 'Claude plugin', 'Codex plugin', 'Codex repo marketplace', 'OpenCode package', 'ECC Tools billing reference', 'Announcement copy']) {
+  for (const surface of ['GitHub release', 'npm package', 'Claude plugin', 'Codex plugin', 'Codex repo marketplace', 'ECC Tools billing reference', 'Announcement copy']) {
     assert.ok(source.includes(surface), `publication readiness missing ${surface}`);
   }
 
@@ -468,8 +468,6 @@ test('active release identity surfaces use canonical ECC repo URLs', () => {
     'README.md',
     '.codex-plugin/README.md',
     '.codex-plugin/plugin.json',
-    '.opencode/README.md',
-    '.opencode/package.json',
     'docs/business/metrics-and-sponsorship.md',
     'docs/releases/2.0.0-rc.1/quickstart.md',
     'docs/releases/2.0.0-rc.1/x-thread.md',

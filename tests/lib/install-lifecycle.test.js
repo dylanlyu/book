@@ -8,7 +8,6 @@ const os = require('os');
 const path = require('path');
 
 const { buildDoctorReport, discoverInstalledStates, normalizeTargets, repairInstalledStates, uninstallInstalledStates } = require('../../scripts/lib/install-lifecycle');
-const { getInstallTargetAdapter } = require('../../scripts/lib/install-targets/registry');
 const { createInstallState, readInstallState, writeInstallState } = require('../../scripts/lib/install-state');
 
 const REPO_ROOT = path.join(__dirname, '..', '..');
@@ -42,11 +41,11 @@ function writeState(filePath, options) {
 }
 
 function createCursorStateOptions(projectRoot, overrides = {}) {
-  const targetRoot = overrides.targetRoot || path.join(projectRoot, '.zed');
+  const targetRoot = overrides.targetRoot || path.join(projectRoot, '.joycode');
   const installStatePath = overrides.installStatePath || path.join(targetRoot, 'ecc-install-state.json');
 
   return {
-    adapter: { id: 'zed-project', target: 'zed', kind: 'project' },
+    adapter: { id: 'joycode-project', target: 'joycode', kind: 'project' },
     targetRoot,
     installStatePath,
     request: {
@@ -59,7 +58,7 @@ function createCursorStateOptions(projectRoot, overrides = {}) {
       ...(overrides.request || {})
     },
     resolution: {
-      selectedModules: ['legacy-zed-install'],
+      selectedModules: ['legacy-joycode-install'],
       skippedModules: [],
       ...(overrides.resolution || {})
     },
@@ -75,48 +74,6 @@ function createCursorStateOptions(projectRoot, overrides = {}) {
 
 function writeCursorState(projectRoot, overrides = {}) {
   const options = createCursorStateOptions(projectRoot, overrides);
-  writeState(options.installStatePath, options);
-  return {
-    targetRoot: options.targetRoot,
-    installStatePath: options.installStatePath,
-    state: options
-  };
-}
-
-function createOpencodeStateOptions(homeDir, overrides = {}) {
-  const targetRoot = overrides.targetRoot || path.join(homeDir, '.opencode');
-  const installStatePath = overrides.installStatePath || path.join(targetRoot, 'ecc-install-state.json');
-
-  return {
-    adapter: { id: 'opencode-home', target: 'opencode', kind: 'home' },
-    targetRoot,
-    installStatePath,
-    request: {
-      profile: null,
-      modules: ['commands-core'],
-      includeComponents: [],
-      excludeComponents: [],
-      legacyLanguages: [],
-      legacyMode: false,
-      ...(overrides.request || {})
-    },
-    resolution: {
-      selectedModules: ['commands-core'],
-      skippedModules: [],
-      ...(overrides.resolution || {})
-    },
-    operations: overrides.operations || [],
-    source: {
-      repoVersion: CURRENT_PACKAGE_VERSION,
-      repoCommit: 'abc123',
-      manifestVersion: CURRENT_MANIFEST_VERSION,
-      ...(overrides.source || {})
-    }
-  };
-}
-
-function writeOpencodeState(homeDir, overrides = {}) {
-  const options = createOpencodeStateOptions(homeDir, overrides);
   writeState(options.installStatePath, options);
   return {
     targetRoot: options.targetRoot,
@@ -175,9 +132,9 @@ function runTests() {
       const defaultTargets = normalizeTargets();
 
       assert.ok(defaultTargets.includes('claude'));
-      assert.ok(defaultTargets.includes('zed'));
+      assert.ok(defaultTargets.includes('joycode'));
       assert.ok(defaultTargets.includes('codex'));
-      assert.deepStrictEqual(normalizeTargets(['zed-project', 'zed', 'claude-home', 'claude']), ['zed', 'claude']);
+      assert.deepStrictEqual(normalizeTargets(['joycode-project', 'joycode', 'claude-home', 'claude']), ['joycode', 'claude']);
     })
   )
     passed++;
@@ -190,7 +147,7 @@ function runTests() {
 
       try {
         const claudeStatePath = path.join(homeDir, '.claude', 'ecc', 'install-state.json');
-        const cursorStatePath = path.join(projectRoot, '.zed', 'ecc-install-state.json');
+        const cursorStatePath = path.join(projectRoot, '.joycode', 'ecc-install-state.json');
 
         writeState(claudeStatePath, {
           adapter: { id: 'claude-home', target: 'claude', kind: 'home' },
@@ -215,8 +172,8 @@ function runTests() {
         });
 
         writeState(cursorStatePath, {
-          adapter: { id: 'zed-project', target: 'zed', kind: 'project' },
-          targetRoot: path.join(projectRoot, '.zed'),
+          adapter: { id: 'joycode-project', target: 'joycode', kind: 'project' },
+          targetRoot: path.join(projectRoot, '.joycode'),
           installStatePath: cursorStatePath,
           request: {
             profile: 'core',
@@ -239,14 +196,14 @@ function runTests() {
         const records = discoverInstalledStates({
           homeDir,
           projectRoot,
-          targets: ['claude', 'zed']
+          targets: ['claude', 'joycode']
         });
 
         assert.strictEqual(records.length, 2);
         assert.strictEqual(records[0].exists, true);
         assert.strictEqual(records[1].exists, true);
         assert.strictEqual(records[0].state.target.id, 'claude-home');
-        assert.strictEqual(records[1].state.target.id, 'zed-project');
+        assert.strictEqual(records[1].state.target.id, 'joycode-project');
       } finally {
         cleanup(homeDir);
         cleanup(projectRoot);
@@ -265,7 +222,7 @@ function runTests() {
         let records = discoverInstalledStates({
           homeDir,
           projectRoot,
-          targets: ['zed']
+          targets: ['joycode']
         });
 
         assert.strictEqual(records.length, 1);
@@ -273,7 +230,7 @@ function runTests() {
         assert.strictEqual(records[0].state, null);
         assert.strictEqual(records[0].error, null);
 
-        const targetRoot = path.join(projectRoot, '.zed');
+        const targetRoot = path.join(projectRoot, '.joycode');
         const statePath = path.join(targetRoot, 'ecc-install-state.json');
         fs.mkdirSync(targetRoot, { recursive: true });
         fs.writeFileSync(statePath, '{not-json', 'utf8');
@@ -281,7 +238,7 @@ function runTests() {
         records = discoverInstalledStates({
           homeDir,
           projectRoot,
-          targets: ['zed']
+          targets: ['joycode']
         });
 
         assert.strictEqual(records[0].exists, true);
@@ -302,12 +259,12 @@ function runTests() {
       const projectRoot = createTempDir('install-lifecycle-project-');
 
       try {
-        const targetRoot = path.join(projectRoot, '.zed');
+        const targetRoot = path.join(projectRoot, '.joycode');
         const statePath = path.join(targetRoot, 'ecc-install-state.json');
         fs.mkdirSync(targetRoot, { recursive: true });
 
         writeState(statePath, {
-          adapter: { id: 'zed-project', target: 'zed', kind: 'project' },
+          adapter: { id: 'joycode-project', target: 'joycode', kind: 'project' },
           targetRoot,
           installStatePath: statePath,
           request: {
@@ -324,7 +281,7 @@ function runTests() {
             {
               kind: 'copy-file',
               moduleId: 'platform-configs',
-              sourceRelativePath: '.zed/hooks.json',
+              sourceRelativePath: '.joycode/hooks.json',
               destinationPath: path.join(targetRoot, 'hooks.json'),
               strategy: 'sync-root-children',
               ownership: 'managed',
@@ -342,7 +299,7 @@ function runTests() {
           repoRoot: REPO_ROOT,
           homeDir,
           projectRoot,
-          targets: ['zed']
+          targets: ['joycode']
         });
 
         assert.strictEqual(report.results.length, 1);
@@ -363,9 +320,9 @@ function runTests() {
       const projectRoot = createTempDir('install-lifecycle-project-');
 
       try {
-        const actualTargetRoot = path.join(projectRoot, '.zed');
+        const actualTargetRoot = path.join(projectRoot, '.joycode');
         const actualStatePath = path.join(actualTargetRoot, 'ecc-install-state.json');
-        const recordedTargetRoot = path.join(projectRoot, '.old-zed');
+        const recordedTargetRoot = path.join(projectRoot, '.old-joycode');
         const recordedStatePath = path.join(recordedTargetRoot, 'state.json');
         const copyDestination = path.join(actualTargetRoot, 'rules', 'missing-source.md');
         const customDestination = path.join(actualTargetRoot, 'custom.txt');
@@ -406,7 +363,7 @@ function runTests() {
           repoRoot: REPO_ROOT,
           homeDir,
           projectRoot,
-          targets: ['zed']
+          targets: ['joycode']
         });
         const codes = report.results[0].issues.map(issue => issue.code);
 
@@ -437,7 +394,7 @@ function runTests() {
       const projectRoot = createTempDir('install-lifecycle-project-');
 
       try {
-        const targetRoot = path.join(projectRoot, '.zed');
+        const targetRoot = path.join(projectRoot, '.joycode');
         const templatePath = path.join(targetRoot, 'generated.txt');
         const jsonPath = path.join(targetRoot, 'settings.json');
         fs.mkdirSync(targetRoot, { recursive: true });
@@ -476,7 +433,7 @@ function runTests() {
           repoRoot: REPO_ROOT,
           homeDir,
           projectRoot,
-          targets: ['zed']
+          targets: ['joycode']
         });
 
         assert.strictEqual(report.results[0].status, 'ok');
@@ -496,7 +453,7 @@ function runTests() {
       const projectRoot = createTempDir('install-lifecycle-project-');
 
       try {
-        const targetRoot = path.join(projectRoot, '.zed');
+        const targetRoot = path.join(projectRoot, '.joycode');
         const templatePath = path.join(targetRoot, 'template.txt');
         const missingPayloadJsonPath = path.join(targetRoot, 'missing-payload.json');
         const invalidJsonPath = path.join(targetRoot, 'invalid.json');
@@ -521,7 +478,7 @@ function runTests() {
           repoRoot: REPO_ROOT,
           homeDir,
           projectRoot,
-          targets: ['zed']
+          targets: ['joycode']
         });
         const codes = report.results[0].issues.map(issue => issue.code);
 
@@ -544,7 +501,7 @@ function runTests() {
       const projectRoot = createTempDir('install-lifecycle-project-');
 
       try {
-        const statePath = path.join(projectRoot, '.zed', 'ecc-install-state.json');
+        const statePath = path.join(projectRoot, '.joycode', 'ecc-install-state.json');
         fs.mkdirSync(path.dirname(statePath), { recursive: true });
         fs.writeFileSync(statePath, '{"schemaVersion":"wrong"}\n');
 
@@ -552,7 +509,7 @@ function runTests() {
           repoRoot: REPO_ROOT,
           homeDir,
           projectRoot,
-          targets: ['zed']
+          targets: ['joycode']
         });
 
         assert.strictEqual(report.results[0].status, 'error');
@@ -636,7 +593,7 @@ function runTests() {
       const projectRoot = createTempDir('install-lifecycle-project-');
 
       try {
-        const targetRoot = path.join(projectRoot, '.zed');
+        const targetRoot = path.join(projectRoot, '.joycode');
         const destinationPath = path.join(targetRoot, 'rules', 'coding-style.md');
         writeCursorState(projectRoot, {
           operations: [
@@ -651,7 +608,7 @@ function runTests() {
           repoRoot: REPO_ROOT,
           homeDir,
           projectRoot,
-          targets: ['zed'],
+          targets: ['joycode'],
           dryRun: true
         });
 
@@ -835,7 +792,7 @@ function runTests() {
       const projectRoot = createTempDir('install-lifecycle-project-');
 
       try {
-        const targetRoot = path.join(projectRoot, '.zed');
+        const targetRoot = path.join(projectRoot, '.joycode');
         const destinationPath = path.join(targetRoot, 'rules', 'coding-style.md');
         const sourcePath = path.join(REPO_ROOT, 'rules', 'common', 'coding-style.md');
         writeCursorState(projectRoot, {
@@ -851,7 +808,7 @@ function runTests() {
           repoRoot: REPO_ROOT,
           homeDir,
           projectRoot,
-          targets: ['zed']
+          targets: ['joycode']
         });
 
         assert.strictEqual(result.results[0].status, 'repaired');
@@ -873,7 +830,7 @@ function runTests() {
       const originalStatSync = fs.statSync;
 
       try {
-        const targetRoot = path.join(projectRoot, '.zed');
+        const targetRoot = path.join(projectRoot, '.joycode');
         const destinationPath = path.join(targetRoot, 'rules', 'coding-style.md');
         writeCursorState(projectRoot, {
           operations: [
@@ -895,7 +852,7 @@ function runTests() {
           repoRoot: REPO_ROOT,
           homeDir,
           projectRoot,
-          targets: ['zed']
+          targets: ['joycode']
         });
 
         assert.strictEqual(result.results[0].status, 'repaired');
@@ -919,7 +876,7 @@ function runTests() {
       const okProjectRoot = createTempDir('install-lifecycle-ok-');
 
       try {
-        const invalidStatePath = path.join(invalidProjectRoot, '.zed', 'ecc-install-state.json');
+        const invalidStatePath = path.join(invalidProjectRoot, '.joycode', 'ecc-install-state.json');
         fs.mkdirSync(path.dirname(invalidStatePath), { recursive: true });
         fs.writeFileSync(invalidStatePath, '{"schemaVersion":"wrong"}\n');
 
@@ -927,12 +884,12 @@ function runTests() {
           repoRoot: REPO_ROOT,
           homeDir,
           projectRoot: invalidProjectRoot,
-          targets: ['zed']
+          targets: ['joycode']
         });
         assert.strictEqual(result.results[0].status, 'error');
         assert.ok(result.results[0].error.includes('Invalid install-state'));
 
-        const missingDestination = path.join(missingSourceProjectRoot, '.zed', 'rules', 'missing.md');
+        const missingDestination = path.join(missingSourceProjectRoot, '.joycode', 'rules', 'missing.md');
         fs.mkdirSync(path.dirname(missingDestination), { recursive: true });
         fs.writeFileSync(missingDestination, 'managed\n');
         writeCursorState(missingSourceProjectRoot, {
@@ -947,12 +904,12 @@ function runTests() {
           repoRoot: REPO_ROOT,
           homeDir,
           projectRoot: missingSourceProjectRoot,
-          targets: ['zed']
+          targets: ['joycode']
         });
         assert.strictEqual(result.results[0].status, 'error');
         assert.ok(result.results[0].error.includes('Missing source file(s)'));
 
-        const unsupportedDestination = path.join(unsupportedProjectRoot, '.zed', 'custom.txt');
+        const unsupportedDestination = path.join(unsupportedProjectRoot, '.joycode', 'custom.txt');
         writeCursorState(unsupportedProjectRoot, {
           operations: [managedOperation('custom-kind', unsupportedDestination)]
         });
@@ -960,7 +917,7 @@ function runTests() {
           repoRoot: REPO_ROOT,
           homeDir,
           projectRoot: unsupportedProjectRoot,
-          targets: ['zed']
+          targets: ['joycode']
         });
         assert.strictEqual(result.results[0].status, 'error');
         assert.ok(result.results[0].error.includes('Unsupported repair operation kind'));
@@ -970,7 +927,7 @@ function runTests() {
           repoRoot: REPO_ROOT,
           homeDir,
           projectRoot: okProjectRoot,
-          targets: ['zed']
+          targets: ['joycode']
         });
         assert.strictEqual(result.results[0].status, 'ok');
         assert.strictEqual(result.results[0].stateRefreshed, true);
@@ -999,7 +956,7 @@ function runTests() {
           repoRoot: REPO_ROOT,
           homeDir,
           projectRoot,
-          targets: ['zed'],
+          targets: ['joycode'],
           dryRun: true
         });
 
@@ -1016,136 +973,8 @@ function runTests() {
   else failed++;
 
   if (
-    test('repair builds the OpenCode payload and clears the missing-payload warning', () => {
-      const homeDir = createTempDir('install-lifecycle-home-');
-      const projectRoot = createTempDir('install-lifecycle-project-');
-
-      try {
-        withTemporarilyMovedPath(path.join(REPO_ROOT, '.opencode', 'dist'), () => {
-          writeOpencodeState(homeDir, {
-            request: {
-              profile: null,
-              modules: ['commands-core'],
-              includeComponents: [],
-              excludeComponents: [],
-              legacyLanguages: [],
-              legacyMode: false
-            },
-            resolution: {
-              selectedModules: ['commands-core'],
-              skippedModules: []
-            },
-            operations: []
-          });
-
-          const beforeValidate = getInstallTargetAdapter('opencode').validate({
-            homeDir,
-            repoRoot: REPO_ROOT
-          });
-          assert.ok(beforeValidate.some(issue => issue.code === 'opencode-plugin-not-built'));
-
-          const beforeDoctor = buildDoctorReport({
-            repoRoot: REPO_ROOT,
-            homeDir,
-            projectRoot,
-            targets: ['opencode']
-          });
-          assert.strictEqual(beforeDoctor.results[0].status, 'error');
-          assert.ok(beforeDoctor.results[0].issues.some(issue => issue.code === 'resolution-unavailable'));
-
-          let buildCalls = 0;
-          const result = repairInstalledStates({
-            repoRoot: REPO_ROOT,
-            homeDir,
-            projectRoot,
-            targets: ['opencode'],
-            buildOpencodePayload: repoRoot => {
-              buildCalls += 1;
-              const distDir = path.join(repoRoot, '.opencode', 'dist');
-              fs.mkdirSync(path.join(distDir, 'plugins'), { recursive: true });
-              fs.mkdirSync(path.join(distDir, 'tools'), { recursive: true });
-              fs.writeFileSync(path.join(distDir, 'index.js'), 'module.exports = {};\\n');
-            }
-          });
-
-          assert.strictEqual(buildCalls, 1);
-          assert.strictEqual(result.results[0].status, 'repaired');
-          assert.ok(fs.existsSync(path.join(REPO_ROOT, '.opencode', 'dist', 'index.js')));
-
-          const afterValidate = getInstallTargetAdapter('opencode').validate({
-            homeDir,
-            repoRoot: REPO_ROOT
-          });
-          assert.deepStrictEqual(afterValidate, []);
-
-          const afterDoctor = buildDoctorReport({
-            repoRoot: REPO_ROOT,
-            homeDir,
-            projectRoot,
-            targets: ['opencode']
-          });
-          assert.strictEqual(afterDoctor.results[0].status, 'ok');
-          assert.strictEqual(afterDoctor.results[0].issues.length, 0);
-        });
-      } finally {
-        cleanup(homeDir);
-        cleanup(projectRoot);
-      }
-    })
-  )
-    passed++;
-  else failed++;
-
-  if (
-    test('repair dry-run plans the OpenCode payload build without creating it', () => {
-      const homeDir = createTempDir('install-lifecycle-home-');
-      const projectRoot = createTempDir('install-lifecycle-project-');
-
-      try {
-        withTemporarilyMovedPath(path.join(REPO_ROOT, '.opencode', 'dist'), () => {
-          writeOpencodeState(homeDir, {
-            request: {
-              profile: null,
-              modules: ['commands-core'],
-              includeComponents: [],
-              excludeComponents: [],
-              legacyLanguages: [],
-              legacyMode: false
-            },
-            resolution: {
-              selectedModules: ['commands-core'],
-              skippedModules: []
-            },
-            operations: []
-          });
-
-          const result = repairInstalledStates({
-            repoRoot: REPO_ROOT,
-            homeDir,
-            projectRoot,
-            targets: ['opencode'],
-            dryRun: true,
-            buildOpencodePayload: () => {
-              throw new Error('build should not run during dry-run');
-            }
-          });
-
-          assert.strictEqual(result.results[0].status, 'planned');
-          assert.ok(result.results[0].plannedRepairs.includes(path.join(REPO_ROOT, '.opencode', 'dist')));
-          assert.ok(!fs.existsSync(path.join(REPO_ROOT, '.opencode', 'dist', 'index.js')));
-        });
-      } finally {
-        cleanup(homeDir);
-        cleanup(projectRoot);
-      }
-    })
-  )
-    passed++;
-  else failed++;
-
-  if (
     test('withTemporarilyMovedPath cleans up newly created paths when nothing was pre-existing', () => {
-      const filePath = path.join(REPO_ROOT, '.opencode', 'dist');
+      const filePath = path.join(REPO_ROOT, '.codex', 'dist');
       const backupPath = `${filePath}.backup-${process.pid}-test`;
 
       try {
@@ -1172,94 +1001,12 @@ function runTests() {
   else failed++;
 
   if (
-    test('repair surfaces OpenCode build failures without blocking other targets', () => {
-      const homeDir = createTempDir('install-lifecycle-home-');
-      const projectRoot = createTempDir('install-lifecycle-project-');
-
-      try {
-        withTemporarilyMovedPath(path.join(REPO_ROOT, '.opencode', 'dist'), () => {
-          const cursorTargetRoot = path.join(projectRoot, '.zed');
-          const cursorStatePath = path.join(cursorTargetRoot, 'ecc-install-state.json');
-          const cursorDestinationPath = path.join(cursorTargetRoot, 'rules', 'coding-style.md');
-          fs.mkdirSync(path.dirname(cursorDestinationPath), { recursive: true });
-
-          writeOpencodeState(homeDir, {
-            request: {
-              profile: null,
-              modules: ['commands-core'],
-              includeComponents: [],
-              excludeComponents: [],
-              legacyLanguages: [],
-              legacyMode: false
-            },
-            resolution: {
-              selectedModules: ['commands-core'],
-              skippedModules: []
-            },
-            operations: []
-          });
-
-          writeState(cursorStatePath, {
-            adapter: { id: 'zed-project', target: 'zed', kind: 'project' },
-            targetRoot: cursorTargetRoot,
-            installStatePath: cursorStatePath,
-            request: {
-              profile: null,
-              modules: [],
-              legacyLanguages: ['typescript'],
-              legacyMode: true
-            },
-            resolution: {
-              selectedModules: ['legacy-zed-install'],
-              skippedModules: []
-            },
-            operations: [
-              managedOperation('copy-file', cursorDestinationPath, {
-                sourceRelativePath: 'rules/common/coding-style.md',
-                strategy: 'copy-file'
-              })
-            ],
-            source: {
-              repoVersion: CURRENT_PACKAGE_VERSION,
-              repoCommit: 'abc123',
-              manifestVersion: CURRENT_MANIFEST_VERSION
-            }
-          });
-
-          const result = repairInstalledStates({
-            repoRoot: REPO_ROOT,
-            homeDir,
-            projectRoot,
-            targets: ['opencode', 'zed'],
-            buildOpencodePayload: () => {
-              throw new Error('typescript dependency missing');
-            }
-          });
-
-          const opencodeResult = result.results.find(entry => entry.adapter.id === 'opencode-home');
-          const cursorResult = result.results.find(entry => entry.adapter.id === 'zed-project');
-
-          assert.strictEqual(opencodeResult.status, 'error');
-          assert.ok(opencodeResult.error.includes('typescript dependency missing'));
-          assert.strictEqual(cursorResult.status, 'repaired');
-          assert.ok(fs.existsSync(cursorDestinationPath));
-        });
-      } finally {
-        cleanup(homeDir);
-        cleanup(projectRoot);
-      }
-    })
-  )
-    passed++;
-  else failed++;
-
-  if (
     test('repair surfaces missing source errors from execution when destination is absent', () => {
       const homeDir = createTempDir('install-lifecycle-home-');
       const projectRoot = createTempDir('install-lifecycle-project-');
 
       try {
-        const destinationPath = path.join(projectRoot, '.zed', 'rules', 'missing.md');
+        const destinationPath = path.join(projectRoot, '.joycode', 'rules', 'missing.md');
         writeCursorState(projectRoot, {
           operations: [
             managedOperation('copy-file', destinationPath, {
@@ -1273,7 +1020,7 @@ function runTests() {
           repoRoot: REPO_ROOT,
           homeDir,
           projectRoot,
-          targets: ['zed']
+          targets: ['joycode']
         });
 
         assert.strictEqual(result.results[0].status, 'error');
@@ -1300,7 +1047,7 @@ function runTests() {
         for (const sourceRelativePath of unsafeSources) {
           const projectRoot = createTempDir('install-lifecycle-project-');
           try {
-            const destinationPath = path.join(projectRoot, '.zed', 'copied-secret.txt');
+            const destinationPath = path.join(projectRoot, '.joycode', 'copied-secret.txt');
             writeCursorState(projectRoot, {
               operations: [
                 managedOperation('copy-file', destinationPath, {
@@ -1314,13 +1061,13 @@ function runTests() {
               repoRoot: REPO_ROOT,
               homeDir,
               projectRoot,
-              targets: ['zed']
+              targets: ['joycode']
             });
             const result = repairInstalledStates({
               repoRoot: REPO_ROOT,
               homeDir,
               projectRoot,
-              targets: ['zed']
+              targets: ['joycode']
             });
 
             assert.strictEqual(doctor.results[0].status, 'error');
@@ -1403,13 +1150,13 @@ function runTests() {
               repoRoot: REPO_ROOT,
               homeDir,
               projectRoot,
-              targets: ['zed']
+              targets: ['joycode']
             });
             const repair = repairInstalledStates({
               repoRoot: REPO_ROOT,
               homeDir,
               projectRoot,
-              targets: ['zed']
+              targets: ['joycode']
             });
 
             assert.strictEqual(doctor.results[0].status, 'error');
@@ -1437,15 +1184,15 @@ function runTests() {
       const projectRoot = createTempDir('install-lifecycle-project-');
 
       try {
-        const targetRoot = path.join(projectRoot, '.zed');
+        const targetRoot = path.join(projectRoot, '.joycode');
         const statePath = path.join(targetRoot, 'ecc-install-state.json');
-        const sourcePath = path.join(REPO_ROOT, '.zed', 'settings.json');
+        const sourcePath = path.join(REPO_ROOT, '.codex', 'AGENTS.md');
         const destinationPath = path.join(targetRoot, 'settings.json');
         fs.mkdirSync(path.dirname(destinationPath), { recursive: true });
         fs.writeFileSync(destinationPath, '{"drifted":true}\n');
 
         writeState(statePath, {
-          adapter: { id: 'zed-project', target: 'zed', kind: 'project' },
+          adapter: { id: 'joycode-project', target: 'joycode', kind: 'project' },
           targetRoot,
           installStatePath: statePath,
           request: {
@@ -1463,7 +1210,7 @@ function runTests() {
               kind: 'copy-file',
               moduleId: 'platform-configs',
               sourcePath,
-              sourceRelativePath: '.zed/settings.json',
+              sourceRelativePath: '.codex/AGENTS.md',
               destinationPath,
               strategy: 'sync-root-children',
               ownership: 'managed',
@@ -1481,7 +1228,7 @@ function runTests() {
           repoRoot: REPO_ROOT,
           homeDir,
           projectRoot,
-          targets: ['zed']
+          targets: ['joycode']
         });
 
         assert.strictEqual(report.results.length, 1);
@@ -1502,12 +1249,12 @@ function runTests() {
       const projectRoot = createTempDir('install-lifecycle-project-');
 
       try {
-        const targetRoot = path.join(projectRoot, '.zed');
+        const targetRoot = path.join(projectRoot, '.joycode');
         const statePath = path.join(targetRoot, 'ecc-install-state.json');
         fs.mkdirSync(targetRoot, { recursive: true });
 
         writeState(statePath, {
-          adapter: { id: 'zed-project', target: 'zed', kind: 'project' },
+          adapter: { id: 'joycode-project', target: 'joycode', kind: 'project' },
           targetRoot,
           installStatePath: statePath,
           request: {
@@ -1532,7 +1279,7 @@ function runTests() {
           repoRoot: REPO_ROOT,
           homeDir,
           projectRoot,
-          targets: ['zed']
+          targets: ['joycode']
         });
 
         assert.strictEqual(report.results.length, 1);
@@ -1616,7 +1363,7 @@ function runTests() {
       const projectRoot = createTempDir('install-lifecycle-project-');
 
       try {
-        const targetRoot = path.join(projectRoot, '.zed');
+        const targetRoot = path.join(projectRoot, '.joycode');
         const statePath = path.join(targetRoot, 'ecc-install-state.json');
         const destinationPath = path.join(targetRoot, 'hooks.json');
         fs.mkdirSync(path.dirname(destinationPath), { recursive: true });
@@ -1635,7 +1382,7 @@ function runTests() {
         );
 
         writeState(statePath, {
-          adapter: { id: 'zed-project', target: 'zed', kind: 'project' },
+          adapter: { id: 'joycode-project', target: 'joycode', kind: 'project' },
           targetRoot,
           installStatePath: statePath,
           request: {
@@ -1645,14 +1392,14 @@ function runTests() {
             legacyMode: true
           },
           resolution: {
-            selectedModules: ['legacy-zed-install'],
+            selectedModules: ['legacy-joycode-install'],
             skippedModules: []
           },
           operations: [
             {
               kind: 'merge-json',
               moduleId: 'platform-configs',
-              sourceRelativePath: '.zed/hooks.json',
+              sourceRelativePath: '.joycode/hooks.json',
               destinationPath,
               strategy: 'merge-json',
               ownership: 'managed',
@@ -1676,7 +1423,7 @@ function runTests() {
           repoRoot: REPO_ROOT,
           homeDir,
           projectRoot,
-          targets: ['zed']
+          targets: ['joycode']
         });
 
         assert.strictEqual(result.results[0].status, 'repaired');
@@ -1702,14 +1449,14 @@ function runTests() {
       const projectRoot = createTempDir('install-lifecycle-project-');
 
       try {
-        const targetRoot = path.join(projectRoot, '.zed');
+        const targetRoot = path.join(projectRoot, '.joycode');
         const statePath = path.join(targetRoot, 'ecc-install-state.json');
         const destinationPath = path.join(targetRoot, 'legacy-note.txt');
         fs.mkdirSync(path.dirname(destinationPath), { recursive: true });
         fs.writeFileSync(destinationPath, 'stale');
 
         writeState(statePath, {
-          adapter: { id: 'zed-project', target: 'zed', kind: 'project' },
+          adapter: { id: 'joycode-project', target: 'joycode', kind: 'project' },
           targetRoot,
           installStatePath: statePath,
           request: {
@@ -1719,14 +1466,14 @@ function runTests() {
             legacyMode: true
           },
           resolution: {
-            selectedModules: ['legacy-zed-install'],
+            selectedModules: ['legacy-joycode-install'],
             skippedModules: []
           },
           operations: [
             {
               kind: 'remove',
               moduleId: 'platform-configs',
-              sourceRelativePath: '.zed/legacy-note.txt',
+              sourceRelativePath: '.joycode/legacy-note.txt',
               destinationPath,
               strategy: 'remove',
               ownership: 'managed',
@@ -1744,7 +1491,7 @@ function runTests() {
           repoRoot: REPO_ROOT,
           homeDir,
           projectRoot,
-          targets: ['zed']
+          targets: ['joycode']
         });
 
         assert.strictEqual(result.results[0].status, 'repaired');
@@ -1763,7 +1510,7 @@ function runTests() {
       const homeDir = createTempDir('install-lifecycle-home-');
       const projectRoot = createTempDir('install-lifecycle-project-');
       const outsideRoot = createTempDir('install-lifecycle-outside-');
-      const targetRoot = path.join(projectRoot, '.zed');
+      const targetRoot = path.join(projectRoot, '.joycode');
       const destinationParent = path.join(targetRoot, 'late-parent');
       const destinationPath = path.join(destinationParent, 'managed.md');
       const outsideDestinationPath = path.join(outsideRoot, 'managed.md');
@@ -1792,7 +1539,7 @@ function runTests() {
           repoRoot: REPO_ROOT,
           homeDir,
           projectRoot,
-          targets: ['zed']
+          targets: ['joycode']
         });
       } finally {
         fs.mkdirSync = originalMkdirSync;
@@ -1819,7 +1566,7 @@ function runTests() {
       const projectRoot = createTempDir('install-lifecycle-project-');
 
       try {
-        const targetRoot = path.join(projectRoot, '.zed');
+        const targetRoot = path.join(projectRoot, '.joycode');
         const victimPath = path.join(targetRoot, 'victim.md');
         const destinationPath = path.join(targetRoot, 'managed.md');
         fs.mkdirSync(targetRoot, { recursive: true });
@@ -1843,7 +1590,7 @@ function runTests() {
           repoRoot: REPO_ROOT,
           homeDir,
           projectRoot,
-          targets: ['zed']
+          targets: ['joycode']
         });
 
         assert.strictEqual(result.results[0].status, 'error');
@@ -1869,7 +1616,7 @@ function runTests() {
       const homeDir = createTempDir('install-lifecycle-home-');
       const projectRoot = createTempDir('install-lifecycle-project-');
       const outsideRoot = createTempDir('install-lifecycle-outside-');
-      const targetRoot = path.join(projectRoot, '.zed');
+      const targetRoot = path.join(projectRoot, '.joycode');
       const destinationPath = path.join(targetRoot, 'managed.md');
       const outsideDestinationPath = path.join(outsideRoot, 'managed.md');
       const originalOpenSync = fs.openSync;
@@ -1896,7 +1643,7 @@ function runTests() {
           repoRoot: REPO_ROOT,
           homeDir,
           projectRoot,
-          targets: ['zed']
+          targets: ['joycode']
         });
       } finally {
         fs.openSync = originalOpenSync;
@@ -1921,7 +1668,7 @@ function runTests() {
       const homeDir = createTempDir('install-lifecycle-home-');
       const projectRoot = createTempDir('install-lifecycle-project-');
       const outsideRoot = createTempDir('install-lifecycle-outside-');
-      const targetRoot = path.join(projectRoot, '.zed');
+      const targetRoot = path.join(projectRoot, '.joycode');
       const destinationParent = path.join(targetRoot, 'late-parent');
       const backupParent = path.join(targetRoot, 'late-parent-backup');
       const destinationPath = path.join(destinationParent, 'managed.md');
@@ -1967,7 +1714,7 @@ function runTests() {
           repoRoot: REPO_ROOT,
           homeDir,
           projectRoot,
-          targets: ['zed']
+          targets: ['joycode']
         });
       } finally {
         fs.openSync = originalOpenSync;
@@ -1995,7 +1742,7 @@ function runTests() {
       const outsideRoot = createTempDir('install-lifecycle-outside-');
 
       try {
-        const targetRoot = path.join(projectRoot, '.zed');
+        const targetRoot = path.join(projectRoot, '.joycode');
         const adapterStatePath = path.join(targetRoot, 'ecc-install-state.json');
         const recordedStatePath = path.join(outsideRoot, 'recorded-state.json');
         const stateOptions = createCursorStateOptions(projectRoot, {
@@ -2008,7 +1755,7 @@ function runTests() {
           repoRoot: REPO_ROOT,
           homeDir,
           projectRoot,
-          targets: ['zed']
+          targets: ['joycode']
         });
 
         assert.strictEqual(result.results[0].status, 'ok');
@@ -2033,7 +1780,7 @@ function runTests() {
       const projectRoot = createTempDir('install-lifecycle-project-');
 
       try {
-        const targetRoot = path.join(projectRoot, '.zed');
+        const targetRoot = path.join(projectRoot, '.joycode');
         const statePath = path.join(targetRoot, 'ecc-install-state.json');
         const destinationPath = path.join(targetRoot, 'hooks.json');
         fs.mkdirSync(path.dirname(destinationPath), { recursive: true });
@@ -2050,7 +1797,7 @@ function runTests() {
         );
 
         writeState(statePath, {
-          adapter: { id: 'zed-project', target: 'zed', kind: 'project' },
+          adapter: { id: 'joycode-project', target: 'joycode', kind: 'project' },
           targetRoot,
           installStatePath: statePath,
           request: {
@@ -2060,14 +1807,14 @@ function runTests() {
             legacyMode: true
           },
           resolution: {
-            selectedModules: ['legacy-zed-install'],
+            selectedModules: ['legacy-joycode-install'],
             skippedModules: []
           },
           operations: [
             {
               kind: 'merge-json',
               moduleId: 'platform-configs',
-              sourceRelativePath: '.zed/hooks.json',
+              sourceRelativePath: '.joycode/hooks.json',
               destinationPath,
               strategy: 'merge-json',
               ownership: 'managed',
@@ -2094,7 +1841,7 @@ function runTests() {
         const result = uninstallInstalledStates({
           homeDir,
           projectRoot,
-          targets: ['zed']
+          targets: ['joycode']
         });
 
         assert.strictEqual(result.results[0].status, 'uninstalled');
@@ -2184,13 +1931,13 @@ function runTests() {
       const projectRoot = createTempDir('install-lifecycle-project-');
 
       try {
-        const targetRoot = path.join(projectRoot, '.zed');
+        const targetRoot = path.join(projectRoot, '.joycode');
         const statePath = path.join(targetRoot, 'ecc-install-state.json');
         const destinationPath = path.join(targetRoot, 'legacy-note.txt');
         fs.mkdirSync(targetRoot, { recursive: true });
 
         writeState(statePath, {
-          adapter: { id: 'zed-project', target: 'zed', kind: 'project' },
+          adapter: { id: 'joycode-project', target: 'joycode', kind: 'project' },
           targetRoot,
           installStatePath: statePath,
           request: {
@@ -2200,14 +1947,14 @@ function runTests() {
             legacyMode: true
           },
           resolution: {
-            selectedModules: ['legacy-zed-install'],
+            selectedModules: ['legacy-joycode-install'],
             skippedModules: []
           },
           operations: [
             {
               kind: 'remove',
               moduleId: 'platform-configs',
-              sourceRelativePath: '.zed/legacy-note.txt',
+              sourceRelativePath: '.joycode/legacy-note.txt',
               destinationPath,
               strategy: 'remove',
               ownership: 'managed',
@@ -2225,7 +1972,7 @@ function runTests() {
         const result = uninstallInstalledStates({
           homeDir,
           projectRoot,
-          targets: ['zed']
+          targets: ['joycode']
         });
 
         assert.strictEqual(result.results[0].status, 'uninstalled');
@@ -2246,7 +1993,7 @@ function runTests() {
       const projectRoot = createTempDir('install-lifecycle-project-');
 
       try {
-        const targetRoot = path.join(projectRoot, '.zed');
+        const targetRoot = path.join(projectRoot, '.joycode');
         const destinationPath = path.join(targetRoot, 'rules', 'coding-style.md');
         fs.mkdirSync(path.dirname(destinationPath), { recursive: true });
         fs.writeFileSync(destinationPath, 'managed\n');
@@ -2257,7 +2004,7 @@ function runTests() {
         const result = uninstallInstalledStates({
           homeDir,
           projectRoot,
-          targets: ['zed'],
+          targets: ['joycode'],
           dryRun: true
         });
 
@@ -2281,14 +2028,14 @@ function runTests() {
       const projectRoot = createTempDir('install-lifecycle-project-');
 
       try {
-        const statePath = path.join(projectRoot, '.zed', 'ecc-install-state.json');
+        const statePath = path.join(projectRoot, '.joycode', 'ecc-install-state.json');
         fs.mkdirSync(path.dirname(statePath), { recursive: true });
         fs.writeFileSync(statePath, '{not-json', 'utf8');
 
         const result = uninstallInstalledStates({
           homeDir,
           projectRoot,
-          targets: ['zed']
+          targets: ['joycode']
         });
 
         assert.strictEqual(result.results[0].status, 'error');
@@ -2310,7 +2057,7 @@ function runTests() {
       const outsideRoot = createTempDir('install-lifecycle-outside-');
 
       try {
-        const targetRoot = path.join(projectRoot, '.zed');
+        const targetRoot = path.join(projectRoot, '.joycode');
         const adapterStatePath = path.join(targetRoot, 'ecc-install-state.json');
         const recordedStatePath = path.join(outsideRoot, 'recorded-state.json');
         const stateOptions = createCursorStateOptions(projectRoot, {
@@ -2322,7 +2069,7 @@ function runTests() {
         const result = uninstallInstalledStates({
           homeDir,
           projectRoot,
-          targets: ['zed']
+          targets: ['joycode']
         });
 
         assert.strictEqual(result.results[0].status, 'uninstalled');
@@ -2344,7 +2091,7 @@ function runTests() {
       const projectRoot = createTempDir('install-lifecycle-project-');
 
       try {
-        const targetRoot = path.join(projectRoot, '.zed');
+        const targetRoot = path.join(projectRoot, '.joycode');
         const destinationPath = path.join(targetRoot, 'rules', 'nested', 'managed.md');
         fs.mkdirSync(path.dirname(destinationPath), { recursive: true });
         fs.writeFileSync(destinationPath, 'managed\n');
@@ -2355,7 +2102,7 @@ function runTests() {
         const result = uninstallInstalledStates({
           homeDir,
           projectRoot,
-          targets: ['zed']
+          targets: ['joycode']
         });
 
         assert.strictEqual(result.results[0].status, 'uninstalled');
@@ -2379,7 +2126,7 @@ function runTests() {
       const projectRoot = path.join(cleanupBoundaryRoot, 'project');
 
       try {
-        const targetRoot = path.join(projectRoot, '.zed');
+        const targetRoot = path.join(projectRoot, '.joycode');
         const adapterStatePath = path.join(targetRoot, 'ecc-install-state.json');
         const destinationPath = path.join(targetRoot, 'rules', 'nested', 'managed.md');
         fs.mkdirSync(path.dirname(destinationPath), { recursive: true });
@@ -2394,7 +2141,7 @@ function runTests() {
         const result = uninstallInstalledStates({
           homeDir,
           projectRoot,
-          targets: ['zed']
+          targets: ['joycode']
         });
 
         assert.strictEqual(result.results[0].status, 'uninstalled');
@@ -2417,7 +2164,7 @@ function runTests() {
       const fullProjectRoot = createTempDir('install-lifecycle-full-');
 
       try {
-        let targetRoot = path.join(partialProjectRoot, '.zed');
+        let targetRoot = path.join(partialProjectRoot, '.joycode');
         let destinationPath = path.join(targetRoot, 'settings.json');
         fs.mkdirSync(targetRoot, { recursive: true });
         fs.writeFileSync(
@@ -2451,7 +2198,7 @@ function runTests() {
         let result = uninstallInstalledStates({
           homeDir,
           projectRoot: partialProjectRoot,
-          targets: ['zed']
+          targets: ['joycode']
         });
         assert.strictEqual(result.results[0].status, 'uninstalled');
         assert.deepStrictEqual(JSON.parse(fs.readFileSync(destinationPath, 'utf8')), {
@@ -2461,7 +2208,7 @@ function runTests() {
           }
         });
 
-        targetRoot = path.join(fullProjectRoot, '.zed');
+        targetRoot = path.join(fullProjectRoot, '.joycode');
         destinationPath = path.join(targetRoot, 'settings.json');
         fs.mkdirSync(targetRoot, { recursive: true });
         fs.writeFileSync(destinationPath, JSON.stringify({ managed: true }, null, 2));
@@ -2476,7 +2223,7 @@ function runTests() {
         result = uninstallInstalledStates({
           homeDir,
           projectRoot: fullProjectRoot,
-          targets: ['zed']
+          targets: ['joycode']
         });
         assert.strictEqual(result.results[0].status, 'uninstalled');
         assert.ok(!fs.existsSync(destinationPath));
@@ -2550,7 +2297,7 @@ function runTests() {
         ];
 
         for (const testCase of cases) {
-          const targetRoot = path.join(testCase.projectRoot, '.zed');
+          const targetRoot = path.join(testCase.projectRoot, '.joycode');
           const destinationPath = path.join(targetRoot, 'settings.json');
           fs.mkdirSync(targetRoot, { recursive: true });
           if (!testCase.absent) {
@@ -2568,7 +2315,7 @@ function runTests() {
           const result = uninstallInstalledStates({
             homeDir,
             projectRoot: testCase.projectRoot,
-            targets: ['zed']
+            targets: ['joycode']
           });
 
           assert.strictEqual(result.results[0].status, 'uninstalled');
@@ -2595,7 +2342,7 @@ function runTests() {
       const projectRoot = createTempDir('install-lifecycle-project-');
 
       try {
-        const targetRoot = path.join(projectRoot, '.zed');
+        const targetRoot = path.join(projectRoot, '.joycode');
         const templatePath = path.join(targetRoot, 'generated', 'plugin.json');
         const removedPath = path.join(targetRoot, 'already-removed.txt');
         fs.mkdirSync(path.dirname(templatePath), { recursive: true });
@@ -2613,7 +2360,7 @@ function runTests() {
         const result = uninstallInstalledStates({
           homeDir,
           projectRoot,
-          targets: ['zed']
+          targets: ['joycode']
         });
 
         assert.strictEqual(result.results[0].status, 'uninstalled');
@@ -2635,7 +2382,7 @@ function runTests() {
       const projectRoot = createTempDir('install-lifecycle-project-');
 
       try {
-        const targetRoot = path.join(projectRoot, '.zed');
+        const targetRoot = path.join(projectRoot, '.joycode');
         const victimPath = path.join(targetRoot, 'victim.md');
         const destinationPath = path.join(targetRoot, 'managed.md');
         fs.mkdirSync(targetRoot, { recursive: true });
@@ -2653,7 +2400,7 @@ function runTests() {
         const result = uninstallInstalledStates({
           homeDir,
           projectRoot,
-          targets: ['zed']
+          targets: ['joycode']
         });
 
         assert.strictEqual(result.results[0].status, 'uninstalled');
@@ -2673,7 +2420,7 @@ function runTests() {
       const homeDir = createTempDir('install-lifecycle-home-');
       const projectRoot = createTempDir('install-lifecycle-project-');
       const outsideRoot = createTempDir('install-lifecycle-outside-');
-      const targetRoot = path.join(projectRoot, '.zed');
+      const targetRoot = path.join(projectRoot, '.joycode');
       const destinationParent = path.join(targetRoot, 'late-parent');
       const backupParent = path.join(targetRoot, 'late-parent-backup');
       const destinationPath = path.join(destinationParent, 'managed.md');
@@ -2706,7 +2453,7 @@ function runTests() {
         result = uninstallInstalledStates({
           homeDir,
           projectRoot,
-          targets: ['zed']
+          targets: ['joycode']
         });
       } finally {
         fs.existsSync = originalExistsSync;
@@ -2733,7 +2480,7 @@ function runTests() {
       const projectRoot = createTempDir('install-lifecycle-project-');
 
       try {
-        const targetRoot = path.join(projectRoot, '.zed');
+        const targetRoot = path.join(projectRoot, '.joycode');
         const templatePath = path.join(targetRoot, 'plugin.json');
         const removedPath = path.join(targetRoot, 'legacy.json');
         fs.mkdirSync(targetRoot, { recursive: true });
@@ -2754,7 +2501,7 @@ function runTests() {
         const result = uninstallInstalledStates({
           homeDir,
           projectRoot,
-          targets: ['zed']
+          targets: ['joycode']
         });
 
         assert.strictEqual(result.results[0].status, 'uninstalled');
@@ -2780,7 +2527,7 @@ function runTests() {
       const missingPayloadProjectRoot = createTempDir('install-lifecycle-missing-payload-');
 
       try {
-        let targetRoot = path.join(unsupportedProjectRoot, '.zed');
+        let targetRoot = path.join(unsupportedProjectRoot, '.joycode');
         let destinationPath = path.join(targetRoot, 'custom.txt');
         fs.mkdirSync(targetRoot, { recursive: true });
         fs.writeFileSync(destinationPath, 'custom\n');
@@ -2791,12 +2538,12 @@ function runTests() {
         let result = uninstallInstalledStates({
           homeDir,
           projectRoot: unsupportedProjectRoot,
-          targets: ['zed']
+          targets: ['joycode']
         });
         assert.strictEqual(result.results[0].status, 'error');
         assert.ok(result.results[0].error.includes('Unsupported uninstall operation kind'));
 
-        targetRoot = path.join(missingPayloadProjectRoot, '.zed');
+        targetRoot = path.join(missingPayloadProjectRoot, '.joycode');
         destinationPath = path.join(targetRoot, 'settings.json');
         fs.mkdirSync(targetRoot, { recursive: true });
         fs.writeFileSync(destinationPath, '{"managed":true}\n');
@@ -2807,7 +2554,7 @@ function runTests() {
         result = uninstallInstalledStates({
           homeDir,
           projectRoot: missingPayloadProjectRoot,
-          targets: ['zed']
+          targets: ['joycode']
         });
         assert.strictEqual(result.results[0].status, 'error');
         assert.ok(result.results[0].error.includes('Missing merge payload for uninstall'));

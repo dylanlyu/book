@@ -13,10 +13,12 @@ function isObject(value) {
 }
 
 function sanitizePathSegment(value) {
-  return String(value || 'unknown')
-    .trim()
-    .replace(/[^A-Za-z0-9._-]+/g, '_')
-    .replace(/^_+|_+$/g, '') || 'unknown';
+  return (
+    String(value || 'unknown')
+      .trim()
+      .replace(/[^A-Za-z0-9._-]+/g, '_')
+      .replace(/^_+|_+$/g, '') || 'unknown'
+  );
 }
 
 function parseContextSeedPaths(context) {
@@ -121,9 +123,7 @@ function summarizeRawWorkerStates(snapshot) {
   }
 
   return (snapshot.workers || []).reduce((counts, worker) => {
-    const state = worker && worker.status && worker.status.state
-      ? worker.status.state
-      : 'unknown';
+    const state = worker && worker.status && worker.status.state ? worker.status.state : 'unknown';
     counts[state] = (counts[state] || 0) + 1;
     return counts;
   }, {});
@@ -131,9 +131,7 @@ function summarizeRawWorkerStates(snapshot) {
 
 function deriveDmuxSessionState(snapshot) {
   const workerStates = summarizeRawWorkerStates(snapshot);
-  const totalWorkers = Number.isInteger(snapshot.workerCount)
-    ? snapshot.workerCount
-    : Object.values(workerStates).reduce((sum, count) => sum + count, 0);
+  const totalWorkers = Number.isInteger(snapshot.workerCount) ? snapshot.workerCount : Object.values(workerStates).reduce((sum, count) => sum + count, 0);
 
   if (snapshot.sessionActive) {
     return 'active';
@@ -148,10 +146,7 @@ function deriveDmuxSessionState(snapshot) {
     return 'failed';
   }
 
-  const completedCount = (workerStates.completed || 0)
-    + (workerStates.succeeded || 0)
-    + (workerStates.success || 0)
-    + (workerStates.done || 0);
+  const completedCount = (workerStates.completed || 0) + (workerStates.succeeded || 0) + (workerStates.success || 0) + (workerStates.done || 0);
   if (completedCount === totalWorkers) {
     return 'completed';
   }
@@ -277,11 +272,7 @@ function resolveRecordingDir(options = {}) {
 function getFallbackSessionRecordingPath(snapshot, options = {}) {
   validateCanonicalSnapshot(snapshot);
 
-  return path.join(
-    resolveRecordingDir(options),
-    sanitizePathSegment(snapshot.adapterId),
-    `${sanitizePathSegment(snapshot.session.id)}.json`
-  );
+  return path.join(resolveRecordingDir(options), sanitizePathSegment(snapshot.adapterId), `${sanitizePathSegment(snapshot.session.id)}.json`);
 }
 
 function readExistingRecording(filePath) {
@@ -300,23 +291,16 @@ function writeFallbackSessionRecording(snapshot, options = {}) {
   const filePath = getFallbackSessionRecordingPath(snapshot, options);
   const recordedAt = new Date().toISOString();
   const existing = readExistingRecording(filePath);
-  const snapshotChanged = !existing
-    || JSON.stringify(existing.latest) !== JSON.stringify(snapshot);
+  const snapshotChanged = !existing || JSON.stringify(existing.latest) !== JSON.stringify(snapshot);
 
   const payload = {
     schemaVersion: SESSION_RECORDING_SCHEMA_VERSION,
     adapterId: snapshot.adapterId,
     sessionId: snapshot.session.id,
-    createdAt: existing && typeof existing.createdAt === 'string'
-      ? existing.createdAt
-      : recordedAt,
+    createdAt: existing && typeof existing.createdAt === 'string' ? existing.createdAt : recordedAt,
     updatedAt: recordedAt,
     latest: snapshot,
-    history: Array.isArray(existing && existing.history)
-      ? (snapshotChanged
-          ? existing.history.concat([{ recordedAt, snapshot }])
-          : existing.history)
-      : [{ recordedAt, snapshot }]
+    history: Array.isArray(existing && existing.history) ? (snapshotChanged ? existing.history.concat([{ recordedAt, snapshot }]) : existing.history) : [{ recordedAt, snapshot }]
   };
 
   fs.mkdirSync(path.dirname(filePath), { recursive: true });
@@ -339,10 +323,7 @@ function loadStateStore(options = {}) {
   try {
     return loadStateStoreImpl();
   } catch (error) {
-    const missingRequestedModule = error
-      && error.code === 'MODULE_NOT_FOUND'
-      && typeof error.message === 'string'
-      && error.message.includes('../state-store');
+    const missingRequestedModule = error && error.code === 'MODULE_NOT_FOUND' && typeof error.message === 'string' && error.message.includes('../state-store');
 
     if (missingRequestedModule) {
       return null;
@@ -436,7 +417,7 @@ function normalizeDmuxSnapshot(snapshot, sourceTarget) {
       command: worker.pane ? worker.pane.currentCommand || null : null,
       pid: worker.pane ? worker.pane.pid || null : null,
       active: worker.pane ? Boolean(worker.pane.active) : false,
-      dead: worker.pane ? Boolean(worker.pane.dead) : false,
+      dead: worker.pane ? Boolean(worker.pane.dead) : false
     },
     intent: {
       objective: worker.task.objective || '',
@@ -492,12 +473,10 @@ function normalizeClaudeHistorySession(session, sourceTarget) {
       command: 'claude',
       pid: null,
       active: false,
-      dead: true,
+      dead: true
     },
     intent: {
-      objective: metadata.inProgress && metadata.inProgress.length > 0
-        ? metadata.inProgress[0]
-        : (metadata.title || ''),
+      objective: metadata.inProgress && metadata.inProgress.length > 0 ? metadata.inProgress[0] : metadata.title || '',
       seedPaths: parseContextSeedPaths(metadata.context)
     },
     outputs: {
@@ -541,7 +520,7 @@ function normalizeCodexWorktreeSession(session, sourceTarget) {
       command: 'codex',
       pid: null,
       active: Boolean(session.active),
-      dead: !session.active,
+      dead: !session.active
     },
     intent: {
       objective,
@@ -577,60 +556,6 @@ function normalizeCodexWorktreeSession(session, sourceTarget) {
   });
 }
 
-function normalizeOpencodeSession(session, sourceTarget) {
-  const state = session.active ? 'active' : 'recorded';
-  const objective = typeof session.objective === 'string' ? session.objective : '';
-  const worker = {
-    id: session.sessionId,
-    label: session.title || session.sessionId,
-    state,
-    health: 'healthy',
-    branch: session.branch || null,
-    worktree: session.cwd || null,
-    runtime: {
-      kind: 'opencode-session',
-      command: 'opencode',
-      pid: null,
-      active: Boolean(session.active),
-      dead: !session.active,
-    },
-    intent: {
-      objective,
-      seedPaths: []
-    },
-    outputs: {
-      summary: [],
-      validation: [],
-      remainingRisks: []
-    },
-    artifacts: {
-      sessionFile: session.sessionPath || null,
-      projectId: session.projectId || null,
-      version: session.version || null,
-      model: session.model || null,
-      provider: session.provider || null,
-      title: session.title || null,
-      createdAt: session.createdAt || null,
-      updatedAt: session.updatedAt || null,
-      messageCount: Number.isInteger(session.messageCount) ? session.messageCount : null
-    }
-  };
-
-  return validateCanonicalSnapshot({
-    schemaVersion: SESSION_SCHEMA_VERSION,
-    adapterId: 'opencode',
-    session: {
-      id: session.sessionId,
-      kind: 'opencode',
-      state,
-      repoRoot: session.cwd || null,
-      sourceTarget
-    },
-    workers: [worker],
-    aggregates: buildAggregates([worker])
-  });
-}
-
 module.exports = {
   SESSION_SCHEMA_VERSION,
   buildAggregates,
@@ -638,7 +563,6 @@ module.exports = {
   normalizeClaudeHistorySession,
   normalizeCodexWorktreeSession,
   normalizeDmuxSnapshot,
-  normalizeOpencodeSession,
   persistCanonicalSnapshot,
   validateCanonicalSnapshot
 };

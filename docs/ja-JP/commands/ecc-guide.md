@@ -90,4 +90,4 @@ description: ECCの現在のエージェント、スキル、コマンド、フ�
 - `/harness-audit` — 決定論的リポジトリ準備度スコアリング
 - `/skill-health` — スキル品質チェック
 - `/skill-create` — ローカルgit履歴からの新しいスキル抽出
-- `/security-scan` — Claude/OpenCode設定のセキュリティレビュー
+- `/security-scan` — Claude/Codex設定のセキュリティレビュー

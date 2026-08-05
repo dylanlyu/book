@@ -134,7 +134,7 @@ Use `/project-init` when the user wants ECC configured for a target repo. The ex
 Ask for the target harness and install path first, then inspect:
 
 - plugin install metadata
-- `.claude/`, `.codex/`, `.opencode/`, `.joycode/`, `.zed/`, or `.qwen/`
+- `.claude/`, `.codex/`, or `.joycode/`
 - `hooks/hooks.json`
 - install-state files
 - relevant command/skill files
@@ -186,4 +186,4 @@ Needs approval before apply: <yes/no>
 - `/harness-audit`: deterministic readiness scorecard
 - `/skill-health`: skill quality review
 - `/skill-create`: generate a new skill from local git history
-- `/security-scan`: inspect Claude/OpenCode configuration security
+- `/security-scan`: inspect Claude/Codex configuration security

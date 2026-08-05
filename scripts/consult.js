@@ -56,7 +56,7 @@ Options:
 
 Examples:
   node scripts/consult.js "security reviews"
-  node scripts/consult.js "Next.js React app" --target zed
+  node scripts/consult.js "Next.js React app" --target claude-project
   node scripts/consult.js "operator workflows" --target codex --json
 `);
 

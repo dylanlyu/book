@@ -39,14 +39,13 @@ No. ECC is a harness layer: skills, commands, agents, hooks. It does not alter y
 
 Do not stack the plugin install with the manual installer (`install.sh` / `install.ps1` / `npx ecc-install --profile full`). Pick one path; stacking creates duplicate skills and duplicate hook runs. If you already stacked, see [Reset / Uninstall ECC](../README.md#reset--uninstall-ecc).
 
-## Using 2.0 across harnesses (Codex, Antigravity/agy, OpenCode, Cursor)
+## Using 2.0 across harnesses (Codex, Antigravity/agy, JoyCode)
 
 2.0 is cross-harness. Use the manual installer with a target:
 
 ```bash
 npx ecc-install --profile core --target codex      # Codex CLI
-npx ecc-install --profile core --target opencode   # OpenCode
 npx ecc-install --profile core --target cursor     # Cursor
 ```
 
-Run `npx ecc consult "<what you need>" --target <harness>` to preview which components fit before installing. Harness-specific guides: [ANTIGRAVITY-GUIDE.md](./ANTIGRAVITY-GUIDE.md), [HERMES-SETUP.md](./HERMES-SETUP.md), [QWEN-GUIDE.md](./QWEN-GUIDE.md), [JOYCODE-GUIDE.md](./JOYCODE-GUIDE.md).
+Run `npx ecc consult "<what you need>" --target <harness>` to preview which components fit before installing. Harness-specific guides: [ANTIGRAVITY-GUIDE.md](./ANTIGRAVITY-GUIDE.md), [JOYCODE-GUIDE.md](./JOYCODE-GUIDE.md).

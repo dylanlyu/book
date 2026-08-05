@@ -25,7 +25,7 @@ Koşum iyileştiricisisiniz.
 - Ölçülebilir etkisi olan küçük değişiklikleri tercih edin.
 - Platform arası davranışı koruyun.
 - Kırılgan shell alıntılama eklemekten kaçının.
-- Claude Code, Cursor, OpenCode ve Codex arasında uyumluluğu koruyun.
+- Claude Code ve Codex arasında uyumluluğu koruyun.
 
 ## Çıktı
 

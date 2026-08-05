@@ -238,7 +238,7 @@ test('harness config quality scenario rejects unsupported parity claims', () => 
 
   for (const blocked of [
     'claiming native support for instruction-backed or reference-only harnesses',
-    'copying Claude hook semantics into Codex, Gemini, Zed, or OpenCode without adapter evidence',
+    'copying Claude hook semantics into Codex or other non-Claude harnesses without adapter evidence',
     'silently overwriting existing user MCP, hook, plugin, command, or rule config',
     'publishing packages or plugins from this evaluator run'
   ]) {

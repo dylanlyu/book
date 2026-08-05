@@ -12,7 +12,7 @@ description: プロジェクトのスタックを検出し、リポジトリの�
 /project-init
 /project-init --dry-run
 /project-init --target claude
-/project-init --target zed
+/project-init --target joycode
 /project-init --skills continuous-learning-v2,security-review
 /project-init --config ecc-install.json
 ```
@@ -20,7 +20,7 @@ description: プロジェクトのスタックを検出し、リポジトリの�
 ## 安全ルール
 
 1. デフォルトはドライラン。ユーザーが具体的な計画を承認するまで、`CLAUDE.md`、設定ファイル、ルール、スキル、またはインストール状態を変更しない。
-2. 既存のプロジェクトガイダンスを保持。`CLAUDE.md`、`.claude/settings.local.json`、`.codex/`、`.opencode/`、`.joycode/`、`.zed/`、または`.qwen/`が既に存在する場合、内容を検査し上書きではなくマージ/追記計画を提案。
+2. 既存のプロジェクトガイダンスを保持。`CLAUDE.md`、`.claude/settings.local.json`、`.codex/`、または`.joycode/`が既に存在する場合、内容を検査し上書きではなくマージ/追記計画を提案。
 3. ECCのインストーラーとマニフェストツールを使用。インストールのショートカットとしてファイルを手動コピーしたり任意のリモートをクローンしない。
 4. パーミッションを狭く保つ。生成された設定は検出されたビルド/テスト/リントツールに一致させ、広範なシェルアクセスを避ける。
 5. 何かを適用する前に、正確に何が変わるかを報告。
@@ -39,7 +39,7 @@ ECCチェックアウトが利用可能な場合、`config/project-stack-mapping
 
 ## 計画フロー
 
-1. ターゲットハーネスを特定。ユーザーが`codex`、`opencode`、`joycode`、`zed`、または`qwen`を要求しない限りデフォルトは`claude`。
+1. ターゲットハーネスを特定。ユーザーが`claude-project`、`antigravity`、`codex`、または`joycode`を要求しない限りデフォルトは`claude`。
 2. プロジェクトファイルからスタックを検出し、各一致のエビデンスを表示。
 3. 最小限の有用なECC計画を解決:
    - プロジェクトに`ecc-install.json`がある: `node scripts/install-plan.js --config ecc-install.json --json`

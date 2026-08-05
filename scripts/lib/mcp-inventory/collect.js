@@ -3,12 +3,10 @@
 const { normalizeServerEntry, buildInventory } = require('./canonical-mcp');
 const { readClaudeCodeMcp } = require('./readers/claude-code');
 const { readCodexMcp } = require('./readers/codex');
-const { readOpencodeMcp } = require('./readers/opencode');
 
 const DEFAULT_READERS = Object.freeze({
   'claude-code': readClaudeCodeMcp,
-  codex: readCodexMcp,
-  opencode: readOpencodeMcp
+  codex: readCodexMcp
 });
 
 // Collect MCP server configs from every harness reader, normalize each raw

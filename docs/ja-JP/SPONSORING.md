@@ -1,6 +1,6 @@
 # ECCのスポンサーシップ
 
-ECCはClaude Code、Cursor、OpenCode、Codex app/CLIにまたがるオープンソースのエージェントハーネスパフォーマンスシステムとして維持されています。
+ECCはClaude Code、Codex、Antigravity、JoyCodeにまたがるオープンソースのエージェントハーネスパフォーマンスシステムとして維持されています。
 
 ## スポンサーになる理由
 

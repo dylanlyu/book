@@ -5,10 +5,7 @@ const path = require('path');
 const PLATFORM_SOURCE_PATH_OWNERS = Object.freeze({
   '.claude-plugin': 'claude',
   '.codex': 'codex',
-  '.joycode': 'joycode',
-  '.opencode': 'opencode',
-  '.qwen': 'qwen',
-  '.zed': 'zed'
+  '.joycode': 'joycode'
 });
 
 function normalizeRelativePath(relativePath) {

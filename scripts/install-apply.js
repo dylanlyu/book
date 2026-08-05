@@ -28,10 +28,7 @@ Targets:
   claude-project - Install ECC into ./.claude/ (per-project) with managed rules under rules/ecc and flat skills under skills/
   antigravity  - Install rules, workflows, skills, and agents to ./.agent/
   codex        - Install shared agents/config into ~/.codex/
-  opencode     - Install shared commands/hooks/config into ~/.opencode/
   joycode      - Install commands, agents, skills, and flattened rules into ./.joycode/
-  qwen         - Install commands, agents, skills, rules, and Qwen config into ~/.qwen/
-  zed          - Install project settings, commands, agents, skills, and flattened rules into ./.zed/
 
 Options:
   --profile <name>    Resolve and install a manifest profile

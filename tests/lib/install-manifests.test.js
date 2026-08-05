@@ -264,27 +264,23 @@ function runTests() {
   if (
     test('resolves a real project profile with target-specific skips', () => {
       const projectRoot = '/workspace/app';
-      const plan = resolveInstallPlan({ profileId: 'developer', target: 'zed', projectRoot });
+      const plan = resolveInstallPlan({ profileId: 'developer', target: 'joycode', projectRoot });
       assert.ok(plan.selectedModuleIds.includes('rules-core'), 'Should keep rules-core');
       assert.ok(plan.selectedModuleIds.includes('commands-core'), 'Should keep commands-core');
-      assert.ok(!plan.selectedModuleIds.includes('orchestration'), 'Should not select unsupported orchestration module for zed');
+      assert.ok(!plan.selectedModuleIds.includes('orchestration'), 'Should not select unsupported orchestration module for joycode');
       assert.ok(plan.skippedModuleIds.includes('orchestration'), 'Should report unsupported orchestration module as skipped');
-      assert.strictEqual(plan.targetAdapterId, 'zed-project');
-      assert.strictEqual(plan.targetRoot, path.join(projectRoot, '.zed'));
-      assert.strictEqual(plan.installStatePath, path.join(projectRoot, '.zed', 'ecc-install-state.json'));
+      assert.strictEqual(plan.targetAdapterId, 'joycode-project');
+      assert.strictEqual(plan.targetRoot, path.join(projectRoot, '.joycode'));
+      assert.strictEqual(plan.installStatePath, path.join(projectRoot, '.joycode', 'ecc-install-state.json'));
       assert.ok(plan.operations.length > 0, 'Should include scaffold operations');
-      assert.ok(
-        plan.operations.some(operation => operation.sourceRelativePath === '.zed' && operation.destinationPath === path.join(projectRoot, '.zed') && operation.strategy === 'sync-root-children'),
-        'Should sync non-rule Zed platform files into the target root'
-      );
       assert.ok(
         plan.operations.some(
           operation =>
             operation.sourceRelativePath === 'rules/common/agents.md' &&
-            operation.destinationPath === path.join(projectRoot, '.zed', 'rules', 'common-agents.md') &&
+            operation.destinationPath === path.join(projectRoot, '.joycode', 'rules', 'common-agents.md') &&
             operation.strategy === 'flatten-copy'
         ),
-        'Should flatten shared rules into the Zed rules directory'
+        'Should flatten shared rules into the JoyCode rules directory'
       );
     })
   )
@@ -323,54 +319,7 @@ function runTests() {
     passed++;
   else failed++;
 
-  if (
-    test('resolves Qwen minimal profile while leaving hooks out', () => {
-      const homeDir = '/Users/example';
-      const plan = resolveInstallPlan({
-        profileId: 'minimal',
-        target: 'qwen',
-        homeDir
-      });
 
-      assert.deepStrictEqual(plan.selectedModuleIds, ['rules-core', 'agents-core', 'commands-core', 'platform-configs', 'skill-unified-memory', 'workflow-quality']);
-      assert.deepStrictEqual(plan.skippedModuleIds, []);
-      assert.strictEqual(plan.targetAdapterId, 'qwen-home');
-      assert.strictEqual(plan.targetRoot, path.join(homeDir, '.qwen'));
-      assert.ok(
-        plan.operations.some(operation => operation.sourceRelativePath === '.qwen'),
-        'Should install Qwen native config'
-      );
-      assert.ok(!plan.operations.some(operation => operation.destinationPath.includes(`${path.sep}hooks`)), 'Qwen minimal profile should not install hook runtime files');
-    })
-  )
-    passed++;
-  else failed++;
-
-  if (
-    test('resolves Zed minimal profile with project settings and without hooks', () => {
-      const projectRoot = '/workspace/zed-app';
-      const plan = resolveInstallPlan({
-        profileId: 'minimal',
-        target: 'zed',
-        projectRoot
-      });
-
-      assert.deepStrictEqual(plan.selectedModuleIds, ['rules-core', 'agents-core', 'commands-core', 'platform-configs', 'skill-unified-memory', 'workflow-quality']);
-      assert.deepStrictEqual(plan.skippedModuleIds, []);
-      assert.strictEqual(plan.targetAdapterId, 'zed-project');
-      assert.strictEqual(plan.targetRoot, path.join(projectRoot, '.zed'));
-      assert.ok(
-        plan.operations.some(operation => operation.sourceRelativePath === '.zed'),
-        'Should install Zed native project settings'
-      );
-      assert.ok(
-        !plan.selectedModuleIds.includes('hooks-runtime') && !plan.operations.some(operation => operation.moduleId === 'hooks-runtime'),
-        'Zed minimal profile should not install hook runtime files'
-      );
-    })
-  )
-    passed++;
-  else failed++;
 
   if (
     test('resolves machine-learning component with workflow dependencies', () => {
@@ -396,8 +345,8 @@ function runTests() {
   else failed++;
 
   if (
-    test('resolves machine-learning component on JoyCode and Qwen targets', () => {
-      for (const target of ['joycode', 'qwen']) {
+    test('resolves machine-learning component on the JoyCode target', () => {
+      for (const target of ['joycode']) {
         const plan = resolveInstallPlan({
           includeComponentIds: ['capability:machine-learning'],
           target,
@@ -485,7 +434,7 @@ function runTests() {
   if (
     test('resolves rust legacy compatibility into framework-language module', () => {
       const selection = resolveLegacyCompatibilitySelection({
-        target: 'zed',
+        target: 'joycode',
         legacyLanguages: ['rust']
       });
 
@@ -499,7 +448,7 @@ function runTests() {
   if (
     test('resolves cpp legacy compatibility into framework-language module', () => {
       const selection = resolveLegacyCompatibilitySelection({
-        target: 'zed',
+        target: 'joycode',
         legacyLanguages: ['cpp']
       });
 
@@ -513,7 +462,7 @@ function runTests() {
   if (
     test('resolves c legacy compatibility into framework-language module', () => {
       const selection = resolveLegacyCompatibilitySelection({
-        target: 'zed',
+        target: 'joycode',
         legacyLanguages: ['c']
       });
 
@@ -527,7 +476,7 @@ function runTests() {
   if (
     test('resolves csharp legacy compatibility into framework-language module', () => {
       const selection = resolveLegacyCompatibilitySelection({
-        target: 'zed',
+        target: 'joycode',
         legacyLanguages: ['csharp']
       });
 
@@ -541,7 +490,7 @@ function runTests() {
   if (
     test('resolves fsharp legacy compatibility into framework-language module', () => {
       const selection = resolveLegacyCompatibilitySelection({
-        target: 'zed',
+        target: 'joycode',
         legacyLanguages: ['fsharp']
       });
 
@@ -555,7 +504,7 @@ function runTests() {
   if (
     test('resolves ruby and rails legacy compatibility into framework-language and security modules', () => {
       const selection = resolveLegacyCompatibilitySelection({
-        target: 'zed',
+        target: 'joycode',
         legacyLanguages: ['ruby', 'rails']
       });
 
@@ -588,7 +537,7 @@ function runTests() {
       assert.throws(
         () =>
           resolveLegacyCompatibilitySelection({
-            target: 'zed',
+            target: 'joycode',
             legacyLanguages: ['brainfuck']
           }),
         /Unknown legacy language: brainfuck/
@@ -723,7 +672,7 @@ function runTests() {
 
   if (
     test('validates projectRoot and homeDir option types before adapter planning', () => {
-      assert.throws(() => resolveInstallPlan({ profileId: 'core', target: 'zed', projectRoot: 42 }), /projectRoot must be a non-empty string when provided/);
+      assert.throws(() => resolveInstallPlan({ profileId: 'core', target: 'joycode', projectRoot: 42 }), /projectRoot must be a non-empty string when provided/);
       assert.throws(() => resolveInstallPlan({ profileId: 'core', target: 'claude', homeDir: {} }), /homeDir must be a non-empty string when provided/);
     })
   )
@@ -753,7 +702,7 @@ function runTests() {
               kind: 'skills',
               description: 'Child',
               paths: ['child'],
-              targets: ['zed'],
+              targets: ['joycode'],
               dependencies: [],
               defaultInstall: false,
               cost: 'light',
@@ -904,7 +853,7 @@ function runTests() {
               id: 'unsupported-antigravity',
               kind: 'skills',
               description: 'Unsupported',
-              paths: ['.zed', 'skills/example'],
+              paths: ['.joycode', 'skills/example'],
               targets: ['antigravity'],
               dependencies: [],
               defaultInstall: false,
@@ -929,7 +878,7 @@ function runTests() {
         assert.deepStrictEqual(plan.selectedModuleIds, ['unsupported-antigravity']);
         assert.deepStrictEqual(plan.skippedModuleIds, []);
         assert.ok(
-          plan.operations.every(operation => operation.sourceRelativePath !== '.zed'),
+          plan.operations.every(operation => operation.sourceRelativePath !== '.joycode'),
           'Unsupported antigravity paths should be filtered from planned operations'
         );
         assert.ok(

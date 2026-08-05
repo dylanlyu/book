@@ -34,7 +34,7 @@
 
 Não são apenas configurações. Um sistema completo: skills, instincts, otimização de memória, aprendizado contínuo, varredura de segurança e desenvolvimento com pesquisa em primeiro lugar. Agentes, hooks, comandos, regras e configurações MCP prontos para produção, desenvolvidos ao longo de 10+ meses de uso intensivo diário construindo produtos reais.
 
-Funciona com **Claude Code**, **Codex**, **OpenCode**, **Zed** e outros harnesses de agentes de IA.
+Funciona com **Claude Code**, **Codex** e outros harnesses de agentes de IA.
 
 ---
 
@@ -146,7 +146,6 @@ npm install        # ou: pnpm install | yarn install | bun install
 # macOS/Linux
 ./install.sh typescript    # ou python ou golang ou swift ou php
 # ./install.sh typescript python golang swift php
-# ./install.sh --target zed typescript
 # ./install.sh --target antigravity typescript
 ```
 
@@ -154,7 +153,6 @@ npm install        # ou: pnpm install | yarn install | bun install
 # Windows PowerShell
 .\install.ps1 typescript   # ou python ou golang ou swift ou php
 # .\install.ps1 typescript python golang swift php
-# .\install.ps1 --target zed typescript
 # .\install.ps1 --target antigravity typescript
 
 # O ponto de entrada de compatibilidade npm também funciona multiplataforma
@@ -180,7 +178,7 @@ npx ecc-install typescript
 
 ## Suporte Multiplataforma
 
-Este plugin agora suporta totalmente **Windows, macOS e Linux**, com integração estreita em principais IDEs (Zed, OpenCode, Antigravity) e harnesses CLI. Todos os hooks e scripts foram reescritos em Node.js para máxima compatibilidade.
+Este plugin agora suporta totalmente **Windows, macOS e Linux**, com integração estreita em principais IDEs (Antigravity, JoyCode) e harnesses CLI. Todos os hooks e scripts foram reescritos em Node.js para máxima compatibilidade.
 
 ### Detecção de Gerenciador de Pacotes
 
@@ -467,11 +465,9 @@ Este é o problema mais comum. **NÃO adicione um campo `"hooks"` ao `.claude-pl
 </details>
 
 <details>
-<summary><b>Posso usar o ECC com OpenCode / Codex / Zed / Antigravity?</b></summary>
+<summary><b>Posso usar o ECC com Codex / Antigravity?</b></summary>
 
 Sim. O ECC é multiplataforma:
-- **Zed**: Adaptador local de projeto em `.zed/` com settings, regras achatadas, comandos, agentes e skills
-- **OpenCode**: Suporte completo a plugins em `.opencode/`
 - **Codex**: Suporte de primeira classe para app macOS e CLI
 - **Antigravity**: Configuração integrada em `.agent/`
 - **Claude Code**: Nativo — este é o alvo principal

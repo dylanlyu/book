@@ -1,6 +1,6 @@
 # Patrocinar ECC
 
-ECC se mantiene como un sistema de rendimiento del harness de agentes de código abierto para Claude Code, Cursor, OpenCode y Codex app/CLI.
+ECC se mantiene como un sistema de rendimiento del harness de agentes de código abierto para Claude Code, Codex, Antigravity y JoyCode.
 
 ## Por Qué Patrocinar
 

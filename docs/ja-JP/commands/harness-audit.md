@@ -66,7 +66,7 @@ Harness Audit (repo): 66/70
 
 Top 3 Actions:
 1) [Security Guardrails] hooks/hooks.jsonにプロンプト/ツールプリフライトセキュリティガードを追加。(hooks/hooks.json)
-2) [Tool Coverage] commands/harness-audit.mdと.opencode/commands/harness-audit.mdを同期。(.opencode/commands/harness-audit.md)
+2) [Tool Coverage] commands/harness-audit.mdと.codex/commands/harness-audit.mdを同期。(.codex/commands/harness-audit.md)
 3) [Eval Coverage] scripts/hooks/lib全体の自動テストカバレッジを増加。(tests/)
 ```
 

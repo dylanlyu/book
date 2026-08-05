@@ -32,9 +32,6 @@ jobs:
       - name: Run supply-chain IOC scan
         run: npm run security:ioc-scan
 
-      - name: Verify OpenCode package payload
-        run: node tests/scripts/build-opencode.test.js
-
       - name: Validate version tag
         run: |
           if ! [[ "${REF_NAME}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$ ]]; then
@@ -69,7 +66,7 @@ jobs:
           ## ECC ${TAG_VERSION}
 
           ### What This Release Focuses On
-          - Harness reliability and hook stability across Claude Code, Cursor, OpenCode, and Codex
+          - Harness reliability and hook stability across Claude Code and Codex
           - Stronger eval-driven workflows and quality gates
           - Better operator UX for autonomous loop execution
 

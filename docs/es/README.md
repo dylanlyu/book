@@ -38,7 +38,7 @@
 
 No son solo configuraciones. Es un sistema completo: skills, instintos, optimización de memoria, aprendizaje continuo, análisis de seguridad y desarrollo orientado a la investigación. Agentes listos para producción, skills, hooks, reglas, configuraciones de MCP y comandos legados, evolucionados durante más de 10 meses de uso diario intensivo construyendo productos reales.
 
-Funciona en **Codex**, **Claude Code**, **OpenCode**, **Zed**, **GitHub Copilot** y otros harnesses de agentes de IA.
+Funciona en **Codex**, **Claude Code**, **GitHub Copilot** y otros harnesses de agentes de IA.
 
 Comienza con las [notas de la versión rc.1](../releases/2.0.0-rc.1/release-notes.md) y la [arquitectura multi-harness](../architecture/cross-harness.md).
 
@@ -431,7 +431,7 @@ python3 ./ecc_dashboard.py
 
 ## Soporte Multiplataforma
 
-Este plugin ahora es totalmente compatible con **Windows, macOS y Linux**, junto con una integración estrecha en los principales IDEs (Zed, OpenCode, Antigravity) y harnesses de CLI. Todos los hooks y scripts han sido reescritos en Node.js para máxima compatibilidad.
+Este plugin ahora es totalmente compatible con **Windows, macOS y Linux**, junto con una integración estrecha en los principales IDEs (Antigravity, JoyCode) y harnesses de CLI. Todos los hooks y scripts han sido reescritos en Node.js para máxima compatibilidad.
 
 ### Detección del Gestor de Paquetes
 
@@ -1001,17 +1001,13 @@ Cada componente es completamente independiente.
 </details>
 
 <details>
-<summary><b>¿Funciona con OpenCode / Codex / Zed / Antigravity / GitHub Copilot?</b></summary>
+<summary><b>¿Funciona con Codex / Antigravity / GitHub Copilot?</b></summary>
 
 Sí. ECC es multiplataforma:
-- **Zed**: Adaptador local al proyecto para settings, reglas aplanadas, comandos, agentes y skills en `.zed/`. Consulta [Soporte de Plataformas](#soporte-de-plataformas).
-- **OpenCode**: Soporte completo del plugin en `.opencode/`. Consulta [Soporte para OpenCode](#soporte-para-opencode).
 - **Codex**: Soporte de primera clase para la app macOS y CLI, con guardias de deriva del adaptador y fallback de SessionStart. Consulta PR [#257](https://github.com/affaan-m/ECC/pull/257).
 - **GitHub Copilot (VS Code)**: Capa de instrucciones y prompts mediante `.github/copilot-instructions.md`, `.vscode/settings.json` y `.github/prompts/`. Consulta [Soporte para GitHub Copilot](#soporte-para-github-copilot).
 - **Antigravity**: Configuración estrechamente integrada para flujos de trabajo, skills y reglas aplanadas en `.agent/`. Consulta la [Guía de Antigravity](../ANTIGRAVITY-GUIDE.md).
 - **JoyCode**: Adaptador de instalación selectiva local al proyecto para comandos, agentes, skills y reglas aplanadas. Consulta la [Guía del Adaptador JoyCode](../JOYCODE-GUIDE.md).
-- **Qwen CLI**: Adaptador de instalación selectiva en el directorio home para comandos, agentes, skills, reglas y configuración de Qwen. Consulta la [Guía del Adaptador Qwen CLI](../QWEN-GUIDE.md).
-- **Zed**: Adaptador de instalación selectiva local al proyecto para `.zed/settings.json`, reglas aplanadas, comandos, agentes y skills.
 - **Harnesses no nativos**: Ruta de respaldo manual para Grok e interfaces similares. Consulta la [Guía de Adaptación Manual](../MANUAL-ADAPTATION-GUIDE.md).
 - **Claude Code**: Nativo — este es el objetivo principal.
 </details>
@@ -1106,36 +1102,6 @@ El script de sincronización fusiona de forma segura los servidores MCP de ECC e
 
 ---
 
-## Soporte para OpenCode
-
-ECC proporciona **soporte completo para OpenCode** incluyendo plugins y hooks.
-
-### Inicio Rápido
-
-```bash
-# Instalar OpenCode
-npm install -g opencode
-
-# Ejecutar en la raíz del repositorio
-opencode
-```
-
-La configuración se detecta automáticamente desde `.opencode/opencode.json`.
-
-### Paridad de Características
-
-| Característica | Claude Code         | OpenCode | Estado |
-|----------------|---------------------|----------|--------|
-| Agentes | 63 agentes | 12 agentes | **Claude Code lidera** |
-| Comandos | 79 comandos | 35 comandos | **Claude Code lidera** |
-| Skills | 249 skills | 37 skills | **Claude Code lidera** |
-| Hooks | 8 tipos de eventos | 11 eventos | **¡OpenCode tiene más!** |
-| Reglas | 29 reglas | 13 instrucciones | **Claude Code lidera** |
-| Servidores MCP | 14 servidores | Completo | **Paridad completa** |
-| Herramientas Personalizadas | Mediante hooks | 6 nativas | **OpenCode es mejor** |
-
----
-
 ## Soporte para GitHub Copilot
 
 ECC proporciona **soporte para GitHub Copilot** para VS Code mediante el sistema nativo de archivos de instrucciones y prompts de Copilot Chat — sin herramientas adicionales necesarias.
@@ -1168,18 +1134,18 @@ Para usar los prompts de flujo de trabajo en Copilot Chat:
 
 ECC es el **primer plugin que maximiza todas las principales herramientas de codificación con IA**. Así se compara cada harness:
 
-| Característica | Claude Code           | Codex CLI | OpenCode | GitHub Copilot |
-|----------------|-----------------------|-----------|----------|----------------|
-| **Agentes** | 63                    | Compartidos (AGENTS.md) | 12 | N/A |
-| **Comandos** | 79                    | Basados en instrucciones | 35 | 5 prompts |
-| **Skills** | 249                   | 10 (formato nativo) | 37 | Mediante instrucciones |
-| **Eventos de Hook** | 8 tipos               | Ninguno aún | 11 tipos | Ninguno |
-| **Scripts de Hook** | 20+ scripts           | N/A | Hooks de plugin | N/A |
-| **Reglas** | 34 (común + lenguaje) | Basadas en instrucciones | 13 instrucciones | 1 archivo siempre activo |
-| **Herramientas Personalizadas** | Mediante hooks        | N/A | 6 herramientas nativas | N/A |
-| **Servidores MCP** | 14                    | 7 (fusión automática vía parser TOML) | Completo | N/A |
-| **Formato de Configuración** | settings.json         | config.toml | opencode.json | copilot-instructions.md + settings.json |
-| **Archivo de Contexto** | CLAUDE.md + AGENTS.md | AGENTS.md | AGENTS.md | copilot-instructions.md |
+| Característica | Claude Code           | Codex CLI | GitHub Copilot |
+|----------------|-----------------------|-----------|----------------|
+| **Agentes** | 63                    | Compartidos (AGENTS.md) | N/A |
+| **Comandos** | 79                    | Basados en instrucciones | 5 prompts |
+| **Skills** | 249                   | 10 (formato nativo) | Mediante instrucciones |
+| **Eventos de Hook** | 8 tipos               | Ninguno aún | Ninguno |
+| **Scripts de Hook** | 20+ scripts           | N/A | N/A |
+| **Reglas** | 34 (común + lenguaje) | Basadas en instrucciones | 1 archivo siempre activo |
+| **Herramientas Personalizadas** | Mediante hooks        | N/A | N/A |
+| **Servidores MCP** | 14                    | 7 (fusión automática vía parser TOML) | N/A |
+| **Formato de Configuración** | settings.json         | config.toml | copilot-instructions.md + settings.json |
+| **Archivo de Contexto** | CLAUDE.md + AGENTS.md | AGENTS.md | copilot-instructions.md |
 
 ---
 

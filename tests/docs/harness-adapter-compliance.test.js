@@ -32,7 +32,7 @@ console.log('\n=== Testing harness adapter compliance docs ===\n');
 
 test('adapter compliance matrix covers the required harness surfaces', () => {
   const source = read('docs/architecture/harness-adapter-compliance.md');
-  for (const harness of ['Claude Code', 'Codex', 'OpenCode', 'Zed', 'dmux', 'Orca', 'Superset', 'Ghast', 'Terminal-only']) {
+  for (const harness of ['Claude Code', 'Codex', 'dmux', 'Orca', 'Superset', 'Ghast', 'Terminal-only']) {
     assert.ok(source.includes(harness), `Expected matrix to include ${harness}`);
   }
 });
@@ -40,10 +40,9 @@ test('adapter compliance matrix covers the required harness surfaces', () => {
 test('adapter compliance source data validates required evidence fields', () => {
   assert.deepStrictEqual(validateAdapterRecords(), []);
 
-  const zedRecord = ADAPTER_RECORDS.find(record => record.id === 'zed');
-  assert.ok(zedRecord, 'Expected Zed adapter record');
-  assert.strictEqual(zedRecord.state, 'Adapter-backed');
-  assert.ok(zedRecord.install_or_onramp.includes('`./install.sh --profile minimal --target zed`'), 'Expected Zed installer onramp');
+  const codexRecord = ADAPTER_RECORDS.find(record => record.id === 'codex');
+  assert.ok(codexRecord, 'Expected Codex adapter record');
+  assert.ok(codexRecord.install_or_onramp.length > 0, 'Expected Codex installer onramp');
 
   for (const record of ADAPTER_RECORDS) {
     assert.ok(record.install_or_onramp.length > 0, `${record.id} needs an install or onramp`);

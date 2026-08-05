@@ -3,7 +3,6 @@
 const { createClaudeHistoryAdapter } = require('./claude-history');
 const { createDmuxTmuxAdapter } = require('./dmux-tmux');
 const { createCodexWorktreeAdapter } = require('./codex-worktree');
-const { createOpencodeAdapter } = require('./opencode');
 
 const TARGET_TYPE_TO_ADAPTER_ID = Object.freeze({
   plan: 'dmux-tmux',
@@ -12,8 +11,7 @@ const TARGET_TYPE_TO_ADAPTER_ID = Object.freeze({
   'claude-alias': 'claude-history',
   'session-file': 'claude-history',
   'codex-worktree': 'codex-worktree',
-  codex: 'codex-worktree',
-  opencode: 'opencode'
+  codex: 'codex-worktree'
 });
 
 function buildDefaultAdapterOptions(options, adapterId) {
@@ -26,9 +24,7 @@ function buildDefaultAdapterOptions(options, adapterId) {
 
   return {
     ...sharedOptions,
-    ...(options.adapterOptions && options.adapterOptions[adapterId]
-      ? options.adapterOptions[adapterId]
-      : {})
+    ...(options.adapterOptions && options.adapterOptions[adapterId] ? options.adapterOptions[adapterId] : {})
   };
 }
 
@@ -36,8 +32,7 @@ function createDefaultAdapters(options = {}) {
   return [
     createClaudeHistoryAdapter(buildDefaultAdapterOptions(options, 'claude-history')),
     createDmuxTmuxAdapter(buildDefaultAdapterOptions(options, 'dmux-tmux')),
-    createCodexWorktreeAdapter(buildDefaultAdapterOptions(options, 'codex-worktree')),
-    createOpencodeAdapter(buildDefaultAdapterOptions(options, 'opencode'))
+    createCodexWorktreeAdapter(buildDefaultAdapterOptions(options, 'codex-worktree'))
   ];
 }
 
@@ -83,13 +78,6 @@ function normalizeStructuredTarget(target, context = {}) {
     };
   }
 
-  if (type === 'opencode') {
-    return {
-      target: `opencode:${value}`,
-      context: nextContext
-    };
-  }
-
   return {
     target: value,
     context: nextContext
@@ -118,9 +106,7 @@ function createAdapterRegistry(options = {}) {
     },
     select(target, context = {}) {
       const normalized = normalizeStructuredTarget(target, context);
-      const adapter = normalized.context.adapterId
-        ? this.getAdapter(normalized.context.adapterId)
-        : adapters.find(candidate => candidate.canOpen(normalized.target, normalized.context));
+      const adapter = normalized.context.adapterId ? this.getAdapter(normalized.context.adapterId) : adapters.find(candidate => candidate.canOpen(normalized.target, normalized.context));
       if (!adapter) {
         throw new Error(`No session adapter matched target: ${target}`);
       }

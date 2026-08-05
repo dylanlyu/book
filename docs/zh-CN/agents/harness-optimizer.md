@@ -25,7 +25,7 @@ color: teal
 * 优先选择效果可衡量的小改动。
 * 保持跨平台行为。
 * 避免引入脆弱的 shell 引用。
-* 保持与 Claude Code、Cursor、OpenCode 和 Codex 的兼容性。
+* 保持与 Claude Code 和 Codex 的兼容性。
 
 ## 输出
 

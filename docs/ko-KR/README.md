@@ -34,7 +34,7 @@
 
 단순한 설정 파일 모음이 아닙니다. 스킬, 직관(Instinct), 메모리 최적화, 지속적 학습, 보안 스캐닝, 리서치 우선 개발을 아우르는 완전한 시스템입니다. 10개월 이상 실제 프로덕트를 만들며 매일 집중적으로 사용해 발전시킨 프로덕션 레벨의 에이전트, 훅, 커맨드, 룰, MCP 설정이 포함되어 있습니다.
 
-**Claude Code**, **Codex**, **OpenCode**, **Zed** 등 다양한 AI 에이전트 하네스에서 사용할 수 있습니다.
+**Claude Code**, **Codex** 등 다양한 AI 에이전트 하네스에서 사용할 수 있습니다.
 
 ---
 
@@ -131,8 +131,6 @@ cd everything-claude-code
 ./install.sh typescript    # 또는 python, golang
 # 여러 언어를 한번에 설치할 수 있습니다:
 # ./install.sh typescript python golang
-# Zed를 대상으로 설치:
-# ./install.sh --target zed typescript
 ```
 
 수동 설치 방법은 `rules/` 폴더의 README를 참고하세요.
@@ -156,7 +154,7 @@ cd everything-claude-code
 
 ## 크로스 플랫폼 지원
 
-이 플러그인은 **Windows, macOS, Linux**를 완벽하게 지원하며, 주요 IDE(Zed, OpenCode, Antigravity) 및 CLI 하네스와 긴밀하게 통합됩니다. 모든 훅과 스크립트는 최대 호환성을 위해 Node.js로 작성되었습니다.
+이 플러그인은 **Windows, macOS, Linux**를 완벽하게 지원하며, 주요 IDE(Antigravity, JoyCode) 및 CLI 하네스와 긴밀하게 통합됩니다. 모든 훅과 스크립트는 최대 호환성을 위해 Node.js로 작성되었습니다.
 
 ### 패키지 매니저 감지
 
@@ -580,11 +578,9 @@ cp -r everything-claude-code/rules/common ~/.claude/rules/common
 </details>
 
 <details>
-<summary><b>OpenCode / Codex / Zed / Antigravity에서도 작동하나요?</b></summary>
+<summary><b>Codex / Antigravity에서도 작동하나요?</b></summary>
 
 네. ECC는 크로스 플랫폼입니다:
-- **Zed**: `.zed/`에 프로젝트 설정, 평탄화된 규칙, 커맨드, 에이전트, 스킬 제공
-- **OpenCode**: `.opencode/`에 전체 플러그인 지원
 - **Codex**: macOS 앱과 CLI 모두 퍼스트클래스 지원
 - **Antigravity**: `.agent/`에 워크플로우, 스킬, 평탄화된 룰 통합
 - **Claude Code**: 네이티브 — 이것이 주 타겟입니다

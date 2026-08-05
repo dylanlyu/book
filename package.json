@@ -1,7 +1,7 @@
 {
   "name": "ecc-universal",
   "version": "2.1.0",
-  "description": "Harness-native agent operating system for Codex, OpenCode, Claude Code, and terminal workflows - skills, hooks, rules, MCP conventions, and operator control-plane patterns",
+  "description": "Harness-native agent operating system for Codex, Claude Code, and terminal workflows - skills, hooks, rules, MCP conventions, and operator control-plane patterns",
   "publishConfig": {
     "access": "public"
   },
@@ -19,7 +19,6 @@
     "security",
     "automation",
     "best-practices",
-    "opencode",
     "codex",
     "presentations",
     "slides"
@@ -43,9 +42,6 @@
     ".codex/",
     ".codex-plugin/",
     ".github/PULL_REQUEST_TEMPLATE.md",
-    ".opencode/",
-    ".qwen/",
-    ".zed/",
     ".mcp.json",
     "AGENTS.md",
     "COMMANDS-QUICK-REF.md",
@@ -441,8 +437,6 @@
     "orchestrate:tmux": "node scripts/orchestrate-worktrees.js",
     "test": "node scripts/ci/check-unicode-safety.js && node scripts/ci/validate-agents.js && node scripts/ci/validate-commands.js && node scripts/ci/validate-rules.js && node scripts/ci/validate-skills.js && node scripts/ci/validate-hooks.js && node scripts/ci/validate-install-manifests.js && node scripts/ci/validate-no-personal-paths.js && npm run catalog:check && npm run command-registry:check && node tests/run-all.js",
     "coverage": "c8 --all --include=\"scripts/**/*.js\" --include=\"scripts/**/*.mjs\" --check-coverage --lines 80 --functions 80 --branches 79 --statements 80 --reporter=text --reporter=lcov node tests/run-all.js",
-    "build:opencode": "node scripts/build-opencode.js",
-    "prepack": "npm run build:opencode",
     "dashboard": "python3 ./ecc_dashboard.py",
     "dashboard:web": "node scripts/dashboard-web.js"
   },
@@ -453,7 +447,6 @@
   },
   "devDependencies": {
     "@eslint/js": "9.39.2",
-    "@opencode-ai/plugin": "1.17.3",
     "@types/node": "25.9.2",
     "c8": "11.0.0",
     "eslint": "10.6.0",

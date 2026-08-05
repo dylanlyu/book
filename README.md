@@ -114,7 +114,7 @@ Instead of rebuilding that process in every prompt, you install it once and make
 
 > Optimize the context window. Persist everything else.
 
-ECC is MIT-licensed open source. It works best with Claude Code today, with first-class Codex support and adapters for OpenCode, Zed, GitHub Copilot, Antigravity, Qwen, and other harnesses.
+ECC is MIT-licensed open source. It works best with Claude Code today, with first-class Codex support and adapters for GitHub Copilot, Antigravity, JoyCode, and other harnesses.
 
 Access to 67 agents, 279 skills, and 94 legacy command shims, plus hooks, rules, memory, continuous learning, and AgentShield security scanning. The agents are specialized for planning, review, build repair, security, architecture, and domain work.
 
@@ -241,7 +241,7 @@ See the [.codex plugin notes](.codex-plugin/README.md) for the current limitatio
 ### Other agents and editors
 
 <details>
-<summary><strong>OpenCode, Zed, Antigravity, Qwen, JoyCode, Copilot</strong></summary>
+<summary><strong>Antigravity, JoyCode, Copilot</strong></summary>
 
 Clone ECC once, then choose the target that matches your harness:
 
@@ -252,10 +252,7 @@ cd ECC
 
 | Harness | Install or setup | Notes |
 |---|---|---|
-| OpenCode | `npm install && npm run build:opencode && ./install.sh --profile full --target opencode` | Builds the plugin payload before the full install |
-| Zed | `./install.sh --profile minimal --target zed` | Project-local `.zed/` adapter |
 | Antigravity | `./install.sh --profile minimal --target antigravity` | See the [Antigravity guide](docs/ANTIGRAVITY-GUIDE.md) |
-| Qwen CLI | `./install.sh --profile minimal --target qwen` | See the [Qwen guide](docs/QWEN-GUIDE.md) |
 | JoyCode | `./install.sh --profile minimal --target joycode` | Project-local `.joycode/` install |
 
 GitHub Copilot support is already included in this repository. `.github/copilot-instructions.md` provides the instruction layer, `.github/prompts/` contains the reusable `/plan`, `/tdd`, `/security-review`, `/build-fix`, and `/refactor` prompts, and `.vscode/settings.json` enables `chat.promptFiles`.
@@ -490,8 +487,8 @@ The agent harness and the model-serving layer are separate. ECC configures the a
 Point your harness at the endpoint, then install ECC:
 
 ```bash
-bash ./install.sh --target zed --profile minimal
-npx ecc doctor --target zed
+bash ./install.sh --target joycode --profile minimal
+npx ecc doctor --target joycode
 ```
 
 The harness discovers the installed project instructions and skills natively. The installer dry-run and regression suite verify that each project target stays inside its own project-local root.
@@ -652,7 +649,7 @@ It's harness- and model-agnostic: a plain CLI (`ecc-plan-canvas`) speaking JSON,
 
 ### Current development: Unified Memory Vault
 
-`ecc memory` gives Claude, Codex, OpenCode, Zed, and other harnesses one local, inspectable Markdown format for durable context and handoffs. The optional `ecc-memory-mcp` stdio server exposes the same bounded save/search/read/doctor surface without enabling itself by default. Full detail in [Share context between harnesses](#share-context-between-harnesses) below.
+`ecc memory` gives Claude, Codex, and other harnesses one local, inspectable Markdown format for durable context and handoffs. The optional `ecc-memory-mcp` stdio server exposes the same bounded save/search/read/doctor surface without enabling itself by default. Full detail in [Share context between harnesses](#share-context-between-harnesses) below.
 
 <details>
 <summary><strong>Previous releases</strong></summary>
@@ -802,7 +799,7 @@ Rules, skills, agents, and hooks solve different problems. Keeping those jobs se
 
 ### Share context between harnesses
 
-ECC's Memory Vault gives Claude, Codex, OpenCode, Zed, and other harnesses one local, inspectable Markdown format for durable context and handoffs. Project and team memories live under `.ecc/memory/`; user memories live under `~/.ecc/memory/`.
+ECC's Memory Vault gives Claude, Codex, and other harnesses one local, inspectable Markdown format for durable context and handoffs. Project and team memories live under `.ecc/memory/`; user memories live under `~/.ecc/memory/`.
 
 ```bash
 npm install -g ecc-universal
@@ -905,7 +902,6 @@ ECC/
 |-- scripts/          # install, repair, sync, orchestration, and checks
 |-- .claude-plugin/   # Claude Code marketplace manifest
 |-- .codex/           # Codex reference configuration and agent roles
-|-- .opencode/        # OpenCode plugin, commands, and instructions
 |-- docs/             # public setup, architecture, and operating guides
 ```
 
@@ -1294,7 +1290,7 @@ See [`rules/README.md`](rules/README.md) for installation and structure details.
 
 ## Cross-Platform Support
 
-ECC fully supports **Windows, macOS, and Linux**, alongside tight integration across major IDEs (Zed, OpenCode, Antigravity) and CLI harnesses. All hooks and scripts are written in Node.js for maximum compatibility.
+ECC fully supports **Windows, macOS, and Linux**, alongside tight integration across major IDEs (Antigravity, JoyCode) and CLI harnesses. All hooks and scripts are written in Node.js for maximum compatibility.
 
 <details>
 <summary><strong>Package manager detection</strong></summary>
@@ -1393,31 +1389,29 @@ See [affaan-m/ECC#2065](https://github.com/affaan-m/ECC/issues/2065).
 |---|---|---|---|
 | Claude Code | Plugin or selective installer | `CLAUDE.md`, rules, skills, agents | Native plugin hooks |
 | Codex | Sync flow, repo config, experimental ECC marketplace | `AGENTS.md`, skills, `.codex/config.toml` | Git hooks and Codex-native configuration |
-| Zed | Project adapter | `.zed/rules/`, project settings | Instruction-backed |
-| OpenCode | Built plugin plus selective installer | `opencode.json`, instructions, commands | OpenCode plugin events |
 | GitHub Copilot | Checked-in instruction layer | `copilot-instructions.md`, prompt files | No ECC hook runtime |
 
 ### Cross-Tool Feature Parity
 
-| Feature | Claude Code           | Codex CLI | OpenCode | GitHub Copilot |
-|---------|-----------------------|-----------|----------|----------------|
-| **Agents** | 67                    | Shared (AGENTS.md) | 12 | N/A |
-| **Commands** | 94                    | Instruction-based | 35 | 5 prompts |
-| **Skills** | 279                   | 10 (native format) | 37 | Via instructions |
-| **Hook Events** | 8 types               | None yet | 11 types | None |
-| **Hook Scripts** | 20+ scripts           | N/A | Plugin hooks | N/A |
-| **Rules** | 34 (common + lang)    | Instruction-based | 13 instructions | 1 always-on file |
-| **Custom Tools** | Via hooks             | N/A | 6 native tools | N/A |
-| **MCP Servers** | 14                    | Shared (mcp.json) | 7 (auto-merged via TOML parser) | Full | N/A |
-| **Config Format** | settings.json         | hooks.json + rules/ | config.toml | opencode.json | copilot-instructions.md + settings.json |
-| **Context File** | CLAUDE.md + AGENTS.md | AGENTS.md | AGENTS.md | AGENTS.md | copilot-instructions.md |
-| **Secret Detection** | Hook-based            | beforeSubmitPrompt hook | Sandbox-based | Hook-based | Instruction-based |
-| **Auto-Format** | PostToolUse hook      | afterFileEdit hook | N/A | file.edited hook | N/A |
-| **Version** | Plugin | Plugin | Reference config | 2.1.0 | Instruction layer |
+| Feature | Claude Code | Codex CLI | GitHub Copilot |
+|---------|-------------|-----------|----------------|
+| **Agents** | 67 | Shared (AGENTS.md) | N/A |
+| **Commands** | 94 | Instruction-based | 5 prompts |
+| **Skills** | 279 | 10 (native format) | Via instructions |
+| **Hook Events** | 8 types | None yet | None |
+| **Hook Scripts** | 20+ scripts | N/A | N/A |
+| **Rules** | 34 (common + lang) | Instruction-based | 1 always-on file |
+| **Custom Tools** | Via hooks | N/A | N/A |
+| **MCP Servers** | 14 | Shared (mcp.json) | N/A |
+| **Config Format** | settings.json + hooks.json + rules/ | config.toml | copilot-instructions.md + settings.json |
+| **Context File** | CLAUDE.md + AGENTS.md | AGENTS.md | copilot-instructions.md |
+| **Secret Detection** | Hook-based | Sandbox-based | Instruction-based |
+| **Auto-Format** | PostToolUse hook | N/A | N/A |
+| **Version** | Plugin | Reference config | Instruction layer | 2.1.0 |
 
 **Key architectural decisions:**
-- **AGENTS.md** at root is the universal cross-tool file (read by Claude Code, Codex, and OpenCode; GitHub Copilot uses `.github/copilot-instructions.md` instead)
-- **Skills format** (SKILL.md with YAML frontmatter) works across Claude Code, Codex, and OpenCode
+- **AGENTS.md** at root is the universal cross-tool file (read by Claude Code and Codex; GitHub Copilot uses `.github/copilot-instructions.md` instead)
+- **Skills format** (SKILL.md with YAML frontmatter) works across Claude Code and Codex
 - Codex's lack of hooks is compensated by `AGENTS.md`, optional `model_instructions_file` overrides, and sandbox permissions
 
 <details>
@@ -1481,85 +1475,6 @@ ECC ships three sample role configs:
 | `reviewer` | Correctness, security, and missing-test review |
 | `docs_researcher` | Documentation and API verification before release/docs changes |
 
-</details>
-
-<details>
-<summary><strong>Zed support</strong></summary>
-
-ECC provides Zed project support through a conservative `.zed` adapter for project-local settings, flattened rules, agents, commands, and skills.
-
-```bash
-./install.sh --profile minimal --target zed
-```
-
-```powershell
-.\install.ps1 --profile minimal --target zed
-```
-
-The adapter writes ECC-managed files under `.zed/` and keeps BYOK/OpenRouter credentials out of the repo. Configure Zed account or API keys through Zed's own settings UI or your local user settings.
-</details>
-
-<details>
-<summary><strong>OpenCode support in depth</strong></summary>
-
-ECC provides **full OpenCode support** including plugins and hooks.
-
-```bash
-# Install OpenCode
-npm install -g opencode
-
-# Run in the repository root
-opencode
-```
-
-The configuration is automatically detected from `.opencode/opencode.json`.
-
-#### Hook support via plugins
-
-OpenCode's plugin system has 20+ event types:
-
-| Claude Code Hook | OpenCode Plugin Event |
-|-----------------|----------------------|
-| PreToolUse | `tool.execute.before` |
-| PostToolUse | `tool.execute.after` |
-| Stop | `session.idle` |
-| SessionStart | `session.created` |
-| SessionEnd | `session.deleted` |
-
-**Additional OpenCode events**: `file.edited`, `file.watcher.updated`, `message.updated`, `lsp.client.diagnostics`, `tui.toast.show`, and more.
-
-#### Plugin installation
-
-**Option 1: Use directly**
-```bash
-cd ECC
-opencode
-```
-
-**Option 2: Install as npm package**
-```bash
-npm install ecc-universal
-```
-
-Then add to your `opencode.json`:
-```json
-{
-  "plugin": ["ecc-universal"]
-}
-```
-
-That npm plugin entry enables ECC's published OpenCode plugin module (hooks/events and plugin tools). It does **not** automatically add ECC's full command/agent/instruction catalog to your project config.
-
-For the full ECC OpenCode setup, either:
-- run OpenCode inside this repository, or
-- copy the bundled `.opencode/` config assets into your project and wire the `instructions`, `agent`, and `command` entries in `opencode.json`
-
-#### Documentation
-
-- **Migration Guide**: `.opencode/MIGRATION.md`
-- **OpenCode Plugin README**: `.opencode/README.md`
-- **Consolidated Rules**: `.opencode/instructions/INSTRUCTIONS.md`
-- **LLM Documentation**: `llms.txt` (complete OpenCode docs for LLMs)
 </details>
 
 <details>
@@ -1820,17 +1735,13 @@ Each component is fully independent.
 </details>
 
 <details>
-<summary><strong>Does this work with OpenCode / Codex / Zed / Antigravity / GitHub Copilot?</strong></summary>
+<summary><strong>Does this work with Codex / Antigravity / JoyCode / GitHub Copilot?</strong></summary>
 
 Yes. ECC is cross-platform:
-- **Zed**: Project-local adapter for settings, flattened rules, commands, agents, and skills in `.zed/`. See [Platform Support](#platform-support).
-- **OpenCode**: Full plugin support in `.opencode/`.
 - **Codex**: First-class support for both macOS app and CLI, with adapter drift guards and SessionStart fallback.
 - **GitHub Copilot (VS Code)**: Instruction and prompt layer via `.github/copilot-instructions.md`, `.vscode/settings.json`, and `.github/prompts/`.
 - **Antigravity**: Tightly integrated setup for workflows, skills, and flattened rules in `.agent/`. See [Antigravity Guide](docs/ANTIGRAVITY-GUIDE.md).
 - **JoyCode**: Project-local selective install adapter for commands, agents, skills, and flattened rules. See [JoyCode Adapter Guide](docs/JOYCODE-GUIDE.md).
-- **Qwen CLI**: Home-directory selective install adapter for commands, agents, skills, rules, and Qwen config. See [Qwen CLI Adapter Guide](docs/QWEN-GUIDE.md).
-- **Zed**: Project-local selective install adapter for `.zed/settings.json`, flattened rules, commands, agents, and skills.
 - **Non-native harnesses**: Manual fallback path for chat-style interfaces. See [Manual Adaptation Guide](docs/MANUAL-ADAPTATION-GUIDE.md).
 - **Claude Code**: Native. This is the primary target.
 </details>

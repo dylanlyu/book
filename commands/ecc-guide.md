@@ -90,4 +90,4 @@ For a specific feature name:
 - `/harness-audit` for deterministic repo readiness scoring
 - `/skill-health` for skill quality checks
 - `/skill-create` for extracting a new skill from local git history
-- `/security-scan` for Claude/OpenCode configuration security review
+- `/security-scan` for Claude/Codex configuration security review

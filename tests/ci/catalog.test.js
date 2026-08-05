@@ -46,8 +46,8 @@ function writeEnglishReadme(root, counts, options = {}) {
   fs.writeFileSync(path.join(root, 'README.md'), `Access to ${counts.agents} agents, ${counts.skills} skills, and ${counts.commands} commands.
 - **Public surface synced to the live repo** - metadata, catalog counts, plugin manifests, and install-facing docs now match the actual OSS surface: ${counts.agents} agents, ${counts.skills} skills, and ${counts.commands} legacy command shims.
 |-- agents/           # ${counts.agents} specialized subagents for delegation
-| Feature | Claude Code | Codex CLI | OpenCode |
-| --- | --- | --- | --- |
+| Feature | Claude Code | Codex CLI |
+| --- | --- | --- |
 | Agents | PASS: ${tableCounts.agents} agents |
 | Commands | PASS: ${tableCounts.commands} commands |
 | Skills | PASS: ${tableCounts.skills} skills |
@@ -58,11 +58,11 @@ function writeEnglishReadme(root, counts, options = {}) {
 
 ## Cross-Tool Feature Parity
 
-| Feature | Claude Code | Codex CLI | OpenCode |
-| --- | --- | --- | --- |
-| **Agents** | ${parityCounts.agents} | Shared (AGENTS.md) | 12 |
-| **Commands** | ${parityCounts.commands} | Instruction-based | 31 |
-| **Skills** | ${parityCounts.skills} | 10 (native format) | 37 |
+| Feature | Claude Code | Codex CLI |
+| --- | --- | --- |
+| **Agents** | ${parityCounts.agents} | Shared (AGENTS.md) |
+| **Commands** | ${parityCounts.commands} | Instruction-based |
+| **Skills** | ${parityCounts.skills} | 10 (native format) |
 `);
 }
 
@@ -107,8 +107,8 @@ function writeZhDocsReadme(root, counts, options = {}) {
   fs.mkdirSync(dir, { recursive: true });
 
   fs.writeFileSync(path.join(dir, 'README.md'), `你现在可以使用 ${counts.agents} 个智能体、${counts.skills} 项技能和 ${counts.commands} 个命令了。
-| 功能特性 | Claude Code | OpenCode | 状态 |
-| --- | --- | --- | --- |
+| 功能特性 | Claude Code | 状态 |
+| --- | --- | --- |
 | 智能体 | PASS: ${tableCounts.agents} 个 |
 | 命令 | PASS: ${tableCounts.commands} 个 |
 | 技能 | PASS: ${tableCounts.skills} 项 |
@@ -119,11 +119,11 @@ function writeZhDocsReadme(root, counts, options = {}) {
 
 ## 跨工具功能对等
 
-| 功能特性 | Claude Code | Codex CLI | OpenCode |
-| --- | --- | --- | --- |
-| **智能体** | ${parityCounts.agents} | 共享 (AGENTS.md) | 12 |
-| **命令** | ${parityCounts.commands} | 基于指令 | 31 |
-| **技能** | ${parityCounts.skills} | 10 (原生格式) | 37 |
+| 功能特性 | Claude Code | Codex CLI |
+| --- | --- | --- |
+| **智能体** | ${parityCounts.agents} | 共享 (AGENTS.md) |
+| **命令** | ${parityCounts.commands} | 基于指令 |
+| **技能** | ${parityCounts.skills} | 10 (原生格式) |
 `);
 }
 

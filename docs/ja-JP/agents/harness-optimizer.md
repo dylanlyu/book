@@ -34,7 +34,7 @@ color: teal
 - 測定可能な効果のある小さな変更を優先する。
 - クロスプラットフォームの動作を保持する。
 - 脆弱なシェルクォーティングの導入を避ける。
-- Claude Code、Cursor、OpenCode、Codex間の互換性を維持する。
+- Claude CodeとCodex間の互換性を維持する。
 
 ## 出力
 

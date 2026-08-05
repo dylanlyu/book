@@ -31,9 +31,6 @@ const agentYamlPath = path.join(repoRoot, 'agent.yaml');
 const versionFilePath = path.join(repoRoot, 'VERSION');
 const zhCnReadmePath = path.join(repoRoot, 'docs', 'zh-CN', 'README.md');
 const selectiveInstallArchitecturePath = path.join(repoRoot, 'docs', 'SELECTIVE-INSTALL-ARCHITECTURE.md');
-const opencodePackageJsonPath = path.join(repoRoot, '.opencode', 'package.json');
-const opencodePackageLockPath = path.join(repoRoot, '.opencode', 'package-lock.json');
-const opencodeHooksPluginPath = path.join(repoRoot, '.opencode', 'plugins', 'ecc-hooks.ts');
 const semverPattern = '[0-9]+\\.[0-9]+\\.[0-9]+(?:-[0-9A-Za-z.-]+)?';
 
 let passed = 0;
@@ -90,7 +87,6 @@ function collectMarkdownFiles(rootPath) {
 
 const rootPackage = loadJsonObject(packageJsonPath, 'package.json');
 const packageLock = loadJsonObject(packageLockPath, 'package-lock.json');
-const opencodePackageLock = loadJsonObject(opencodePackageLockPath, '.opencode/package-lock.json');
 const expectedVersion = rootPackage.version;
 
 test('package.json has version field', () => {
@@ -146,13 +142,6 @@ test('docs/SELECTIVE-INSTALL-ARCHITECTURE.md repoVersion example matches package
   const source = fs.readFileSync(selectiveInstallArchitecturePath, 'utf8');
   const match = source.match(new RegExp(`"repoVersion":\\s*"(${semverPattern})"`));
   assert.ok(match, 'Expected docs/SELECTIVE-INSTALL-ARCHITECTURE.md to declare a repoVersion example');
-  assert.strictEqual(match[1], expectedVersion);
-});
-
-test('.opencode/plugins/ecc-hooks.ts active plugin banner matches package.json', () => {
-  const source = fs.readFileSync(opencodeHooksPluginPath, 'utf8');
-  const match = source.match(new RegExp(`## Active Plugin: ECC v(${semverPattern})`));
-  assert.ok(match, 'Expected .opencode/plugins/ecc-hooks.ts to declare an active plugin banner');
   assert.strictEqual(match[1], expectedVersion);
 });
 
@@ -361,7 +350,6 @@ test('marketplace.json exists at .agents/plugins/', () => {
 });
 
 const marketplace = loadJsonObject(marketplacePath, '.agents/plugins/marketplace.json');
-const opencodePackage = loadJsonObject(opencodePackageJsonPath, '.opencode/package.json');
 
 test('marketplace.json has name field', () => {
   assert.ok(marketplace.name, 'Expected name field');
@@ -467,19 +455,9 @@ test('plugins/ecc README documents the upstream Codex fragility', () => {
   assert.ok(source.includes('sync-ecc-to-codex.sh'), 'plugins/ecc README must point at the supported manual sync flow');
 });
 
-test('.opencode/package.json version matches package.json', () => {
-  assert.strictEqual(opencodePackage.version, expectedVersion);
-});
-
-test('.opencode/package-lock.json root version matches package.json', () => {
-  assert.strictEqual(opencodePackageLock.version, expectedVersion);
-  assert.ok(opencodePackageLock.packages && opencodePackageLock.packages[''], 'Expected .opencode/package-lock root package entry');
-  assert.strictEqual(opencodePackageLock.packages[''].version, expectedVersion);
-});
-
 test('README version row matches package.json', () => {
   const readme = fs.readFileSync(path.join(repoRoot, 'README.md'), 'utf8');
-  const match = readme.match(new RegExp(`^\\| \\*\\*Version\\*\\* \\| Plugin \\| Plugin \\| Reference config \\| (${semverPattern}) \\|(?: Instruction layer \\|)?$`, 'm'));
+  const match = readme.match(new RegExp(`^\\| \\*\\*Version\\*\\* \\| Plugin \\| Reference config \\| Instruction layer \\| (${semverPattern}) \\|$`, 'm'));
   assert.ok(match, 'Expected README version summary row');
   assert.strictEqual(match[1], expectedVersion);
 });
@@ -527,7 +505,7 @@ test('.codex-plugin README uses current marketplace add flow', () => {
 
 test('docs/zh-CN/README.md version row matches package.json', () => {
   const readme = fs.readFileSync(zhCnReadmePath, 'utf8');
-  const match = readme.match(new RegExp(`^\\| \\*\\*版本\\*\\* \\| 插件 \\| 插件 \\| 参考配置 \\| (${semverPattern}) \\|$`, 'm'));
+  const match = readme.match(new RegExp(`^\\| \\*\\*版本\\*\\* \\| 插件 \\| 参考配置 \\| (${semverPattern}) \\|$`, 'm'));
   assert.ok(match, 'Expected docs/zh-CN/README.md version summary row');
   assert.strictEqual(match[1], expectedVersion);
 });

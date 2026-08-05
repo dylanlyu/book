@@ -38,7 +38,7 @@
 
 Nicht nur Konfigurationen. Ein vollständiges System: Skills, Instincts, Speicheroptimierung, Continuous Learning, Security-Scanning und research-first-Entwicklung. Produktionsreife Agents, Skills, Hooks, Rules, MCP-Konfigurationen und Legacy-Command-Shims, die über mehr als 10 Monate intensiver täglicher Nutzung beim Bau echter Produkte entstanden sind.
 
-Funktioniert über **Claude Code**, **Codex**, **OpenCode**, **Zed**, **GitHub Copilot** und andere KI-Agent-Harnesses hinweg.
+Funktioniert über **Claude Code**, **Codex**, **GitHub Copilot** und andere KI-Agent-Harnesses hinweg.
 
 Beginne mit den [rc.1-Release-Notes](../../docs/releases/2.0.0-rc.1/release-notes.md) und der [Cross-Harness-Architektur](../../docs/architecture/cross-harness.md).
 
@@ -429,7 +429,7 @@ python3 ./ecc_dashboard.py
 
 ## Cross-Platform-Unterstützung
 
-Dieses Plugin unterstützt nun vollständig **Windows, macOS und Linux**, neben enger Integration über große IDEs (Zed, OpenCode, Antigravity) und CLI-Harnesses hinweg. Alle Hooks und Skripte wurden für maximale Kompatibilität in Node.js neu geschrieben.
+Dieses Plugin unterstützt nun vollständig **Windows, macOS und Linux**, neben enger Integration über große IDEs (Antigravity, JoyCode) und CLI-Harnesses hinweg. Alle Hooks und Skripte wurden für maximale Kompatibilität in Node.js neu geschrieben.
 
 ### Paketmanager-Erkennung
 
@@ -1143,17 +1143,13 @@ Jede Komponente ist vollständig unabhängig.
 </details>
 
 <details>
-<summary><b>Funktioniert das mit OpenCode / Codex / Zed / Antigravity / GitHub Copilot?</b></summary>
+<summary><b>Funktioniert das mit Codex / Antigravity / JoyCode / GitHub Copilot?</b></summary>
 
 Ja. ECC ist Cross-Platform:
-- **Zed**: Projektlokaler Adapter für Settings, abgeflachte Rules, Commands, Agents und Skills in `.zed/`. Siehe [Plattform-Unterstützung](#plattform-unterstützung).
-- **OpenCode**: Vollständige Plugin-Unterstützung in `.opencode/`. Siehe [OpenCode-Unterstützung](#opencode-unterstützung).
 - **Codex**: Erstklassige Unterstützung sowohl für die macOS-App als auch die CLI, mit Adapter-Drift-Guards und SessionStart-Fallback. Siehe PR [#257](https://github.com/affaan-m/ECC/pull/257).
 - **GitHub Copilot (VS Code)**: Instruction- und Prompt-Schicht über `.github/copilot-instructions.md`, `.vscode/settings.json` und `.github/prompts/`. Siehe [GitHub-Copilot-Unterstützung](#github-copilot-unterstützung).
 - **Antigravity**: Eng integriertes Setup für Workflows, Skills und abgeflachte Rules in `.agent/`. Siehe [Antigravity-Leitfaden](../../docs/ANTIGRAVITY-GUIDE.md).
 - **JoyCode**: Projektlokale Adapter für selektive Installation von Commands, Agents, Skills und abgeflachten Rules. Siehe [JoyCode-Adapter-Leitfaden](../../docs/JOYCODE-GUIDE.md).
-- **Qwen CLI**: Adapter für selektive Installation im Home-Verzeichnis für Commands, Agents, Skills, Rules und Qwen-Konfiguration. Siehe [Qwen-CLI-Adapter-Leitfaden](../../docs/QWEN-GUIDE.md).
-- **Zed**: Projektlokaler Adapter für selektive Installation von `.zed/settings.json`, abgeflachten Rules, Commands, Agents und Skills.
 - **Nicht-native Harnesses**: Manueller Fallback-Pfad für Grok und ähnliche Oberflächen. Siehe [Leitfaden zur manuellen Anpassung](../../docs/MANUAL-ADAPTATION-GUIDE.md).
 - **Claude Code**: Nativ — dies ist das primäre Ziel.
 </details>
@@ -1322,141 +1318,6 @@ ECC liefert drei Beispiel-Rollenkonfigurationen aus:
 
 ---
 
-## Zed-Unterstützung
-
-ECC bietet Zed-Projektunterstützung über einen konservativen `.zed`-Adapter für projektlokale Einstellungen, abgeflachte Rules, Agents, Commands und Skills.
-
-```bash
-./install.sh --profile minimal --target zed
-```
-
-```powershell
-.\install.ps1 --profile minimal --target zed
-```
-
-Der Adapter schreibt ECC-verwaltete Dateien unter `.zed/` und hält BYOK-/OpenRouter-Credentials aus dem Repo heraus. Konfiguriere das Zed-Konto oder API-Keys über Zeds eigene Einstellungs-UI oder deine lokalen Benutzereinstellungen.
-
----
-
-## OpenCode-Unterstützung
-
-ECC bietet **vollständige OpenCode-Unterstützung** einschließlich Plugins und Hooks.
-
-### Schnellstart
-
-```bash
-# OpenCode installieren
-npm install -g opencode
-
-# Im Repository-Root ausführen
-opencode
-```
-
-Die Konfiguration wird automatisch aus `.opencode/opencode.json` erkannt.
-
-### Feature-Parität
-
-| Feature | Claude Code | OpenCode | Status |
-|---------|-------------|----------|--------|
-| Agents | PASS: 60 Agents | PASS: 12 Agents | **Claude Code führt** |
-| Commands | PASS: 75 Commands | PASS: 35 Commands | **Claude Code führt** |
-| Skills | PASS: 232 Skills | PASS: 37 Skills | **Claude Code führt** |
-| Hooks | PASS: 8 Event-Typen | PASS: 11 Events | **OpenCode hat mehr!** |
-| Rules | PASS: 29 Rules | PASS: 13 Instructions | **Claude Code führt** |
-| MCP-Server | PASS: 14 Server | PASS: Vollständig | **Vollständige Parität** |
-| Custom Tools | PASS: Über Hooks | PASS: 6 native Tools | **OpenCode ist besser** |
-
-### Hook-Unterstützung über Plugins
-
-Das Plugin-System von OpenCode ist AUSGEFEILTER als das von Claude Code mit 20+ Event-Typen:
-
-| Claude-Code-Hook | OpenCode-Plugin-Event |
-|-----------------|----------------------|
-| PreToolUse | `tool.execute.before` |
-| PostToolUse | `tool.execute.after` |
-| Stop | `session.idle` |
-| SessionStart | `session.created` |
-| SessionEnd | `session.deleted` |
-
-**Zusätzliche OpenCode-Events**: `file.edited`, `file.watcher.updated`, `message.updated`, `lsp.client.diagnostics`, `tui.toast.show` und mehr.
-
-### Gepflegte Slash-Einträge
-
-| Command | Beschreibung |
-|---------|-------------|
-| `/plan` | Implementierungsplan erstellen |
-| `/code-review` | Code-Änderungen reviewen |
-| `/build-fix` | Build-Fehler beheben |
-| `/refactor-clean` | Toten Code entfernen |
-| `/learn` | Muster aus der Session extrahieren |
-| `/checkpoint` | Verifikationsstatus speichern |
-| `/quality-gate` | Das gepflegte Verifikations-Gate ausführen |
-| `/update-docs` | Dokumentation aktualisieren |
-| `/update-codemaps` | Codemaps aktualisieren |
-| `/test-coverage` | Coverage analysieren |
-| `/go-review` | Go-Code-Review |
-| `/go-test` | Go-TDD-Workflow |
-| `/go-build` | Go-Build-Fehler beheben |
-| `/python-review` | Python-Code-Review (PEP 8, Type Hints, Sicherheit) |
-| `/multi-plan` | Kollaborative Multi-Modell-Planung |
-| `/multi-execute` | Kollaborative Multi-Modell-Ausführung |
-| `/multi-backend` | Backend-fokussierter Multi-Modell-Workflow |
-| `/multi-frontend` | Frontend-fokussierter Multi-Modell-Workflow |
-| `/multi-workflow` | Vollständiger Multi-Modell-Entwicklungs-Workflow |
-| `/pm2` | PM2-Service-Commands automatisch generieren |
-| `/sessions` | Session-Verlauf verwalten |
-| `/skill-create` | Skills aus Git generieren |
-| `/instinct-status` | Gelernte Instincts anzeigen |
-| `/instinct-import` | Instincts importieren |
-| `/instinct-export` | Instincts exportieren |
-| `/evolve` | Instincts zu Skills clustern |
-| `/promote` | Projekt-Instincts auf globalen Geltungsbereich heben |
-| `/projects` | Bekannte Projekte und Instinct-Statistiken auflisten |
-| `/prune` | Abgelaufene ausstehende Instincts löschen (30 Tage TTL) |
-| `/learn-eval` | Muster vor dem Speichern extrahieren und evaluieren |
-| `/setup-pm` | Paketmanager konfigurieren |
-| `/harness-audit` | Harness-Zuverlässigkeit, Eval-Bereitschaft und Risikolage auditieren |
-| `/loop-start` | Kontrolliertes agentisches Loop-Ausführungsmuster starten |
-| `/loop-status` | Aktiven Loop-Status und Checkpoints inspizieren |
-| `/quality-gate` | Quality-Gate-Prüfungen für Pfade oder das gesamte Repo ausführen |
-| `/model-route` | Aufgaben nach Komplexität und Budget an Modelle routen |
-
-### Plugin-Installation
-
-**Option 1: Direkt verwenden**
-```bash
-cd ECC
-opencode
-```
-
-**Option 2: Als npm-Paket installieren**
-```bash
-npm install ecc-universal
-```
-
-Füge es dann zu deiner `opencode.json` hinzu:
-```json
-{
-  "plugin": ["ecc-universal"]
-}
-```
-
-Dieser npm-Plugin-Eintrag aktiviert ECCs veröffentlichtes OpenCode-Plugin-Modul (Hooks/Events und Plugin-Tools).
-Er fügt **nicht** automatisch ECCs vollständigen Command-/Agent-/Instruction-Katalog zu deiner Projektkonfiguration hinzu.
-
-Für das vollständige ECC-OpenCode-Setup entweder:
-- OpenCode innerhalb dieses Repositorys ausführen, oder
-- die mitgelieferten `.opencode/`-Konfigurations-Assets in dein Projekt kopieren und die `instructions`-, `agent`- und `command`-Einträge in `opencode.json` verdrahten
-
-### Dokumentation
-
-- **Migrationsleitfaden**: `.opencode/MIGRATION.md`
-- **OpenCode-Plugin-README**: `.opencode/README.md`
-- **Konsolidierte Rules**: `.opencode/instructions/INSTRUCTIONS.md`
-- **LLM-Dokumentation**: `llms.txt` (vollständige OpenCode-Dokumentation für LLMs)
-
----
-
 ## GitHub-Copilot-Unterstützung
 
 ECC bietet **GitHub-Copilot-Unterstützung** für VS Code über das native Instruction- und Prompt-Datei-System von Copilot Chat — kein zusätzliches Tooling erforderlich.
@@ -1517,25 +1378,25 @@ GitHub Copilot hat kein Hook-System und keine Subagent-API, daher sind ECCs Hook
 
 ECC ist das **erste Plugin, das jedes große KI-Coding-Tool ausreizt**. So vergleicht sich jeder Harness:
 
-| Feature | Claude Code | Codex CLI | OpenCode | GitHub Copilot |
-|---------|------------|-----------|----------|----------------|
-| **Agents** | 60 | Gemeinsam (AGENTS.md) | 12 | Nicht verfügbar |
-| **Commands** | 75 | Instruction-basiert | 35 | 5 Prompts |
-| **Skills** | 232 | 10 (natives Format) | 37 | Über Instructions |
-| **Hook-Events** | 8 Typen | Noch keine | 11 Typen | Keine |
-| **Hook-Skripte** | 20+ Skripte | Nicht verfügbar | Plugin-Hooks | Nicht verfügbar |
-| **Rules** | 34 (common + Sprache) | Instruction-basiert | 13 Instructions | 1 stets aktive Datei |
-| **Custom Tools** | Über Hooks | Nicht verfügbar | 6 native Tools | Nicht verfügbar |
-| **MCP-Server** | 14 | 7 (automatisch gemergt über TOML-Parser) | Vollständig | Nicht verfügbar |
-| **Konfigurationsformat** | settings.json | config.toml | opencode.json | copilot-instructions.md + settings.json |
-| **Kontextdatei** | CLAUDE.md + AGENTS.md | AGENTS.md | AGENTS.md | copilot-instructions.md |
-| **Secret-Erkennung** | Hook-basiert | Sandbox-basiert | Hook-basiert | Instruction-basiert |
-| **Auto-Formatierung** | PostToolUse-Hook | Nicht verfügbar | file.edited-Hook | Nicht verfügbar |
-| **Version** | Plugin | Referenzkonfiguration | 2.0.0-rc.1 | Instruction-Schicht |
+| Feature | Claude Code | Codex CLI | GitHub Copilot |
+|---------|------------|-----------|----------------|
+| **Agents** | 60 | Gemeinsam (AGENTS.md) | Nicht verfügbar |
+| **Commands** | 75 | Instruction-basiert | 5 Prompts |
+| **Skills** | 232 | 10 (natives Format) | Über Instructions |
+| **Hook-Events** | 8 Typen | Noch keine | Keine |
+| **Hook-Skripte** | 20+ Skripte | Nicht verfügbar | Nicht verfügbar |
+| **Rules** | 34 (common + Sprache) | Instruction-basiert | 1 stets aktive Datei |
+| **Custom Tools** | Über Hooks | Nicht verfügbar | Nicht verfügbar |
+| **MCP-Server** | 14 | 7 (automatisch gemergt über TOML-Parser) | Nicht verfügbar |
+| **Konfigurationsformat** | settings.json | config.toml | copilot-instructions.md + settings.json |
+| **Kontextdatei** | CLAUDE.md + AGENTS.md | AGENTS.md | copilot-instructions.md |
+| **Secret-Erkennung** | Hook-basiert | Sandbox-basiert | Instruction-basiert |
+| **Auto-Formatierung** | PostToolUse-Hook | Nicht verfügbar | Nicht verfügbar |
+| **Version** | Plugin | Referenzkonfiguration | Instruction-Schicht |
 
 **Wesentliche architektonische Entscheidungen:**
-- **AGENTS.md** im Root ist die universelle Cross-Tool-Datei (gelesen von Claude Code, Codex und OpenCode — GitHub Copilot verwendet stattdessen `.github/copilot-instructions.md`)
-- Das **Skills-Format** (SKILL.md mit YAML-Frontmatter) funktioniert über Claude Code, Codex und OpenCode hinweg
+- **AGENTS.md** im Root ist die universelle Cross-Tool-Datei (gelesen von Claude Code und Codex — GitHub Copilot verwendet stattdessen `.github/copilot-instructions.md`)
+- Das **Skills-Format** (SKILL.md mit YAML-Frontmatter) funktioniert über Claude Code und Codex hinweg
 - Codex' fehlende Hooks werden durch `AGENTS.md`, optionale `model_instructions_file`-Overrides und Sandbox-Berechtigungen kompensiert
 
 ---

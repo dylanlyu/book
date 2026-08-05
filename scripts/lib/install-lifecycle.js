@@ -1,5 +1,4 @@
 const fs = require('fs');
-const { execFileSync } = require('child_process');
 const os = require('os');
 const path = require('path');
 
@@ -7,13 +6,8 @@ const { resolveInstallPlan, loadInstallManifests } = require('./install-manifest
 const { readInstallState, validateInstallState } = require('./install-state');
 const { assertWithinTrustedRoot } = require('./path-safety');
 const { createManifestInstallPlan } = require('./install-executor');
-const {
-  prepareClaudeSkillMigration,
-} = require('./install/claude-skill-migration');
+const { prepareClaudeSkillMigration } = require('./install/claude-skill-migration');
 const { getInstallTargetAdapter, listInstallTargetAdapters } = require('./install-targets/registry');
-const OPENCODE_BUILD_ARTIFACT = path.join('.opencode', 'dist');
-const OPENCODE_BUILD_SCRIPT = path.join('scripts', 'build-opencode.js');
-const OPENCODE_PLUGIN_NOT_BUILT_CODE = 'opencode-plugin-not-built';
 
 const DEFAULT_REPO_ROOT = path.join(__dirname, '../..');
 
@@ -53,39 +47,12 @@ function compareStringArrays(left, right) {
   return leftValues.every((value, index) => value === rightValues[index]);
 }
 
-function hasOpencodeBuildError(issues) {
-  return Array.isArray(issues) && issues.some(issue => issue.code === OPENCODE_PLUGIN_NOT_BUILT_CODE);
-}
-
-function getOpencodeBuildValidationIssues(context) {
-  return getInstallTargetAdapter('opencode').validate({
-    homeDir: context.homeDir,
-    repoRoot: context.repoRoot,
-  });
-}
-
-function buildOpencodePayload(repoRoot, buildRunner = execFileSync) {
-  buildRunner(process.execPath, [path.join(repoRoot, OPENCODE_BUILD_SCRIPT)], {
-    cwd: repoRoot,
-    encoding: 'utf8',
-    stdio: ['ignore', 'pipe', 'pipe'],
-  });
-}
-
-function formatBuildErrorMessage(error) {
-  const stderr = typeof error.stderr === 'string' ? error.stderr.trim() : '';
-  const stdout = typeof error.stdout === 'string' ? error.stdout.trim() : '';
-  return stderr || stdout || error.message || 'Failed to build OpenCode payload';
-}
-
 function getManagedOperations(state) {
   return Array.isArray(state && state.operations) ? state.operations.filter(operation => operation.ownership === 'managed') : [];
 }
 
 function createUnsafeRepairSourceError() {
-  return new Error(
-    'Refusing unsafe repair source metadata: sources must stay within the repository.'
-  );
+  return new Error('Refusing unsafe repair source metadata: sources must stay within the repository.');
 }
 
 function assertSafeRepairSourcePath(sourcePath, repoRoot) {
@@ -103,28 +70,19 @@ function resolveOperationSourcePath(repoRoot, operation) {
     }
 
     const sourceRelativePath = operation.sourceRelativePath;
-    const hasParentTraversal = sourceRelativePath
-      .split(/[/\\]+/)
-      .includes('..');
-    const isAbsolute = path.isAbsolute(sourceRelativePath)
-      || path.win32.isAbsolute(sourceRelativePath);
+    const hasParentTraversal = sourceRelativePath.split(/[/\\]+/).includes('..');
+    const isAbsolute = path.isAbsolute(sourceRelativePath) || path.win32.isAbsolute(sourceRelativePath);
     if (isAbsolute || hasParentTraversal) {
       throw createUnsafeRepairSourceError();
     }
 
-    return assertSafeRepairSourcePath(
-      path.resolve(repoRoot, sourceRelativePath),
-      repoRoot
-    );
+    return assertSafeRepairSourcePath(path.resolve(repoRoot, sourceRelativePath), repoRoot);
   }
 
   if (!operation.sourcePath) {
     return null;
   }
-  if (
-    typeof operation.sourcePath !== 'string'
-    || !path.isAbsolute(operation.sourcePath)
-  ) {
+  if (typeof operation.sourcePath !== 'string' || !path.isAbsolute(operation.sourcePath)) {
     throw createUnsafeRepairSourceError();
   }
   return assertSafeRepairSourcePath(operation.sourcePath, repoRoot);
@@ -222,23 +180,14 @@ function formatJson(value) {
   return `${JSON.stringify(value, null, 2)}\n`;
 }
 
-function getManagedDestination(
-  destinationPath,
-  trustedRoot,
-  action,
-  { allowFinalSymlink = false } = {}
-) {
+function getManagedDestination(destinationPath, trustedRoot, action, { allowFinalSymlink = false } = {}) {
   if (!destinationPath || typeof destinationPath !== 'string') {
     throw new Error(`Refusing to ${action}: missing destination path.`);
   }
 
   const canonicalRoot = assertWithinTrustedRoot(trustedRoot, trustedRoot, action);
   const resolvedDestination = path.resolve(destinationPath);
-  const canonicalParent = assertWithinTrustedRoot(
-    path.dirname(resolvedDestination),
-    canonicalRoot,
-    action
-  );
+  const canonicalParent = assertWithinTrustedRoot(path.dirname(resolvedDestination), canonicalRoot, action);
   const managedPath = path.join(canonicalParent, path.basename(resolvedDestination));
   let stat = null;
 
@@ -251,9 +200,7 @@ function getManagedDestination(
   }
 
   if (stat && stat.isSymbolicLink() && !allowFinalSymlink) {
-    const error = new Error(
-      `Refusing to ${action}: managed destination is a final symlink.`
-    );
+    const error = new Error(`Refusing to ${action}: managed destination is a final symlink.`);
     error.code = 'ECC_FINAL_DESTINATION_SYMLINK';
     throw error;
   }
@@ -267,17 +214,11 @@ function getManagedDestination(
 }
 
 function ensureContainedParentDir(destinationPath, trustedRoot, action) {
-  const initialDestination = getManagedDestination(
-    destinationPath,
-    trustedRoot,
-    action
-  );
+  const initialDestination = getManagedDestination(destinationPath, trustedRoot, action);
   const { canonicalRoot, managedPath } = initialDestination;
   const canonicalParent = path.dirname(managedPath);
   const relativeParent = path.relative(canonicalRoot, canonicalParent);
-  const pathSegments = relativeParent
-    ? relativeParent.split(path.sep).filter(Boolean)
-    : [];
+  const pathSegments = relativeParent ? relativeParent.split(path.sep).filter(Boolean) : [];
   let currentPath = canonicalRoot;
 
   for (const segment of pathSegments) {
@@ -306,29 +247,14 @@ function prepareContainedWriteDestination(destinationPath, trustedRoot, action) 
   return ensureContainedParentDir(destinationPath, trustedRoot, action);
 }
 
-function getContainedExistingPath(
-  destinationPath,
-  trustedRoot,
-  action,
-  { allowFinalSymlink = false } = {}
-) {
-  const initialDestination = getManagedDestination(
-    destinationPath,
-    trustedRoot,
-    action,
-    { allowFinalSymlink }
-  );
+function getContainedExistingPath(destinationPath, trustedRoot, action, { allowFinalSymlink = false } = {}) {
+  const initialDestination = getManagedDestination(destinationPath, trustedRoot, action, { allowFinalSymlink });
   const followsToExistingPath = fs.existsSync(initialDestination.managedPath);
   if (!followsToExistingPath && !initialDestination.isFinalSymlink) {
     return null;
   }
 
-  const finalDestination = getManagedDestination(
-    initialDestination.managedPath,
-    trustedRoot,
-    action,
-    { allowFinalSymlink }
-  );
+  const finalDestination = getManagedDestination(initialDestination.managedPath, trustedRoot, action, { allowFinalSymlink });
   return finalDestination.exists ? finalDestination.managedPath : null;
 }
 
@@ -337,9 +263,7 @@ function hasSameFileIdentity(leftStat, rightStat) {
 }
 
 function createChangedDestinationError(action) {
-  return new Error(
-    `Refusing to ${action}: managed destination changed during the write.`
-  );
+  return new Error(`Refusing to ${action}: managed destination changed during the write.`);
 }
 
 function getStableParentStat(filePath, action) {
@@ -350,13 +274,7 @@ function getStableParentStat(filePath, action) {
   return parentStat;
 }
 
-function assertPinnedWriteDestination(
-  filePath,
-  fileDescriptor,
-  expectedParentStat,
-  trustedRoot,
-  action
-) {
+function assertPinnedWriteDestination(filePath, fileDescriptor, expectedParentStat, trustedRoot, action) {
   const liveDestination = getManagedDestination(filePath, trustedRoot, action);
   if (path.resolve(liveDestination.managedPath) !== path.resolve(filePath)) {
     throw createChangedDestinationError(action);
@@ -369,31 +287,18 @@ function assertPinnedWriteDestination(
 
   const descriptorStat = fs.fstatSync(fileDescriptor);
   const livePathStat = fs.lstatSync(liveDestination.managedPath);
-  if (
-    !descriptorStat.isFile()
-    || !livePathStat.isFile()
-    || livePathStat.isSymbolicLink()
-    || !hasSameFileIdentity(descriptorStat, livePathStat)
-  ) {
+  if (!descriptorStat.isFile() || !livePathStat.isFile() || livePathStat.isSymbolicLink() || !hasSameFileIdentity(descriptorStat, livePathStat)) {
     throw createChangedDestinationError(action);
   }
 }
 
 function writeFileNoFollow(filePath, content, mode, trustedRoot, action) {
   const expectedParentStat = getStableParentStat(filePath, action);
-  const flags = fs.constants.O_WRONLY
-    | fs.constants.O_CREAT
-    | (fs.constants.O_NOFOLLOW || 0);
+  const flags = fs.constants.O_WRONLY | fs.constants.O_CREAT | (fs.constants.O_NOFOLLOW || 0);
   const fileDescriptor = fs.openSync(filePath, flags, mode);
 
   try {
-    assertPinnedWriteDestination(
-      filePath,
-      fileDescriptor,
-      expectedParentStat,
-      trustedRoot,
-      action
-    );
+    assertPinnedWriteDestination(filePath, fileDescriptor, expectedParentStat, trustedRoot, action);
     fs.ftruncateSync(fileDescriptor, 0);
     fs.writeFileSync(fileDescriptor, content);
     if (mode !== undefined) {
@@ -415,7 +320,7 @@ function readFileWithMetadataNoFollow(filePath, encoding) {
     }
     return {
       content: fs.readFileSync(fileDescriptor, encoding),
-      mode: stat.mode,
+      mode: stat.mode
     };
   } finally {
     fs.closeSync(fileDescriptor);
@@ -432,49 +337,23 @@ function readJsonNoFollow(filePath) {
 
 function writeContainedFile(destinationPath, content, trustedRoot, action, mode) {
   const preparedDestination = prepareContainedWriteDestination(destinationPath, trustedRoot, action);
-  const finalDestination = getManagedDestination(
-    preparedDestination,
-    trustedRoot,
-    action
-  ).managedPath;
-  writeFileNoFollow(
-    finalDestination,
-    content,
-    mode,
-    trustedRoot,
-    action
-  );
+  const finalDestination = getManagedDestination(preparedDestination, trustedRoot, action).managedPath;
+  writeFileNoFollow(finalDestination, content, mode, trustedRoot, action);
   return finalDestination;
 }
 
 function copyContainedFile(sourcePath, destinationPath, trustedRoot, action) {
   const source = readFileWithMetadataNoFollow(sourcePath);
-  return writeContainedFile(
-    destinationPath,
-    source.content,
-    trustedRoot,
-    action,
-    source.mode & 0o777
-  );
+  return writeContainedFile(destinationPath, source.content, trustedRoot, action, source.mode & 0o777);
 }
 
 function removeContainedPath(destinationPath, trustedRoot, action, options = {}) {
-  const existingDestination = getContainedExistingPath(
-    destinationPath,
-    trustedRoot,
-    action,
-    { allowFinalSymlink: true }
-  );
+  const existingDestination = getContainedExistingPath(destinationPath, trustedRoot, action, { allowFinalSymlink: true });
   if (!existingDestination) {
     return null;
   }
 
-  const finalDestination = getManagedDestination(
-    existingDestination,
-    trustedRoot,
-    action,
-    { allowFinalSymlink: true }
-  ).managedPath;
+  const finalDestination = getManagedDestination(existingDestination, trustedRoot, action, { allowFinalSymlink: true }).managedPath;
   fs.rmSync(finalDestination, options);
   return finalDestination;
 }
@@ -622,11 +501,7 @@ function executeRepairOperation(repoRoot, operation, trustedRoot) {
     }
 
     const existingDestination = getContainedExistingPath(operation.destinationPath, trustedRoot, 'repair');
-    const currentValue = existingDestination
-      ? readJsonNoFollow(
-        getManagedDestination(existingDestination, trustedRoot, 'repair').managedPath
-      )
-      : {};
+    const currentValue = existingDestination ? readJsonNoFollow(getManagedDestination(existingDestination, trustedRoot, 'repair').managedPath) : {};
     const mergedValue = deepMergeJson(currentValue, payload);
 
     writeContainedFile(operation.destinationPath, formatJson(mergedValue), trustedRoot, 'repair');
@@ -634,12 +509,7 @@ function executeRepairOperation(repoRoot, operation, trustedRoot) {
   }
 
   if (operation.kind === 'remove') {
-    const removedPath = removeContainedPath(
-      operation.destinationPath,
-      trustedRoot,
-      'repair',
-      { recursive: true, force: true }
-    );
+    const removedPath = removeContainedPath(operation.destinationPath, trustedRoot, 'repair', { recursive: true, force: true });
     return removedPath ? operation.destinationPath : null;
   }
 
@@ -649,12 +519,7 @@ function executeRepairOperation(repoRoot, operation, trustedRoot) {
 function executeUninstallOperation(operation, trustedRoot) {
   // Confine deletes to the trusted install root (GHSA-hfpv-w6mp-5g95).
   if (operation.kind === 'copy-file') {
-    const removedPath = removeContainedPath(
-      operation.destinationPath,
-      trustedRoot,
-      'uninstall',
-      { force: true }
-    );
+    const removedPath = removeContainedPath(operation.destinationPath, trustedRoot, 'uninstall', { force: true });
     if (!removedPath) {
       return {
         removedPaths: [],
@@ -687,12 +552,7 @@ function executeUninstallOperation(operation, trustedRoot) {
       };
     }
 
-    const removedPath = removeContainedPath(
-      operation.destinationPath,
-      trustedRoot,
-      'uninstall',
-      { force: true }
-    );
+    const removedPath = removeContainedPath(operation.destinationPath, trustedRoot, 'uninstall', { force: true });
     if (!removedPath) {
       return {
         removedPaths: [],
@@ -725,11 +585,7 @@ function executeUninstallOperation(operation, trustedRoot) {
       };
     }
 
-    const existingDestination = getContainedExistingPath(
-      operation.destinationPath,
-      trustedRoot,
-      'uninstall'
-    );
+    const existingDestination = getContainedExistingPath(operation.destinationPath, trustedRoot, 'uninstall');
     if (!existingDestination) {
       return {
         removedPaths: [],
@@ -742,17 +598,10 @@ function executeUninstallOperation(operation, trustedRoot) {
       throw new Error(`Missing merge payload for uninstall: ${operation.destinationPath}`);
     }
 
-    const currentValue = readJsonNoFollow(
-      getManagedDestination(existingDestination, trustedRoot, 'uninstall').managedPath
-    );
+    const currentValue = readJsonNoFollow(getManagedDestination(existingDestination, trustedRoot, 'uninstall').managedPath);
     const nextValue = deepRemoveJsonSubset(currentValue, payload);
     if (nextValue === JSON_REMOVE_SENTINEL) {
-      const removedPath = removeContainedPath(
-        operation.destinationPath,
-        trustedRoot,
-        'uninstall',
-        { force: true }
-      );
+      const removedPath = removeContainedPath(operation.destinationPath, trustedRoot, 'uninstall', { force: true });
       return {
         removedPaths: removedPath ? [operation.destinationPath] : [],
         cleanupTargets: removedPath ? [removedPath] : []
@@ -805,20 +654,13 @@ function inspectManagedOperation(repoRoot, trustedRoot, operation) {
 
   let managedDestination;
   try {
-    managedDestination = getManagedDestination(
-      destinationPath,
-      trustedRoot,
-      'inspect managed operation',
-      { allowFinalSymlink: operation.kind === 'remove' }
-    );
+    managedDestination = getManagedDestination(destinationPath, trustedRoot, 'inspect managed operation', { allowFinalSymlink: operation.kind === 'remove' });
   } catch (error) {
     return {
       status: 'unsafe-destination',
       operation,
       destinationPath,
-      reason: error && error.code === 'ECC_FINAL_DESTINATION_SYMLINK'
-        ? 'final-symlink'
-        : 'outside-root'
+      reason: error && error.code === 'ECC_FINAL_DESTINATION_SYMLINK' ? 'final-symlink' : 'outside-root'
     };
   }
 
@@ -993,9 +835,7 @@ function summarizeManagedOperationHealth(repoRoot, trustedRoot, operations) {
 }
 
 function getUnsafeManagedDestinationError(operationHealth) {
-  const hasFinalSymlink = operationHealth.unsafeDestination.some(
-    inspection => inspection.reason === 'final-symlink'
-  );
+  const hasFinalSymlink = operationHealth.unsafeDestination.some(inspection => inspection.reason === 'final-symlink');
   if (hasFinalSymlink) {
     return 'Refusing unsafe managed destination: final symlink detected.';
   }
@@ -1003,11 +843,8 @@ function getUnsafeManagedDestinationError(operationHealth) {
 }
 
 function getUnsafeOperationResult(record, operationHealth) {
-  const error = operationHealth.unsafeDestination.length > 0
-    ? getUnsafeManagedDestinationError(operationHealth)
-    : operationHealth.unsafeSource.length > 0
-      ? createUnsafeRepairSourceError().message
-      : null;
+  const error =
+    operationHealth.unsafeDestination.length > 0 ? getUnsafeManagedDestinationError(operationHealth) : operationHealth.unsafeSource.length > 0 ? createUnsafeRepairSourceError().message : null;
   if (!error) {
     return null;
   }
@@ -1156,31 +993,15 @@ function analyzeRecord(record, context) {
   }
 
   const managedOperations = getManagedOperations(state);
-  const operationHealth = summarizeManagedOperationHealth(
-    context.repoRoot,
-    record.targetRoot,
-    managedOperations
-  );
+  const operationHealth = summarizeManagedOperationHealth(context.repoRoot, record.targetRoot, managedOperations);
   const missingManagedOperations = operationHealth.missing;
 
   if (operationHealth.unsafeDestination.length > 0) {
-    issues.push(
-      buildIssue(
-        'error',
-        'unsafe-managed-destination',
-        `${operationHealth.unsafeDestination.length} managed operation(s) target an unsafe destination`
-      )
-    );
+    issues.push(buildIssue('error', 'unsafe-managed-destination', `${operationHealth.unsafeDestination.length} managed operation(s) target an unsafe destination`));
   }
 
   if (operationHealth.unsafeSource.length > 0) {
-    issues.push(
-      buildIssue(
-        'error',
-        'unsafe-repair-source',
-        `${operationHealth.unsafeSource.length} managed operation(s) reference unsafe repair source metadata`
-      )
-    );
+    issues.push(buildIssue('error', 'unsafe-repair-source', `${operationHealth.unsafeSource.length} managed operation(s) reference unsafe repair source metadata`));
   }
 
   if (missingManagedOperations.length > 0) {
@@ -1336,7 +1157,7 @@ function createRepairPlanFromRecord(record, context, options = {}) {
     excludeComponentIds: state.request.excludeComponents || [],
     projectRoot: context.projectRoot,
     homeDir: context.homeDir,
-    exemptValidationCodes: options.exemptValidationCodes || [],
+    exemptValidationCodes: options.exemptValidationCodes || []
   });
 
   return {
@@ -1369,21 +1190,14 @@ function assertValidInstallStateForWrite(state, label) {
     return;
   }
 
-  const details = validation.errors
-    .map(error => `${error.instancePath || '/'} ${error.message}`)
-    .join('; ');
+  const details = validation.errors.map(error => `${error.instancePath || '/'} ${error.message}`).join('; ');
   throw new Error(`Invalid install-state (${label}): ${details}`);
 }
 
 function writeRefreshedInstallState(record, statePreview) {
   const trustedStatePreview = buildAdapterDerivedStatePreview(statePreview, record);
   assertValidInstallStateForWrite(trustedStatePreview, record.installStatePath);
-  return writeContainedFile(
-    record.installStatePath,
-    formatJson(trustedStatePreview),
-    record.targetRoot,
-    'repair'
-  );
+  return writeContainedFile(record.installStatePath, formatJson(trustedStatePreview), record.targetRoot, 'repair');
 }
 
 function prepareRepairMigration(plan, record) {
@@ -1393,7 +1207,7 @@ function prepareRepairMigration(plan, record) {
     targetRoot: record.targetRoot,
     installRoot: record.targetRoot,
     installStatePath: record.installStatePath,
-    statePreview: buildAdapterDerivedStatePreview(plan.statePreview, record),
+    statePreview: buildAdapterDerivedStatePreview(plan.statePreview, record)
   };
   const migration = prepareClaudeSkillMigration(trustedPlan);
   return {
@@ -1402,11 +1216,8 @@ function prepareRepairMigration(plan, record) {
       ...trustedPlan,
       operations: migration.finalState.operations,
       statePreview: migration.finalState,
-      warnings: [
-        ...(Array.isArray(plan.warnings) ? plan.warnings : []),
-        ...migration.warnings,
-      ],
-    },
+      warnings: [...(Array.isArray(plan.warnings) ? plan.warnings : []), ...migration.warnings]
+    }
   };
 }
 
@@ -1420,9 +1231,6 @@ function repairInstalledStates(options = {}) {
     manifestVersion: manifests.modulesVersion,
     packageVersion: readPackageVersion(repoRoot)
   };
-  const buildOpencodeRunner = typeof options.buildOpencodePayload === 'function'
-    ? options.buildOpencodePayload
-    : buildOpencodePayload;
   const records = discoverInstalledStates({
     homeDir: context.homeDir,
     projectRoot: context.projectRoot,
@@ -1442,72 +1250,11 @@ function repairInstalledStates(options = {}) {
     }
 
     try {
-      const needsOpencodeBuild = record.adapter.target === 'opencode'
-        && hasOpencodeBuildError(getOpencodeBuildValidationIssues(context));
-      const opencodeBuildRepairPath = path.join(context.repoRoot, OPENCODE_BUILD_ARTIFACT);
-
-      if (needsOpencodeBuild && options.dryRun) {
-        const rawPlan = createRepairPlanFromRecord(record, context, {
-          exemptValidationCodes: [OPENCODE_PLUGIN_NOT_BUILT_CODE],
-        });
-        const { plan: desiredPlan } = prepareRepairMigration(rawPlan, record);
-        const operationHealth = summarizeManagedOperationHealth(
-          context.repoRoot,
-          record.targetRoot,
-          desiredPlan.operations
-        );
-        const unsafeOperationResult = getUnsafeOperationResult(
-          record,
-          operationHealth
-        );
-        if (unsafeOperationResult) {
-          return unsafeOperationResult;
-        }
-        const repairOperations = [...operationHealth.missing.map(entry => ({ ...entry.operation })), ...operationHealth.drifted.map(entry => ({ ...entry.operation }))];
-        const plannedRepairs = [opencodeBuildRepairPath, ...repairOperations.map(operation => operation.destinationPath)];
-
-        return {
-          adapter: record.adapter,
-          status: 'planned',
-          installStatePath: record.installStatePath,
-          repairedPaths: [],
-          plannedRepairs,
-          stateRefreshed: false,
-          warnings: desiredPlan.warnings,
-          error: null
-        };
-      }
-
-      if (needsOpencodeBuild) {
-        try {
-          buildOpencodeRunner(context.repoRoot);
-        } catch (error) {
-          return {
-            adapter: record.adapter,
-            status: 'error',
-            installStatePath: record.installStatePath,
-            repairedPaths: [],
-            plannedRepairs: [],
-            error: formatBuildErrorMessage(error)
-          };
-        }
-      }
-
       const rawPlan = createRepairPlanFromRecord(record, context);
-      const {
-        migration,
-        plan: desiredPlan,
-      } = prepareRepairMigration(rawPlan, record);
-      const operationHealth = summarizeManagedOperationHealth(
-        context.repoRoot,
-        record.targetRoot,
-        desiredPlan.operations
-      );
+      const { migration, plan: desiredPlan } = prepareRepairMigration(rawPlan, record);
+      const operationHealth = summarizeManagedOperationHealth(context.repoRoot, record.targetRoot, desiredPlan.operations);
 
-      const unsafeOperationResult = getUnsafeOperationResult(
-        record,
-        operationHealth
-      );
+      const unsafeOperationResult = getUnsafeOperationResult(record, operationHealth);
       if (unsafeOperationResult) {
         return unsafeOperationResult;
       }
@@ -1525,14 +1272,8 @@ function repairInstalledStates(options = {}) {
       }
 
       const repairOperations = [...operationHealth.missing.map(entry => ({ ...entry.operation })), ...operationHealth.drifted.map(entry => ({ ...entry.operation }))];
-      const legacyMigrationPaths = migration.legacyOperationsToRemove.map(
-        operation => operation.destinationPath
-      );
-      const plannedRepairs = [...new Set([
-        ...(needsOpencodeBuild ? [opencodeBuildRepairPath] : []),
-        ...repairOperations.map(operation => operation.destinationPath),
-        ...legacyMigrationPaths,
-      ])];
+      const legacyMigrationPaths = migration.legacyOperationsToRemove.map(operation => operation.destinationPath);
+      const plannedRepairs = [...new Set([...repairOperations.map(operation => operation.destinationPath), ...legacyMigrationPaths])];
 
       if (options.dryRun) {
         return {
@@ -1548,29 +1289,20 @@ function repairInstalledStates(options = {}) {
       }
 
       const hasLegacyMigration = migration.legacyOperationsToRemove.length > 0;
-      const repairedPaths = needsOpencodeBuild ? [opencodeBuildRepairPath] : [];
+      const repairedPaths = [];
       if (migration.requiresBridgeState && (repairOperations.length > 0 || hasLegacyMigration)) {
         writeRefreshedInstallState(record, migration.bridgeState);
       }
 
       for (const operation of repairOperations) {
-        const repairedPath = executeRepairOperation(
-          context.repoRoot,
-          operation,
-          record.targetRoot
-        );
+        const repairedPath = executeRepairOperation(context.repoRoot, operation, record.targetRoot);
         if (repairedPath) {
           repairedPaths.push(repairedPath);
         }
       }
       if (hasLegacyMigration) {
         for (const operation of migration.legacyOperationsToRemove) {
-          const removedPath = removeContainedPath(
-            operation.destinationPath,
-            record.targetRoot,
-            'migrate managed Claude skill',
-            { force: true }
-          );
+          const removedPath = removeContainedPath(operation.destinationPath, record.targetRoot, 'migrate managed Claude skill', { force: true });
           if (removedPath) {
             repairedPaths.push(removedPath);
           }
@@ -1580,9 +1312,7 @@ function repairInstalledStates(options = {}) {
 
       return {
         adapter: record.adapter,
-        status: (repairOperations.length > 0 || needsOpencodeBuild || hasLegacyMigration)
-          ? 'repaired'
-          : 'ok',
+        status: repairOperations.length > 0 || hasLegacyMigration ? 'repaired' : 'ok',
         installStatePath: record.installStatePath,
         repairedPaths,
         plannedRepairs: [],
@@ -1632,9 +1362,7 @@ function cleanupEmptyParentDirs(filePath, stopAt) {
 
   while (currentPath) {
     const relativePath = path.relative(trustedStopAt, currentPath);
-    const isContained = relativePath !== '..'
-      && !relativePath.startsWith(`..${path.sep}`)
-      && !path.isAbsolute(relativePath);
+    const isContained = relativePath !== '..' && !relativePath.startsWith(`..${path.sep}`) && !path.isAbsolute(relativePath);
     if (!isContained || relativePath === '') {
       break;
     }
@@ -1682,10 +1410,7 @@ function uninstallInstalledStates(options = {}) {
     }
 
     const state = record.state;
-    const plannedRemovals = Array.from(new Set([
-      ...getManagedOperations(state).map(operation => operation.destinationPath),
-      record.installStatePath
-    ]));
+    const plannedRemovals = Array.from(new Set([...getManagedOperations(state).map(operation => operation.destinationPath), record.installStatePath]));
 
     if (options.dryRun) {
       return {
@@ -1709,12 +1434,7 @@ function uninstallInstalledStates(options = {}) {
         cleanupTargets.push(...outcome.cleanupTargets);
       }
 
-      const removedStatePath = removeContainedPath(
-        record.installStatePath,
-        record.targetRoot,
-        'uninstall',
-        { force: true }
-      );
+      const removedStatePath = removeContainedPath(record.installStatePath, record.targetRoot, 'uninstall', { force: true });
       if (removedStatePath) {
         removedPaths.push(record.installStatePath);
         cleanupTargets.push(removedStatePath);

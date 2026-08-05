@@ -17,9 +17,6 @@ MARKETPLACE_JSON=".claude-plugin/marketplace.json"
 CODEX_MARKETPLACE_JSON=".agents/plugins/marketplace.json"
 CODEX_PLUGIN_JSON=".codex-plugin/plugin.json"
 CODEX_MARKETPLACE_PLUGIN_JSON="plugins/ecc/.codex-plugin/plugin.json"
-OPENCODE_PACKAGE_JSON=".opencode/package.json"
-OPENCODE_PACKAGE_LOCK_JSON=".opencode/package-lock.json"
-OPENCODE_ECC_HOOKS_PLUGIN=".opencode/plugins/ecc-hooks.ts"
 README_FILE="README.md"
 ROOT_ZH_CN_README_FILE="README.zh-CN.md"
 TR_README_FILE="docs/tr/README.md"
@@ -60,7 +57,7 @@ if [[ -n "$(git status --porcelain --untracked-files=all)" ]]; then
 fi
 
 # Verify versioned manifests exist
-for FILE in "$ROOT_PACKAGE_JSON" "$PACKAGE_LOCK_JSON" "$ROOT_AGENTS_MD" "$TR_AGENTS_MD" "$ZH_CN_AGENTS_MD" "$AGENT_YAML" "$VERSION_FILE" "$PLUGIN_JSON" "$MARKETPLACE_JSON" "$CODEX_MARKETPLACE_JSON" "$CODEX_PLUGIN_JSON" "$OPENCODE_PACKAGE_JSON" "$OPENCODE_PACKAGE_LOCK_JSON" "$OPENCODE_ECC_HOOKS_PLUGIN" "$README_FILE" "$ROOT_ZH_CN_README_FILE" "$TR_README_FILE" "$PT_BR_README_FILE" "$ZH_CN_README_FILE" "$SELECTIVE_INSTALL_ARCHITECTURE_DOC"; do
+for FILE in "$ROOT_PACKAGE_JSON" "$PACKAGE_LOCK_JSON" "$ROOT_AGENTS_MD" "$TR_AGENTS_MD" "$ZH_CN_AGENTS_MD" "$AGENT_YAML" "$VERSION_FILE" "$PLUGIN_JSON" "$MARKETPLACE_JSON" "$CODEX_MARKETPLACE_JSON" "$CODEX_PLUGIN_JSON" "$README_FILE" "$ROOT_ZH_CN_README_FILE" "$TR_README_FILE" "$PT_BR_README_FILE" "$ZH_CN_README_FILE" "$SELECTIVE_INSTALL_ARCHITECTURE_DOC"; do
   if [[ ! -f "$FILE" ]]; then
     echo "Error: $FILE not found"
     exit 1
@@ -109,25 +106,26 @@ update_package_lock_version() {
   ' "$1" "$VERSION"
 }
 
+# Usage: update_readme_version_row <file> <label> <col>...
+# Parity tables differ in width per locale (English carries a GitHub Copilot
+# column, zh-CN does not), so the leading cells are variadic and the semver
+# cell is always the one right after them.
 update_readme_version_row() {
   local file="$1"
   local label="$2"
-  local first_col="$3"
-  local second_col="$4"
-  local third_col="$5"
+  shift 2
   node -e '
     const fs = require("fs");
     const file = process.argv[1];
     const version = process.argv[2];
     const label = process.argv[3];
-    const firstCol = process.argv[4];
-    const secondCol = process.argv[5];
-    const thirdCol = process.argv[6];
+    const columns = process.argv.slice(4);
     const escape = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     const current = fs.readFileSync(file, "utf8");
+    const columnPattern = columns.map(escape).join(" \\| ");
     const updated = current.replace(
       new RegExp(
-        `^(\\| \\*\\*${escape(label)}\\*\\* \\| ${escape(firstCol)} \\| ${escape(secondCol)} \\| ${escape(thirdCol)} \\| )[0-9]+\\.[0-9]+\\.[0-9]+(?:-[0-9A-Za-z.-]+)?( \\|(?: [^|]+ \\|)*)$`,
+        `^(\\| \\*\\*${escape(label)}\\*\\* \\| ${columnPattern} \\| )[0-9]+\\.[0-9]+\\.[0-9]+(?:-[0-9A-Za-z.-]+)?( \\|(?: [^|]+ \\|)*)$`,
         "m"
       ),
       (_, prefix, suffix) => `${prefix}${version}${suffix}`
@@ -137,7 +135,7 @@ update_readme_version_row() {
       process.exit(1);
     }
     fs.writeFileSync(file, updated);
-  ' "$file" "$VERSION" "$label" "$first_col" "$second_col" "$third_col"
+  ' "$file" "$VERSION" "$label" "$@"
 }
 
 update_marketplace_plugin_version() {
@@ -264,24 +262,6 @@ update_codex_marketplace_version() {
   ' "$CODEX_MARKETPLACE_JSON" "$VERSION"
 }
 
-update_opencode_hook_banner_version() {
-  node -e '
-    const fs = require("fs");
-    const file = process.argv[1];
-    const version = process.argv[2];
-    const current = fs.readFileSync(file, "utf8");
-    const updated = current.replace(
-      /(## Active Plugin: (?:Everything Claude Code|ECC) v)[0-9]+\.[0-9]+\.[0-9]+(?:-[0-9A-Za-z.-]+)?/,
-      `$1${version}`
-    );
-    if (updated === current) {
-      console.error(`Error: could not update OpenCode hook banner version in ${file}`);
-      process.exit(1);
-    }
-    fs.writeFileSync(file, updated);
-  ' "$OPENCODE_ECC_HOOKS_PLUGIN" "$VERSION"
-}
-
 # Update all shipped package/plugin manifests
 update_version "$ROOT_PACKAGE_JSON" "s|\"version\": *\"[^\"]*\"|\"version\": \"$VERSION\"|"
 update_package_lock_version "$PACKAGE_LOCK_JSON"
@@ -295,11 +275,8 @@ update_marketplace_plugin_version "$MARKETPLACE_JSON"
 update_codex_marketplace_version
 update_version "$CODEX_PLUGIN_JSON" "s|\"version\": *\"[^\"]*\"|\"version\": \"$VERSION\"|"
 update_version "$CODEX_MARKETPLACE_PLUGIN_JSON" "s|\"version\": *\"[^\"]*\"|\"version\": \"$VERSION\"|"
-update_version "$OPENCODE_PACKAGE_JSON" "s|\"version\": *\"[^\"]*\"|\"version\": \"$VERSION\"|"
-update_package_lock_version "$OPENCODE_PACKAGE_LOCK_JSON"
-update_opencode_hook_banner_version
-update_readme_version_row "$README_FILE" "Version" "Plugin" "Plugin" "Reference config"
-update_readme_version_row "$ZH_CN_README_FILE" "版本" "插件" "插件" "参考配置"
+update_readme_version_row "$README_FILE" "Version" "Plugin" "Reference config" "Instruction layer"
+update_readme_version_row "$ZH_CN_README_FILE" "版本" "插件" "参考配置"
 update_latest_release_heading "$README_FILE"
 update_latest_release_heading "$ROOT_ZH_CN_README_FILE"
 update_latest_release_heading "$TR_README_FILE"
@@ -311,13 +288,11 @@ update_selective_install_repo_version "$SELECTIVE_INSTALL_ARCHITECTURE_DOC"
 
 # Verify the bumped release surface is still internally consistent before
 # writing a release commit, tag, or push.
-echo "Verifying OpenCode build and npm pack payload..."
-node scripts/build-opencode.js
-node tests/scripts/build-opencode.test.js
+echo "Verifying npm pack payload..."
 node tests/plugin-manifest.test.js
 
 # Stage, commit, tag, and push
-git add "$ROOT_PACKAGE_JSON" "$PACKAGE_LOCK_JSON" "$ROOT_AGENTS_MD" "$TR_AGENTS_MD" "$ZH_CN_AGENTS_MD" "$AGENT_YAML" "$VERSION_FILE" "$PLUGIN_JSON" "$MARKETPLACE_JSON" "$CODEX_MARKETPLACE_JSON" "$CODEX_PLUGIN_JSON" "$CODEX_MARKETPLACE_PLUGIN_JSON" "$OPENCODE_PACKAGE_JSON" "$OPENCODE_PACKAGE_LOCK_JSON" "$OPENCODE_ECC_HOOKS_PLUGIN" "$README_FILE" "$ROOT_ZH_CN_README_FILE" "$TR_README_FILE" "$PT_BR_README_FILE" "$ZH_CN_README_FILE" "$SELECTIVE_INSTALL_ARCHITECTURE_DOC"
+git add "$ROOT_PACKAGE_JSON" "$PACKAGE_LOCK_JSON" "$ROOT_AGENTS_MD" "$TR_AGENTS_MD" "$ZH_CN_AGENTS_MD" "$AGENT_YAML" "$VERSION_FILE" "$PLUGIN_JSON" "$MARKETPLACE_JSON" "$CODEX_MARKETPLACE_JSON" "$CODEX_PLUGIN_JSON" "$CODEX_MARKETPLACE_PLUGIN_JSON" "$README_FILE" "$ROOT_ZH_CN_README_FILE" "$TR_README_FILE" "$PT_BR_README_FILE" "$ZH_CN_README_FILE" "$SELECTIVE_INSTALL_ARCHITECTURE_DOC"
 git commit -m "chore: bump plugin version to $VERSION"
 git tag "v$VERSION"
 git push origin main "v$VERSION"

@@ -68,32 +68,6 @@ const ADAPTER_RECORDS = Object.freeze(
       source_docs: ['.codex-plugin/plugin.json', 'AGENTS.md', 'scripts/lib/install-targets/codex-home.js']
     },
     {
-      id: 'opencode',
-      harness: 'OpenCode',
-      state: 'Adapter-backed',
-      supported_assets: ['OpenCode package/plugin metadata', 'shared skills', 'MCP config', 'event adapter patterns'],
-      unsupported_surfaces: ['Event names, plugin packaging, and command dispatch differ from Claude Code'],
-      install_or_onramp: ['OpenCode package or plugin surface from this repo'],
-      verification_commands: ['`node tests/scripts/build-opencode.test.js`', '`npm run harness:audit -- --format json`'],
-      risk_notes: ['Keep hook logic in shared scripts and adapt only event shape at the edge.'],
-      last_verified_at: '2026-05-12',
-      owner: 'ECC maintainers',
-      source_docs: ['.opencode/package.json', '.opencode/plugins/ecc-hooks.ts', 'scripts/build-opencode.js']
-    },
-    {
-      id: 'zed',
-      harness: 'Zed',
-      state: 'Adapter-backed',
-      supported_assets: ['Zed project settings', 'flattened project rules', 'shared skills', 'commands', 'agents'],
-      unsupported_surfaces: ['Zed external agents and native Agent Panel permissions are not Claude hooks'],
-      install_or_onramp: ['`./install.sh --profile minimal --target zed`'],
-      verification_commands: ['`node tests/lib/install-targets.test.js`', '`npm run harness:audit -- --format json`'],
-      risk_notes: ['Keep project settings conservative and do not copy BYOK/OpenRouter secrets into `.zed/`.'],
-      last_verified_at: '2026-05-17',
-      owner: 'ECC maintainers',
-      source_docs: ['.zed/settings.json', 'scripts/lib/install-targets/zed-project.js', 'docs/architecture/cross-harness.md', 'tests/lib/install-targets.test.js']
-    },
-    {
       id: 'dmux',
       harness: 'dmux',
       state: 'Adapter-backed',

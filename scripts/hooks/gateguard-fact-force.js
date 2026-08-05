@@ -116,9 +116,9 @@ function getExemptMatchers() {
     .map(glob => {
       const source = glob
         .replace(/[.+^${}()|[\]\\]/g, '\\$&') // escape regex metachars, keep * and ?
-        .split('**')                           // ** boundaries (cross-segment)
+        .split('**') // ** boundaries (cross-segment)
         .map(part => part.replace(/\*/g, '[^/]*').replace(/\?/g, '.'))
-        .join('.*');                           // ** -> across segments
+        .join('.*'); // ** -> across segments
       try {
         return new RegExp(source);
       } catch (_) {
@@ -1256,7 +1256,7 @@ function run(rawInput) {
 
     // Operator opt-out: skip the routine-bash gate entirely. The destructive
     // gate above still fires. This is the documented escape hatch for hosts
-    // (Cursor, OpenCode, etc.) where the once-per-session routine gate is
+    // (non-Claude harnesses, etc.) where the once-per-session routine gate is
     // friction without signal.
     if (isRoutineBashGateDisabled()) {
       return rawInput; // routine gate opted out via env

@@ -27,10 +27,6 @@ const {
   resolveInstallPlan,
 } = require('../../scripts/lib/install-manifests');
 
-function normalizePlanPath(value) {
-  return String(value || '').replace(/\\/g, '/');
-}
-
 function test(name, fn) {
   try {
     fn();
@@ -167,7 +163,7 @@ function runTests() {
 
   if (test('normalizes --profile + --with + --without as manifest mode', () => {
     const request = normalizeInstallRequest({
-      target: 'zed',
+      target: 'joycode',
       profileId: 'developer',
       moduleIds: [],
       includeComponentIds: ['lang:typescript', 'framework:nextjs'],
@@ -415,13 +411,13 @@ function runTests() {
   if (test('--with respects target compatibility filtering', () => {
     const plan = resolveInstallPlan({
       includeComponentIds: ['capability:orchestration'],
-      target: 'zed',
+      target: 'joycode',
     });
-    // orchestration module only supports claude, codex, opencode
+    // orchestration module only supports claude, claude-project, and codex
     assert.ok(!plan.selectedModuleIds.includes('orchestration'),
-      'Should skip orchestration for zed target');
+      'Should skip orchestration for joycode target');
     assert.ok(plan.skippedModuleIds.includes('orchestration'),
-      'Should report orchestration as skipped for zed');
+      'Should report orchestration as skipped for joycode');
   })) passed++; else failed++;
 
   if (test('--without with agent: component excludes the agent module', () => {
@@ -484,7 +480,7 @@ function runTests() {
     assert.ok(result.includes('--with'), 'Help should mention --with');
     assert.ok(result.includes('--without'), 'Help should mention --without');
     assert.ok(result.includes('component'), 'Help should describe components');
-    assert.ok(result.includes('zed          - Install project settings'), 'Help should describe Zed target');
+    assert.ok(result.includes('joycode      - Install commands, agents, skills, and flattened rules'), 'Help should describe JoyCode target');
   })) passed++; else failed++;
 
   // ─── End-to-End Dry-Run ───
@@ -520,17 +516,17 @@ function runTests() {
     }
   })) passed++; else failed++;
 
-  if (test('end-to-end: --profile minimal --target zed --dry-run --json plans project adapter', () => {
+  if (test('end-to-end: --profile minimal --target joycode --dry-run --json plans project adapter', () => {
     const { execFileSync } = require('child_process');
     const scriptPath = path.join(__dirname, '..', '..', 'scripts', 'install-apply.js');
     const homeDir = fs.mkdtempSync(path.join(os.tmpdir(), 'selective-e2e-'));
-    const projectDir = fs.mkdtempSync(path.join(os.tmpdir(), 'selective-e2e-zed-project-'));
+    const projectDir = fs.mkdtempSync(path.join(os.tmpdir(), 'selective-e2e-joycode-project-'));
 
     try {
       const result = execFileSync('node', [
         scriptPath,
         '--profile', 'minimal',
-        '--target', 'zed',
+        '--target', 'joycode',
         '--dry-run',
         '--json',
       ], {
@@ -542,16 +538,12 @@ function runTests() {
       const parsed = JSON.parse(result);
 
       assert.strictEqual(parsed.dryRun, true);
-      assert.strictEqual(parsed.plan.target, 'zed');
-      assert.strictEqual(parsed.plan.adapter.id, 'zed-project');
-      assert.strictEqual(parsed.plan.installRoot, path.join(fs.realpathSync(projectDir), '.zed'));
-      assert.ok(
-        parsed.plan.operations.some(operation => normalizePlanPath(operation.sourceRelativePath) === '.zed/settings.json'),
-        'Should include Zed native settings operation'
-      );
+      assert.strictEqual(parsed.plan.target, 'joycode');
+      assert.strictEqual(parsed.plan.adapter.id, 'joycode-project');
+      assert.strictEqual(parsed.plan.installRoot, path.join(fs.realpathSync(projectDir), '.joycode'));
       assert.ok(
         !parsed.plan.operations.some(operation => operation.moduleId === 'hooks-runtime'),
-        'Zed minimal dry-run should not install hook runtime files'
+        'JoyCode minimal dry-run should not install hook runtime files'
       );
     } finally {
       fs.rmSync(homeDir, { recursive: true, force: true });

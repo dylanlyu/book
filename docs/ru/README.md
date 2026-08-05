@@ -37,7 +37,7 @@
 
 Не просто конфиги. Это полноценная система: навыки, инстинкты, оптимизация памяти, непрерывное обучение, сканирование безопасности и разработка с приоритетом исследований. Готовые к рабочему использованию агенты, навыки, хуки, правила, конфигурации MCP и устаревшие совместимые заглушки команд, отточенные за 10+ месяцев интенсивного ежедневного использования при создании реальных продуктов.
 
-Работает в **Claude Code**, **Codex**, **OpenCode**, **Zed** и других средах агентного ИИ.
+Работает в **Claude Code**, **Codex** и других средах агентного ИИ.
 
 Начните с [примечаний к выпуску rc.1](../releases/2.0.0-rc.1/release-notes.md) и [архитектуры для разных сред](../architecture/cross-harness.md).
 
@@ -386,7 +386,7 @@ python3 ./ecc_dashboard.py
 
 ## Кроссплатформенная поддержка
 
-Плагин теперь полностью поддерживает **Windows, macOS и Linux**, а также плотно интегрирован с основными IDE (Zed, OpenCode, Antigravity) и CLI-средами. Все хуки и скрипты переписаны на Node.js для максимальной совместимости.
+Плагин теперь полностью поддерживает **Windows, macOS и Linux**, а также плотно интегрирован с основными IDE (Antigravity, JoyCode) и CLI-средами. Все хуки и скрипты переписаны на Node.js для максимальной совместимости.
 
 ### Определение пакетного менеджера
 
@@ -1075,11 +1075,9 @@ cp -r everything-claude-code/rules/common ~/.claude/rules/ecc/
 </details>
 
 <details>
-<summary><b>Работает ли это с OpenCode / Codex / Zed / Antigravity?</b></summary>
+<summary><b>Работает ли это с Codex / Antigravity?</b></summary>
 
 Да. ECC кроссплатформенный:
-- **Zed**: project-local адаптер для настроек, плоских правил, команд, агентов и навыков в `.zed/`. См. [Поддержка платформ](#поддержка-платформ).
-- **OpenCode**: полная поддержка плагина в `.opencode/`. См. [Поддержка OpenCode](#поддержка-opencode).
 - **Codex**: первоклассная поддержка macOS app и CLI, с guards против adapter drift и SessionStart fallback. См. PR [#257](https://github.com/affaan-m/everything-claude-code/pull/257).
 - **Antigravity**: плотная настройка для workflows, skills и flattened rules в `.agent/`. См. [Antigravity Guide](../ANTIGRAVITY-GUIDE.md).
 - **Ненативные среды**: ручной fallback path для Grok и похожих интерфейсов. См. [Manual Adaptation Guide](../MANUAL-ADAPTATION-GUIDE.md).
@@ -1250,148 +1248,29 @@ ECC поставляет три sample role configs:
 
 ---
 
-## Поддержка OpenCode
-
-ECC предоставляет **полную поддержку OpenCode**, включая плагины и хуки.
-
-### Быстрый старт
-
-```bash
-# Установить OpenCode
-npm install -g opencode
-
-# Запустить в корне репозитория
-opencode
-```
-
-Конфигурация автоматически определяется из `.opencode/opencode.json`.
-
-### Паритет возможностей
-
-| Возможность | Claude Code | OpenCode | Статус |
-|-------------|-------------|----------|--------|
-| Agents | PASS: 50 agents | PASS: 12 agents | **Claude Code впереди** |
-| Commands | PASS: 68 commands | PASS: 31 commands | **Claude Code впереди** |
-| Skills | PASS: 185 skills | PASS: 37 skills | **Claude Code впереди** |
-| Hooks | PASS: 8 event types | PASS: 11 events | **В OpenCode больше** |
-| Rules | PASS: 29 rules | PASS: 13 instructions | **Claude Code впереди** |
-| MCP Servers | PASS: 14 servers | PASS: Full | **Полный паритет** |
-| Custom Tools | PASS: Via hooks | PASS: 6 native tools | **OpenCode лучше** |
-
-### Поддержка хуков через плагины
-
-Система плагинов OpenCode БОЛЕЕ продвинута, чем Claude Code, и имеет 20+ типов событий:
-
-| Claude Code Hook | OpenCode Plugin Event |
-|------------------|----------------------|
-| PreToolUse | `tool.execute.before` |
-| PostToolUse | `tool.execute.after` |
-| Stop | `session.idle` |
-| SessionStart | `session.created` |
-| SessionEnd | `session.deleted` |
-
-**Дополнительные события OpenCode**: `file.edited`, `file.watcher.updated`, `message.updated`, `lsp.client.diagnostics`, `tui.toast.show` и другие.
-
-### Поддерживаемые slash-записи
-
-| Команда | Описание |
-|---------|----------|
-| `/plan` | Создать план реализации |
-| `/code-review` | Проверить изменения кода |
-| `/build-fix` | Исправить ошибки сборки |
-| `/refactor-clean` | Удалить мёртвый код |
-| `/learn` | Извлечь паттерны из сессии |
-| `/checkpoint` | Сохранить состояние верификации |
-| `/quality-gate` | Запустить поддерживаемый verification gate |
-| `/update-docs` | Обновить документацию |
-| `/update-codemaps` | Обновить codemaps |
-| `/test-coverage` | Проанализировать покрытие |
-| `/go-review` | Ревью Go-кода |
-| `/go-test` | Go TDD workflow |
-| `/go-build` | Исправить ошибки сборки Go |
-| `/python-review` | Ревью Python-кода (PEP 8, type hints, security) |
-| `/multi-plan` | Multi-model collaborative planning |
-| `/multi-execute` | Multi-model collaborative execution |
-| `/multi-backend` | Backend-focused multi-model workflow |
-| `/multi-frontend` | Frontend-focused multi-model workflow |
-| `/multi-workflow` | Full multi-model development workflow |
-| `/pm2` | Auto-generate PM2 service commands |
-| `/sessions` | Управлять историей сессий |
-| `/skill-create` | Генерировать skills из git |
-| `/instinct-status` | Смотреть изученные инстинкты |
-| `/instinct-import` | Импортировать инстинкты |
-| `/instinct-export` | Экспортировать инстинкты |
-| `/evolve` | Кластеризовать инстинкты в skills |
-| `/promote` | Продвинуть project instincts в global scope |
-| `/projects` | Перечислить известные проекты и статистику инстинктов |
-| `/prune` | Удалить истёкшие pending-инстинкты (30d TTL) |
-| `/learn-eval` | Извлечь и оценить паттерны перед сохранением |
-| `/setup-pm` | Настроить package manager |
-| `/harness-audit` | Аудитировать надёжность среды, eval readiness и risk posture |
-| `/loop-start` | Запустить controlled agentic loop execution pattern |
-| `/loop-status` | Проверить status и checkpoints активного loop |
-| `/quality-gate` | Запустить quality gate checks для путей или всего repo |
-| `/model-route` | Маршрутизировать задачи на модели по сложности и бюджету |
-
-### Установка плагина
-
-**Вариант 1: использовать напрямую**
-```bash
-cd everything-claude-code
-opencode
-```
-
-**Вариант 2: установить как npm package**
-```bash
-npm install ecc-universal
-```
-
-Затем добавьте в `opencode.json`:
-```json
-{
-  "plugin": ["ecc-universal"]
-}
-```
-
-Эта npm plugin entry включает опубликованный OpenCode plugin module ECC (hooks/events и plugin tools).
-Она **не** добавляет автоматически полный catalog команд/агентов/instructions ECC в конфиг вашего проекта.
-
-Для полной настройки ECC OpenCode:
-- запустите OpenCode внутри этого репозитория, или
-- скопируйте bundled `.opencode/` config assets в ваш проект и подключите entries `instructions`, `agent` и `command` в `opencode.json`
-
-### Документация
-
-- **Migration Guide**: `.opencode/MIGRATION.md`
-- **OpenCode Plugin README**: `.opencode/README.md`
-- **Consolidated Rules**: `.opencode/instructions/INSTRUCTIONS.md`
-- **LLM Documentation**: `llms.txt` (полная документация OpenCode для LLM)
-
----
-
 ## Паритет возможностей между инструментами
 
 ECC — **первый плагин, который помогает максимально использовать каждый крупный инструмент AI-кодинга**. Вот как сравниваются среды:
 
-| Возможность | Claude Code | Codex CLI | OpenCode |
-|-------------|-------------|-----------|----------|
-| **Agents** | 50 | Shared (AGENTS.md) | 12 |
-| **Commands** | 68 | Instruction-based | 31 |
-| **Skills** | 185 | 10 (native format) | 37 |
-| **Hook Events** | 8 типов | Пока нет | 11 типов |
-| **Hook Scripts** | 20+ scripts | N/A | Plugin hooks |
-| **Rules** | 34 (common + lang) | Instruction-based | 13 instructions |
-| **Custom Tools** | Через hooks | N/A | 6 native tools |
-| **MCP Servers** | 14 | 7 (auto-merged через TOML parser) | Full |
-| **Config Format** | settings.json | config.toml | opencode.json |
-| **Context File** | CLAUDE.md + AGENTS.md | AGENTS.md | AGENTS.md |
-| **Secret Detection** | Hook-based | Sandbox-based | Hook-based |
-| **Auto-Format** | PostToolUse hook | N/A | file.edited hook |
-| **Version** | Plugin | Reference config | 2.0.0-rc.1 |
+| Возможность | Claude Code | Codex CLI |
+|-------------|-------------|-----------|
+| **Agents** | 50 | Shared (AGENTS.md) |
+| **Commands** | 68 | Instruction-based |
+| **Skills** | 185 | 10 (native format) |
+| **Hook Events** | 8 типов | Пока нет |
+| **Hook Scripts** | 20+ scripts | N/A |
+| **Rules** | 34 (common + lang) | Instruction-based |
+| **Custom Tools** | Через hooks | N/A |
+| **MCP Servers** | 14 | 7 (auto-merged через TOML parser) |
+| **Config Format** | settings.json | config.toml |
+| **Context File** | CLAUDE.md + AGENTS.md | AGENTS.md |
+| **Secret Detection** | Hook-based | Sandbox-based |
+| **Auto-Format** | PostToolUse hook | N/A |
+| **Version** | Plugin | Reference config |
 
 **Ключевые архитектурные решения:**
-- **AGENTS.md** в корне — универсальный cross-tool файл (читается всеми 4 инструментами)
-- **Формат Skills** (SKILL.md с YAML frontmatter) работает в Claude Code, Codex и OpenCode
+- **AGENTS.md** в корне — универсальный cross-tool файл (читается и Claude Code, и Codex)
+- **Формат Skills** (SKILL.md с YAML frontmatter) работает в Claude Code и Codex
 - Отсутствие хуков в Codex компенсируется `AGENTS.md`, опциональными overrides `model_instructions_file` и sandbox permissions
 
 ---

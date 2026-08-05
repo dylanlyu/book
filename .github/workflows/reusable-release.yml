@@ -53,9 +53,6 @@ jobs:
       - name: Run supply-chain IOC scan
         run: npm run security:ioc-scan
 
-      - name: Verify OpenCode package payload
-        run: node tests/scripts/build-opencode.test.js
-
       - name: Verify OMP adapter payload
         run: node tests/omp/omp-plugin.test.js
 

@@ -10,13 +10,13 @@ const REDACTED = '***';
 
 // Known secret value prefixes (provider API keys) plus a high-entropy fallback.
 const SECRET_VALUE_PATTERNS = [
-  /^sk-[A-Za-z0-9_-]{16,}$/i,            // OpenAI / Anthropic (sk-ant-...)
-  /^ghp_[A-Za-z0-9]{16,}$/,             // GitHub PAT (classic)
-  /^github_pat_[A-Za-z0-9_]{16,}$/,     // GitHub PAT (fine-grained)
-  /^gh[oprs]_[A-Za-z0-9]{16,}$/,        // other GitHub tokens
-  /^sm_[A-Za-z0-9_-]{16,}$/,            // Supermemory
-  /^AIza[A-Za-z0-9_-]{16,}$/,           // Google API key
-  /^xox[baprs]-[A-Za-z0-9-]{10,}$/,     // Slack
+  /^sk-[A-Za-z0-9_-]{16,}$/i, // OpenAI / Anthropic (sk-ant-...)
+  /^ghp_[A-Za-z0-9]{16,}$/, // GitHub PAT (classic)
+  /^github_pat_[A-Za-z0-9_]{16,}$/, // GitHub PAT (fine-grained)
+  /^gh[oprs]_[A-Za-z0-9]{16,}$/, // other GitHub tokens
+  /^sm_[A-Za-z0-9_-]{16,}$/, // Supermemory
+  /^AIza[A-Za-z0-9_-]{16,}$/, // Google API key
+  /^xox[baprs]-[A-Za-z0-9-]{10,}$/, // Slack
   /^(pb|sk|pk|rk)_(live|test)_[A-Za-z0-9]{12,}$/i // Stripe / PostBridge-style
 ];
 
@@ -34,12 +34,7 @@ function looksLikeSecretValue(value) {
 
   // High-entropy fallback: a long opaque token (letters AND digits, no path or
   // package separators) is almost certainly a credential, not a flag value.
-  return value.length >= 32
-    && /^[A-Za-z0-9_+/=.-]+$/.test(value)
-    && /[A-Za-z]/.test(value)
-    && /[0-9]/.test(value)
-    && !value.includes('/')
-    && !value.includes('@');
+  return value.length >= 32 && /^[A-Za-z0-9_+/=.-]+$/.test(value) && /[A-Za-z]/.test(value) && /[0-9]/.test(value) && !value.includes('/') && !value.includes('@');
 }
 
 // Redact secret values from a command arg vector: any token that looks like a
@@ -63,9 +58,7 @@ function redactArgs(args) {
     }
 
     const previous = index > 0 ? list[index - 1] : null;
-    const followsSecretFlag = typeof previous === 'string'
-      && /^--?[A-Za-z0-9_-]+$/.test(previous)
-      && SECRET_FLAG_PATTERN.test(previous.replace(/^--?/, ''));
+    const followsSecretFlag = typeof previous === 'string' && /^--?[A-Za-z0-9_-]+$/.test(previous) && SECRET_FLAG_PATTERN.test(previous.replace(/^--?/, ''));
 
     if (followsSecretFlag || looksLikeSecretValue(current)) {
       result.push(REDACTED);
@@ -107,7 +100,6 @@ function asStringArray(value) {
 
 // Normalize a transport label across harnesses:
 //   Claude:   type "stdio" | "http" | "sse"
-//   OpenCode: type "local" (stdio) | "remote" (http/sse)
 //   Codex:    no type; presence of url => http, else stdio
 function normalizeTransport(rawType, { url } = {}) {
   const type = typeof rawType === 'string' ? rawType.toLowerCase() : '';
@@ -169,8 +161,7 @@ function normalizeServerEntry(rawServer) {
   // env. Redact before anything is stored or hashed into the signature.
   const args = redactArgs(rawArgs);
   const url = redactUrl(rawUrl);
-  const argsCarrySecret = rawArgs.length !== args.length
-    || rawArgs.some((value, index) => value !== args[index]);
+  const argsCarrySecret = rawArgs.length !== args.length || rawArgs.some((value, index) => value !== args[index]);
   const urlCarriesSecret = rawUrl !== url;
 
   const source = isObject(rawServer.source) ? rawServer.source : {};
@@ -185,11 +176,13 @@ function normalizeServerEntry(rawServer) {
     hasSecrets: hasSecrets || argsCarrySecret || urlCarriesSecret,
     enabled: rawServer.enabled === false ? false : true,
     signature: buildSignature({ transport, command, args, url }),
-    sources: [{
-      harness: asNonEmptyString(source.harness) || 'unknown',
-      scope: asNonEmptyString(source.scope) || 'user',
-      configPath: asNonEmptyString(source.configPath) || null
-    }]
+    sources: [
+      {
+        harness: asNonEmptyString(source.harness) || 'unknown',
+        scope: asNonEmptyString(source.scope) || 'user',
+        configPath: asNonEmptyString(source.configPath) || null
+      }
+    ]
   };
 }
 

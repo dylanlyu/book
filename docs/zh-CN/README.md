@@ -35,7 +35,7 @@
 
 不仅仅是配置。一个完整的系统：技能、本能、内存优化、持续学习、安全扫描以及研究优先的开发。经过 10 多个月的密集日常使用和构建真实产品的经验，演进出生产就绪的智能体、钩子、命令、规则和 MCP 配置。
 
-适用于 **Claude Code**、**Codex**、**OpenCode**、**Zed** 以及其他 AI 智能体平台。
+适用于 **Claude Code**、**Codex** 以及其他 AI 智能体平台。
 
 ***
 
@@ -166,7 +166,7 @@
 ## 统一记忆库
 
 `ecc memory` 使用可检查的 `ecc.memory.v1` Markdown 文档，在 Claude、
-Codex、OpenCode 等 harness 之间传递上下文。常规搜索只召回 `project` 和
+Codex 等 harness 之间传递上下文。常规搜索只召回 `project` 和
 `team` 范围内状态为 active 的条目，按 ID 直接读取仍可用于检查非 active
 条目；`user` 范围必须显式请求。首个版本中的所有记忆都保持 unreviewed，
 接受后的知识应进入受治理的项目文档，
@@ -258,11 +258,20 @@ Copy-Item -Recurse rules/typescript "$HOME/.claude/rules/"
 
 **搞定！** 你现在可以使用 67 个智能体、279 项技能和 94 个命令了。
 
+| 包含内容 | 数量 | 提供什么 |
+| -------- | ---: | -------- |
+| 智能体 | 67 个 | 规划、审查、构建修复、安全、架构与领域工作 |
+| 技能 | 279 项 | TDD、研究、安全、文档、前端、数据、ML、运维等 |
+| 命令 | 94 个 | 在 ECC 转向 skills-first 表面期间的便捷入口 |
+| 钩子与记忆 | 运行时 | 强制执行、会话摘要、持续学习、直觉与上下文控制 |
+| 规则 | 可选 | 按语言或项目选择的常驻标准 |
+| AgentShield | 已内置 | 扫描提示词、钩子、MCP 配置、权限、密钥与代理文件 |
+
 ***
 
 ## 跨平台支持
 
-此插件现已完全支持 **Windows、macOS 和 Linux**，并与主流 IDE（Zed、OpenCode、Antigravity）和 CLI 平台紧密集成。所有钩子和脚本都已用 Node.js 重写，以实现最大兼容性。
+此插件现已完全支持 **Windows、macOS 和 Linux**，并与主流 IDE（Antigravity、JoyCode）和 CLI 平台紧密集成。所有钩子和脚本都已用 Node.js 重写，以实现最大兼容性。
 
 ### 包管理器检测
 
@@ -925,12 +934,10 @@ cp -r everything-claude-code/rules/common ~/.claude/rules/common
 </details>
 
 <details>
-<summary><b>这能与 OpenCode / Codex / Zed / Antigravity 一起使用吗？</b></summary>
+<summary><b>这能与 Codex / Antigravity / JoyCode 一起使用吗？</b></summary>
 
 是的。ECC 是跨平台的：
 
-* **Zed**: 项目本地适配器，提供设置、扁平化规则、命令、代理和技能，位于 `.zed/`。参见 [平台支持](#平台支持)。
-* **OpenCode**: `.opencode/` 中的完整插件支持。参见 [OpenCode 支持](#opencode-支持)。
 * **Codex**: 对 macOS 应用和 CLI 的一流支持，带有适配器漂移防护和 SessionStart 回退。参见 PR [#257](https://github.com/affaan-m/everything-claude-code/pull/257)。
 * **Antigravity**: 为工作流、技能和扁平化规则紧密集成的设置，位于 `.agent/`。参见 [Antigravity 指南](../ANTIGRAVITY-GUIDE.md)。
 * **Claude Code**: 原生支持 — 这是主要目标。
@@ -1087,152 +1094,30 @@ ECC 附带了三个示例角色配置：
 
 ***
 
-## OpenCode 支持
-
-ECC 提供 **完整的 OpenCode 支持**，包括插件和钩子。
-
-### 快速开始
-
-```bash
-# Install OpenCode
-npm install -g opencode
-
-# Run in the repository root
-opencode
-```
-
-配置会自动从 `.opencode/opencode.json` 检测。
-
-### 功能对等
-
-| 功能特性 | Claude Code   | OpenCode | 状态 |
-|---------|---------------|----------|--------|
-| 智能体 | PASS: 67 个    | PASS: 12 个 | **Claude Code 领先** |
-| 命令 | PASS: 94 个    | PASS: 35 个 | **Claude Code 领先** |
-| 技能 | PASS: 279 项   | PASS: 37 项 | **Claude Code 领先** |
-| 钩子 | PASS: 8 种事件类型 | PASS: 11 种事件 | **OpenCode 更多！** |
-| 规则 | PASS: 29 条    | PASS: 13 条指令 | **Claude Code 领先** |
-| MCP 服务器 | PASS: 14 个    | PASS: 完整 | **完全对等** |
-| 自定义工具 | PASS: 通过钩子    | PASS: 6 个原生工具 | **OpenCode 更优** |
-
-### 通过插件实现的钩子支持
-
-OpenCode 的插件系统比 Claude Code 更复杂，有 20 多种事件类型：
-
-| Claude Code 钩子 | OpenCode 插件事件 |
-|-----------------|----------------------|
-| PreToolUse | `tool.execute.before` |
-| PostToolUse | `tool.execute.after` |
-| Stop | `session.idle` |
-| SessionStart | `session.created` |
-| SessionEnd | `session.deleted` |
-
-**额外的 OpenCode 事件**：`file.edited`、`file.watcher.updated`、`message.updated`、`lsp.client.diagnostics`、`tui.toast.show` 等等。
-
-### 维护中的斜杠命令
-
-| 命令 | 描述 |
-|---------|-------------|
-| `/plan` | 创建实施计划 |
-| `/code-review` | 审查代码变更 |
-| `/build-fix` | 修复构建错误 |
-| `/refactor-clean` | 移除死代码 |
-| `/learn` | 从会话中提取模式 |
-| `/checkpoint` | 保存验证状态 |
-| `/quality-gate` | 运行维护中的验证门禁 |
-| `/update-docs` | 更新文档 |
-| `/update-codemaps` | 更新代码地图 |
-| `/test-coverage` | 分析覆盖率 |
-| `/go-review` | Go 代码审查 |
-| `/go-test` | Go TDD 工作流 |
-| `/go-build` | 修复 Go 构建错误 |
-| `/python-review` | Python 代码审查（PEP 8、类型提示、安全性） |
-| `/multi-plan` | 多模型协作规划 |
-| `/multi-execute` | 多模型协作执行 |
-| `/multi-backend` | 后端聚焦的多模型工作流 |
-| `/multi-frontend` | 前端聚焦的多模型工作流 |
-| `/multi-workflow` | 完整的多模型开发工作流 |
-| `/pm2` | 自动生成 PM2 服务命令 |
-| `/sessions` | 管理会话历史 |
-| `/skill-create` | 从 git 生成技能 |
-| `/instinct-status` | 查看已学习的本能 |
-| `/instinct-import` | 导入本能 |
-| `/instinct-export` | 导出本能 |
-| `/evolve` | 将本能聚类为技能 |
-| `/promote` | 将项目本能提升到全局范围 |
-| `/projects` | 列出已知项目和本能统计信息 |
-| `/learn-eval` | 保存前提取和评估模式 |
-| `/setup-pm` | 配置包管理器 |
-| `/harness-audit` | 审计平台可靠性、评估准备情况和风险状况 |
-| `/loop-start` | 启动受控的智能体循环执行模式 |
-| `/loop-status` | 检查活动循环状态和检查点 |
-| `/quality-gate` | 对路径或整个仓库运行质量门检查 |
-| `/model-route` | 根据复杂度和预算将任务路由到模型 |
-
-### 插件安装
-
-**选项 1：直接使用**
-
-```bash
-cd everything-claude-code
-opencode
-```
-
-**选项 2：作为 npm 包安装**
-
-```bash
-npm install ecc-universal
-```
-
-然后添加到您的 `opencode.json`：
-
-```json
-{
-  "plugin": ["ecc-universal"]
-}
-```
-
-该 npm 插件条目启用了 ECC 发布的 OpenCode 插件模块（钩子/事件和插件工具）。
-它**不会**自动将 ECC 的完整命令/代理/指令目录添加到您的项目配置中。
-
-要获得完整的 ECC OpenCode 设置，您可以：
-
-* 在此仓库内运行 OpenCode，或者
-* 将捆绑的 `.opencode/` 配置资源复制到您的项目中，并在 `opencode.json` 中连接 `instructions`、`agent` 和 `command` 条目
-
-### 文档
-
-* **迁移指南**：`.opencode/MIGRATION.md`
-* **OpenCode 插件 README**：`.opencode/README.md`
-* **整合的规则**：`.opencode/instructions/INSTRUCTIONS.md`
-* **LLM 文档**：`llms.txt`（完整的 OpenCode 文档，供 LLM 使用）
-
-***
-
 ## 跨工具功能对等
 
 ECC 是**第一个最大化利用每个主要 AI 编码工具的插件**。以下是每个平台的比较：
 
-| 功能特性 | Claude Code           | Codex CLI | OpenCode |
-|---------|-----------------------|-----------|----------|
-| **智能体** | 67                    | 共享 (AGENTS.md) | 12 |
-| **命令** | 94                    | 基于指令 | 35 |
-| **技能** | 279                   | 10 (原生格式) | 37 |
-| **钩子事件** | 8 种类型                 | 暂无 | 11 种类型 |
-| **钩子脚本** | 20+ 个脚本               | N/A | 插件钩子 |
-| **规则** | 34 (通用 + 语言)          | 基于指令 | 13 条指令 |
-| **自定义工具** | 通过钩子                  | N/A | 6 个原生工具 |
-| **MCP 服务器** | 14                    | 4 (基于命令) | 完整 |
-| **配置格式** | settings.json         | config.toml | opencode.json |
-| **上下文文件** | CLAUDE.md + AGENTS.md | AGENTS.md | AGENTS.md | AGENTS.md |
-| **秘密检测** | 基于钩子                  | beforeSubmitPrompt 钩子 | 基于沙箱 | 基于钩子 |
-| **自动格式化** | PostToolUse 钩子        | afterFileEdit 钩子 | N/A | file.edited 钩子 |
-| **版本** | 插件 | 插件 | 参考配置 | 2.1.0 |
+| 功能特性 | Claude Code | Codex CLI |
+|---------|-------------|-----------|
+| **智能体** | 67 | 共享 (AGENTS.md) |
+| **命令** | 94 | 基于指令 |
+| **技能** | 279 | 10 (原生格式) |
+| **钩子事件** | 8 种类型 | 暂无 |
+| **钩子脚本** | 20+ 个脚本 | N/A |
+| **规则** | 34 (通用 + 语言) | 基于指令 |
+| **自定义工具** | 通过钩子 | N/A |
+| **MCP 服务器** | 14 | 4 (基于命令) |
+| **配置格式** | settings.json | config.toml |
+| **上下文文件** | CLAUDE.md + AGENTS.md | AGENTS.md |
+| **秘密检测** | 基于钩子 | 基于沙箱 |
+| **自动格式化** | PostToolUse 钩子 | afterFileEdit 钩子 |
+| **版本** | 插件 | 参考配置 | 2.1.0 |
 
 **关键架构决策：**
 
-* **AGENTS.md** 在根目录是通用的跨工具文件（所有 4 个工具都能读取）
-* **技能格式**（带有 YAML 前言的 SKILL.md）在 Claude Code、Codex 和 OpenCode 中都能工作
+* **AGENTS.md** 在根目录是通用的跨工具文件（Claude Code 与 Codex 都能读取）
+* **技能格式**（带有 YAML 前言的 SKILL.md）在 Claude Code 和 Codex 中都能工作
 * Codex 缺少钩子功能，通过 `AGENTS.md`、可选的 `model_instructions_file` 覆盖以及沙箱权限来弥补
 
 ***

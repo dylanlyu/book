@@ -71,7 +71,7 @@ function main() {
       assert.deepStrictEqual(module.dependencies, ["platform-configs"]);
       assert.strictEqual(module.defaultInstall, false);
       assert.strictEqual(module.stability, "beta");
-      for (const target of ["claude", "codex", "opencode"]) {
+      for (const target of ["claude", "codex"]) {
         assert.ok(module.targets.includes(target), `${target} target is missing`);
       }
 

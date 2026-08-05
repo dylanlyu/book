@@ -34,7 +34,7 @@ Mejorar la calidad de finalización de los agentes mejorando la configuración d
 - Preferir cambios pequeños con efecto medible.
 - Preservar el comportamiento multiplataforma.
 - Evitar introducir entrecomillado de shell frágil.
-- Mantener compatibilidad entre Claude Code, Cursor, OpenCode y Codex.
+- Mantener compatibilidad entre Claude Code y Codex.
 
 ## Salida
 

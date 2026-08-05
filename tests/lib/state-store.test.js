@@ -495,7 +495,7 @@ async function runTests() {
         id: 'github-pr-1738',
         source: 'github',
         sourceId: '1738',
-        title: 'Add Qwen install target',
+        title: 'Add JoyCode install target',
         status: 'merged',
         priority: 'normal',
         url: 'https://github.com/affaan-m/everything-claude-code/pull/1738',

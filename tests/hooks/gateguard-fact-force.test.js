@@ -1753,7 +1753,7 @@ function runTests() {
 
   // --- Issue #2078: GATEGUARD_BASH_ROUTINE_DISABLED env var ---
   // Operators on hosts that don't benefit from the once-per-session
-  // routine bash gate (Cursor, OpenCode, etc.) get an env-var opt-out.
+  // routine bash gate (non-Claude harnesses, etc.) get an env-var opt-out.
   // The destructive gate is unaffected.
 
   clearState();

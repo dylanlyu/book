@@ -15,7 +15,7 @@ ECC_ROOT="${CLAUDE_PLUGIN_ROOT:-$(node -e "var r=(function(){var p=require('path
 node "$ECC_ROOT/scripts/auto-update.js" --dry-run
 
 # 現在のプロジェクトのZed管理ファイルのみ更新
-node "$ECC_ROOT/scripts/auto-update.js" --target zed
+node "$ECC_ROOT/scripts/auto-update.js" --target joycode
 
 # ECCリポジトリルートを明示的に上書き
 node "$ECC_ROOT/scripts/auto-update.js" --repo-root /path/to/everything-claude-code

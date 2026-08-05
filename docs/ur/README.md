@@ -37,7 +37,7 @@
 
 صرف کنفیگریشن نہیں۔ ایک مکمل نظام: skills، instincts، میموری آپٹیمائزیشن، مسلسل سیکھنا، سیکیورٹی اسکیننگ، اور research-first ڈیویلپمنٹ۔ 10+ مہینوں کی گہری روزانہ استعمال سے تیار کیے گئے پروڈکشن-ریڈی agents، skills، hooks، rules، MCP کنفیگریشن، اور legacy command shims۔
 
-**Claude Code**، **Codex**، **Cursor**، **OpenCode**، **Gemini**، **Zed**، **GitHub Copilot**، اور دیگر AI ایجنٹ ہارنسز پر کام کرتا ہے۔
+**Claude Code**، **Codex**، **GitHub Copilot**، اور دیگر AI ایجنٹ ہارنسز پر کام کرتا ہے۔
 
 ECC v2.0.0-rc.1 اس قابل استعمال پرت پر عوامی Hermes آپریٹر کہانی شامل کرتا ہے: [Hermes سیٹ اپ گائیڈ](../../docs/HERMES-SETUP.md) سے شروع کریں، پھر [rc.1 ریلیز نوٹس](../../docs/releases/2.0.0-rc.1/release-notes.md) اور [کراس-ہارنس آرکیٹیکچر](../../docs/architecture/cross-harness.md) دیکھیں۔
 
@@ -245,7 +245,7 @@ node tests/run-all.js
 
 ## کراس-پلیٹ فارم سپورٹ
 
-یہ پلگ ان **Windows، macOS، اور Linux** کو مکمل طور پر سپورٹ کرتا ہے، ساتھ ہی بڑے IDEs (Cursor، Zed، OpenCode) اور CLI ہارنسز کے ساتھ تنگ انضمام۔ تمام hooks اور اسکرپٹس زیادہ سے زیادہ مطابقت کے لیے Node.js میں دوبارہ لکھے گئے ہیں۔
+یہ پلگ ان **Windows، macOS، اور Linux** کو مکمل طور پر سپورٹ کرتا ہے، ساتھ ہی بڑے IDEs (Antigravity، JoyCode) اور CLI ہارنسز کے ساتھ تنگ انضمام۔ تمام hooks اور اسکرپٹس زیادہ سے زیادہ مطابقت کے لیے Node.js میں دوبارہ لکھے گئے ہیں۔
 
 ---
 
@@ -290,9 +290,9 @@ mkdir -p ~/.claude/rules/ecc/
 cp -r rules/common ~/.claude/rules/ecc/
 ```
 
-**کیا یہ Cursor / OpenCode / Codex کے ساتھ کام کرتا ہے؟**
+**کیا یہ Codex / Antigravity کے ساتھ کام کرتا ہے؟**
 
-ہاں۔ ECC کراس-پلیٹ فارم ہے — Claude Code، Cursor، OpenCode، Codex، GitHub Copilot، Gemini، Zed، اور مزید کے ساتھ۔
+ہاں۔ ECC کراس-پلیٹ فارم ہے — Claude Code، Codex، GitHub Copilot، Antigravity، JoyCode، اور مزید کے ساتھ۔
 
 ---
 

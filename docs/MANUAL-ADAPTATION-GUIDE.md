@@ -1,6 +1,6 @@
 # Manual Adaptation Guide for Non-Native Harnesses
 
-Use this guide when you want ECC behavior inside a harness that does not natively load `.claude/`, `.codex/`, `.opencode/`, `.zed/`, or `.agent/` layouts.
+Use this guide when you want ECC behavior inside a harness that does not natively load `.claude/`, `.codex/`, `.joycode/`, or `.agent/` layouts.
 
 This is the fallback path for tools like Grok and other chat-style interfaces that can accept system prompts, uploaded files, or pasted instructions, but cannot execute the repo's native install surfaces directly.
 
@@ -18,8 +18,8 @@ Prefer a first-class ECC target whenever one exists:
 
 - Claude Code
 - Codex
-- OpenCode
 - Antigravity
+- JoyCode
 
 Use this guide only when you need ECC behavior in a non-native harness.
 

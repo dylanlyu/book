@@ -12,7 +12,7 @@ The goal is to keep the durable parts of agentic work in one repo:
 - session and orchestration patterns
 - durable, harness-neutral memory documents
 
-Claude Code, Codex, OpenCode, Zed, and future harnesses should adapt those assets at the edge instead of requiring a new workflow model for every tool.
+Claude Code, Codex, and future harnesses should adapt those assets at the edge instead of requiring a new workflow model for every tool.
 
 For the operator-facing support matrix and scorecard workflow, see
 [Harness Adapter Compliance Matrix](harness-adapter-compliance.md).
@@ -23,9 +23,9 @@ For the full-stack platform framing and product-integration loop, see
 
 | Surface | Shared Source | Harness Adapter | Current Status |
 |---------|---------------|-----------------|----------------|
-| Skills | `skills/*/SKILL.md` | Claude plugin, Codex plugin, `.agents/skills`, Zed skill copies, OpenCode plugin/config | Supported with harness-specific packaging |
-| Rules and instructions | `rules/`, `AGENTS.md`, translated docs | Claude rules install, Codex `AGENTS.md`, Zed flattened rules, OpenCode instructions | Supported, but not identical across harnesses |
-| Hooks | `hooks/hooks.json`, `scripts/hooks/` | Claude native hooks, OpenCode plugin events | Hook-backed in Claude/OpenCode; instruction-backed in Codex and Zed |
+| Skills | `skills/*/SKILL.md` | Claude plugin, Codex plugin, `.agents/skills` | Supported with harness-specific packaging |
+| Rules and instructions | `rules/`, `AGENTS.md`, translated docs | Claude rules install, Codex `AGENTS.md` | Supported, but not identical across harnesses |
+| Hooks | `hooks/hooks.json`, `scripts/hooks/` | Claude native hooks | Hook-backed in Claude; instruction-backed in Codex |
 | MCPs | `.mcp.json`, `mcp-configs/` | Native MCP config import per harness | Supported where the harness exposes MCP |
 | Commands | `commands/`, CLI scripts | Claude slash commands, compatibility shims, CLI entrypoints | Supported, but command semantics vary |
 | Memory | `.ecc/memory/`, `~/.ecc/memory/` | `ecc memory` CLI or opt-in `ecc-memory-mcp` stdio server | Supported with explicit recall and unreviewed writes |
@@ -51,15 +51,13 @@ Each harness has different loading and enforcement behavior:
 
 - Claude Code loads plugin assets and has native hook execution.
 - Codex reads `AGENTS.md`, plugin metadata, skills, and MCP config, but hook parity is instruction-driven.
-- OpenCode has a plugin/event system that can reuse ECC hook logic through an adapter layer.
-- Zed consumes project settings plus flattened rules, so ECC maintains a translated surface under `.zed/`.
 
 Adapters should stay thin. The shared behavior belongs in `skills/`, `rules/`, `hooks/`, `scripts/`, and `mcp-configs/`.
 
 ## Shared Memory Contract
 
 ECC Memory Vault is the common knowledge-transfer surface for Claude, Codex,
-OpenCode, Zed, and other agents. It stores portable
+and other agents. It stores portable
 `ecc.memory.v1` Markdown documents in three scopes:
 
 - project: `<repo>/.ecc/memory/project/`
@@ -114,8 +112,6 @@ Claude Code gets the skill through the Claude plugin surface and can enforce rel
 
 Codex reads the repo instructions, `.codex-plugin/plugin.json`, and the MCP reference config. The same skill source still describes the workflow, but hook parity is instruction-backed unless Codex adds a native hook surface.
 
-OpenCode gets the skill through the OpenCode package/plugin surface. Event handling can reuse ECC hook logic through the adapter layer, while the skill text stays unchanged.
-
 If a change requires editing three harness copies of the same workflow, the shared source is in the wrong place. Put the workflow back in `skills/`, then adapt only loading, event shape, or command routing at the harness edge.
 
 ## Today vs Later
@@ -125,8 +121,6 @@ Supported today:
 - shared skill source in `skills/`
 - Claude Code plugin packaging
 - Codex plugin metadata and MCP reference config
-- OpenCode package/plugin surface
-- Zed-adapted project settings, flattened rules, and skills
 - file-first cross-harness memory through the CLI and opt-in MCP adapter
 - `ecc2/` as an alpha Rust control plane
 

@@ -91,14 +91,14 @@ function runTests() {
       'node',
       'scripts/auto-update.js',
       '--target',
-      'zed',
+      'joycode',
       '--repo-root',
       '/tmp/ecc',
       '--dry-run',
       '--json',
     ]);
 
-    assert.deepStrictEqual(parsed.targets, ['zed']);
+    assert.deepStrictEqual(parsed.targets, ['joycode']);
     assert.strictEqual(parsed.repoRoot, '/tmp/ecc');
     assert.strictEqual(parsed.dryRun, true);
     assert.strictEqual(parsed.json, true);
@@ -159,9 +159,9 @@ function runTests() {
 
   if (test('buildInstallApplyArgs reconstructs manifest installs', () => {
     const record = {
-      adapter: { target: 'zed', kind: 'project' },
+      adapter: { target: 'joycode', kind: 'project' },
       state: {
-        target: { target: 'zed' },
+        target: { target: 'joycode' },
         request: {
           profile: 'developer',
           modules: ['platform-configs'],
@@ -174,7 +174,7 @@ function runTests() {
     };
 
     assert.deepStrictEqual(buildInstallApplyArgs(record), [
-      '--target', 'zed',
+      '--target', 'joycode',
       '--profile', 'developer',
       '--modules', 'platform-configs',
       '--with', 'component:alpha',
@@ -187,7 +187,7 @@ function runTests() {
       adapter: { kind: 'project' },
       state: {
         target: {
-          root: path.join('/tmp', 'project', '.zed'),
+          root: path.join('/tmp', 'project', '.joycode'),
         },
       },
     };
@@ -254,7 +254,7 @@ function runTests() {
           repoRoot: repoTwo,
           homeDir,
           projectRoot,
-          adapter: { id: 'zed-project', target: 'zed', kind: 'project' },
+          adapter: { id: 'joycode-project', target: 'joycode', kind: 'project' },
           request: {
             profile: 'core',
             modules: [],
@@ -268,9 +268,9 @@ function runTests() {
             {
               kind: 'copy-file',
               moduleId: 'rules-core',
-              sourcePath: path.join(repoTwo, '.zed', 'mcp.json'),
-              sourceRelativePath: path.join('.zed', 'mcp.json'),
-              destinationPath: path.join(projectRoot, '.zed', 'mcp.json'),
+              sourcePath: path.join(repoTwo, '.joycode', 'mcp.json'),
+              sourceRelativePath: path.join('.joycode', 'mcp.json'),
+              destinationPath: path.join(projectRoot, '.joycode', 'mcp.json'),
               strategy: 'sync-root-children',
               ownership: 'managed',
               scaffoldOnly: false,
@@ -313,7 +313,7 @@ function runTests() {
           repoRoot,
           homeDir,
           projectRoot,
-          adapter: { id: 'zed-project', target: 'zed', kind: 'project' },
+          adapter: { id: 'joycode-project', target: 'joycode', kind: 'project' },
           request: {
             profile: 'developer',
             modules: [],
@@ -327,9 +327,9 @@ function runTests() {
             {
               kind: 'copy-file',
               moduleId: 'platform-configs',
-              sourcePath: path.join(repoRoot, '.zed', 'mcp.json'),
-              sourceRelativePath: path.join('.zed', 'mcp.json'),
-              destinationPath: path.join(projectRoot, '.zed', 'mcp.json'),
+              sourcePath: path.join(repoRoot, '.joycode', 'mcp.json'),
+              sourceRelativePath: path.join('.joycode', 'mcp.json'),
+              destinationPath: path.join(projectRoot, '.joycode', 'mcp.json'),
               strategy: 'sync-root-children',
               ownership: 'managed',
               scaffoldOnly: false,
@@ -354,7 +354,7 @@ function runTests() {
                 stdout: JSON.stringify({
                   dryRun: false,
                   result: {
-                    installStatePath: path.join(projectRoot, '.zed', 'ecc-install-state.json'),
+                    installStatePath: path.join(projectRoot, '.joycode', 'ecc-install-state.json'),
                   },
                 }),
                 stderr: '',
@@ -374,7 +374,7 @@ function runTests() {
         [process.execPath, path.join(repoRoot, 'scripts', 'install-apply.js')],
       ]);
       assert.deepStrictEqual(commands[2].args.slice(1), [
-        '--target', 'zed',
+        '--target', 'joycode',
         '--profile', 'developer',
         '--with', 'component:alpha',
         '--without', 'component:beta',

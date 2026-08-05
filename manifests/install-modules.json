@@ -12,9 +12,7 @@
         "claude",
         "claude-project",
         "antigravity",
-        "joycode",
-        "qwen",
-        "zed"
+        "joycode"
       ],
       "dependencies": [],
       "defaultInstall": true,
@@ -35,9 +33,7 @@
         "claude-project",
         "antigravity",
         "codex",
-        "joycode",
-        "qwen",
-        "zed"
+        "joycode"
       ],
       "dependencies": [],
       "defaultInstall": true,
@@ -57,10 +53,7 @@
         "claude",
         "claude-project",
         "antigravity",
-        "opencode",
-        "joycode",
-        "qwen",
-        "zed"
+        "joycode"
       ],
       "dependencies": [],
       "defaultInstall": true,
@@ -78,8 +71,7 @@
       ],
       "targets": [
         "claude",
-        "claude-project",
-        "opencode"
+        "claude-project"
       ],
       "dependencies": [],
       "defaultInstall": true,
@@ -93,9 +85,6 @@
       "paths": [
         ".claude-plugin",
         ".codex",
-        ".opencode",
-        ".qwen",
-        ".zed",
         "mcp-configs",
         "scripts/auto-update.js",
         "scripts/setup-package-manager.js"
@@ -105,10 +94,7 @@
         "claude-project",
         "antigravity",
         "codex",
-        "opencode",
-        "joycode",
-        "qwen",
-        "zed"
+        "joycode"
       ],
       "dependencies": [],
       "defaultInstall": true,
@@ -195,10 +181,7 @@
         "claude-project",
         "antigravity",
         "codex",
-        "opencode",
-        "joycode",
-        "qwen",
-        "zed"
+        "joycode"
       ],
       "dependencies": [
         "rules-core",
@@ -228,10 +211,7 @@
         "claude-project",
         "antigravity",
         "codex",
-        "opencode",
-        "joycode",
-        "qwen",
-        "zed"
+        "joycode"
       ],
       "dependencies": [
         "platform-configs"
@@ -252,10 +232,7 @@
         "claude-project",
         "antigravity",
         "codex",
-        "opencode",
-        "joycode",
-        "qwen",
-        "zed"
+        "joycode"
       ],
       "dependencies": [
         "platform-configs"
@@ -318,10 +295,7 @@
         "claude-project",
         "antigravity",
         "codex",
-        "opencode",
-        "joycode",
-        "qwen",
-        "zed"
+        "joycode"
       ],
       "dependencies": [
         "skill-unified-memory"
@@ -349,10 +323,7 @@
         "claude-project",
         "antigravity",
         "codex",
-        "opencode",
-        "joycode",
-        "qwen",
-        "zed"
+        "joycode"
       ],
       "dependencies": [
         "workflow-quality",
@@ -393,10 +364,7 @@
         "claude-project",
         "antigravity",
         "codex",
-        "opencode",
-        "joycode",
-        "qwen",
-        "zed"
+        "joycode"
       ],
       "dependencies": [
         "workflow-quality"
@@ -425,10 +393,7 @@
         "claude-project",
         "antigravity",
         "codex",
-        "opencode",
-        "joycode",
-        "qwen",
-        "zed"
+        "joycode"
       ],
       "dependencies": [
         "platform-configs"
@@ -462,10 +427,7 @@
         "claude-project",
         "antigravity",
         "codex",
-        "opencode",
-        "joycode",
-        "qwen",
-        "zed"
+        "joycode"
       ],
       "dependencies": [
         "platform-configs"
@@ -504,10 +466,7 @@
         "claude-project",
         "antigravity",
         "codex",
-        "opencode",
-        "joycode",
-        "qwen",
-        "zed"
+        "joycode"
       ],
       "dependencies": [
         "platform-configs"
@@ -533,10 +492,7 @@
         "claude-project",
         "antigravity",
         "codex",
-        "opencode",
-        "joycode",
-        "qwen",
-        "zed"
+        "joycode"
       ],
       "dependencies": [
         "research-apis",
@@ -559,10 +515,7 @@
         "claude-project",
         "antigravity",
         "codex",
-        "opencode",
-        "joycode",
-        "qwen",
-        "zed"
+        "joycode"
       ],
       "dependencies": [
         "platform-configs"
@@ -585,10 +538,7 @@
         "claude-project",
         "antigravity",
         "codex",
-        "opencode",
-        "joycode",
-        "qwen",
-        "zed"
+        "joycode"
       ],
       "dependencies": [
         "business-content"
@@ -615,10 +565,7 @@
         "claude",
         "claude-project",
         "codex",
-        "opencode",
-        "joycode",
-        "qwen",
-        "zed"
+        "joycode"
       ],
       "dependencies": [
         "platform-configs"
@@ -642,8 +589,7 @@
       "targets": [
         "claude",
         "claude-project",
-        "codex",
-        "opencode"
+        "codex"
       ],
       "dependencies": [
         "commands-core",
@@ -671,10 +617,7 @@
         "claude-project",
         "antigravity",
         "codex",
-        "opencode",
-        "joycode",
-        "qwen",
-        "zed"
+        "joycode"
       ],
       "dependencies": [
         "platform-configs"
@@ -728,10 +671,7 @@
         "claude-project",
         "antigravity",
         "codex",
-        "opencode",
-        "joycode",
-        "qwen",
-        "zed"
+        "joycode"
       ],
       "dependencies": [
         "platform-configs"
@@ -767,10 +707,7 @@
         "claude-project",
         "antigravity",
         "codex",
-        "opencode",
-        "joycode",
-        "qwen",
-        "zed"
+        "joycode"
       ],
       "dependencies": [
         "platform-configs"
@@ -794,10 +731,7 @@
         "claude-project",
         "antigravity",
         "codex",
-        "opencode",
-        "joycode",
-        "qwen",
-        "zed"
+        "joycode"
       ],
       "dependencies": [
         "framework-language",
@@ -829,10 +763,7 @@
         "claude-project",
         "antigravity",
         "codex",
-        "opencode",
-        "joycode",
-        "qwen",
-        "zed"
+        "joycode"
       ],
       "dependencies": [
         "platform-configs"
@@ -854,10 +785,7 @@
         "claude-project",
         "antigravity",
         "codex",
-        "opencode",
-        "joycode",
-        "qwen",
-        "zed"
+        "joycode"
       ],
       "dependencies": [
         "platform-configs"

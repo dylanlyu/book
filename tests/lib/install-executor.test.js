@@ -363,16 +363,16 @@ function runTests() {
   })) passed++; else failed++;
 
   if (test('dedupeCopyFileOperations keeps the last writer per destination (issue #2414)', () => {
-    // Mirrors the OpenCode command scenario: a generic commands/<name>.md source
-    // (preserve-relative-path) and an override .opencode/commands/<name>.md source
+    // Mirrors the harness command-override scenario: a generic commands/<name>.md source
+    // (preserve-relative-path) and an override .codex/commands/<name>.md source
     // (sync-root-children) both write the same destination. Before the fix both
     // ops were recorded, so `doctor` reported perpetual drift and `repair`
     // clobbered the override. Only the last writer (the override) should survive.
-    const dest = '/home/.opencode/commands/build-fix.md';
+    const dest = '/home/.codex/commands/build-fix.md';
     const operations = [
       { kind: 'copy-file', sourceRelativePath: 'commands/build-fix.md', destinationPath: dest, strategy: 'preserve-relative-path' },
-      { kind: 'copy-file', sourceRelativePath: '.opencode/commands/build-fix.md', destinationPath: dest, strategy: 'sync-root-children' },
-      { kind: 'copy-file', sourceRelativePath: 'commands/other.md', destinationPath: '/home/.opencode/commands/other.md', strategy: 'preserve-relative-path' },
+      { kind: 'copy-file', sourceRelativePath: '.codex/commands/build-fix.md', destinationPath: dest, strategy: 'sync-root-children' },
+      { kind: 'copy-file', sourceRelativePath: 'commands/other.md', destinationPath: '/home/.codex/commands/other.md', strategy: 'preserve-relative-path' },
     ];
 
     const deduped = dedupeCopyFileOperations(operations);
@@ -382,13 +382,13 @@ function runTests() {
       .map(operation => operation.destinationPath);
     assert.deepStrictEqual(
       destinations,
-      [dest, '/home/.opencode/commands/other.md'],
+      [dest, '/home/.codex/commands/other.md'],
       'each copy-file destination must appear exactly once'
     );
     const survivor = deduped.find(operation => operation.destinationPath === dest);
     assert.strictEqual(
       survivor.sourceRelativePath,
-      '.opencode/commands/build-fix.md',
+      '.codex/commands/build-fix.md',
       'the last writer (override) must win, not the generic source'
     );
   })) passed++; else failed++;
@@ -397,7 +397,7 @@ function runTests() {
     // merge-json operations legitimately accumulate into a shared config file, so
     // multiple writes to one destination must be preserved; only redundant
     // copy-file writes are collapsed, and surviving ops keep their relative order.
-    const mergeDest = '/home/.opencode/opencode.json';
+    const mergeDest = '/home/.codex/mcp.json';
     const operations = [
       { kind: 'merge-json', sourceRelativePath: 'a.json', destinationPath: mergeDest },
       { kind: 'copy-file', sourceRelativePath: 'src/x.md', destinationPath: '/home/x.md' },

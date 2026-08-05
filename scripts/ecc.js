@@ -137,7 +137,7 @@ Compute:
 Examples:
   ecc typescript
   ecc install --profile developer --target claude
-  ecc plan --profile core --target zed
+  ecc plan --profile core --target codex
   ecc catalog profiles
   ecc catalog components --family language
   ecc catalog show framework:nextjs
@@ -151,7 +151,7 @@ Examples:
   ecc memory handoff --from codex --target claude --title "Continue migration" --stdin
   ecc memory search "migration blockers" --target-harness codex
   ecc list-installed --json
-  ecc doctor --target zed
+  ecc doctor --target codex
   ecc repair --dry-run
   ecc auto-update --dry-run
   ecc status --json

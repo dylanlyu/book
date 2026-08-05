@@ -33,7 +33,7 @@
 
 Sadece konfigürasyon dosyaları değil. Tam bir sistem: skill'ler, instinct'ler, memory optimizasyonu, sürekli öğrenme, güvenlik taraması ve araştırma odaklı geliştirme. 10+ ay boyunca gerçek ürünler inşa ederken yoğun günlük kullanımla evrimleşmiş production-ready agent'lar, hook'lar, command'lar, rule'lar ve MCP konfigürasyonları.
 
-**Claude Code**, **Codex**, **OpenCode**, **Zed** ve diğer AI agent harness'larında çalışır.
+**Claude Code**, **Codex** ve diğer AI agent harness'larında çalışır.
 
 ---
 
@@ -147,7 +147,6 @@ npm install        # veya: pnpm install | yarn install | bun install
 # macOS/Linux
 ./install.sh typescript    # veya python veya golang veya swift veya php
 # ./install.sh typescript python golang swift php
-# ./install.sh --target zed typescript
 # ./install.sh --target antigravity typescript
 ```
 
@@ -155,7 +154,6 @@ npm install        # veya: pnpm install | yarn install | bun install
 # Windows PowerShell
 .\install.ps1 typescript   # veya python veya golang veya swift veya php
 # .\install.ps1 typescript python golang swift php
-# .\install.ps1 --target zed typescript
 # .\install.ps1 --target antigravity typescript
 
 # npm-installed uyumluluk entry point'i de çapraz platform çalışır
@@ -183,7 +181,7 @@ Manuel kurulum talimatları için `rules/` klasöründeki README'ye bakın.
 
 ## Çapraz Platform Desteği
 
-Bu plugin artık **Windows, macOS ve Linux**'u tam olarak destekliyor, ana IDE'ler (Zed, OpenCode, Antigravity) ve CLI harness'lar arasında sıkı entegrasyon ile birlikte. Tüm hook'lar ve script'ler maksimum uyumluluk için Node.js ile yeniden yazıldı.
+Bu plugin artık **Windows, macOS ve Linux**'u tam olarak destekliyor, ana IDE'ler (Antigravity, JoyCode) ve CLI harness'lar arasında sıkı entegrasyon ile birlikte. Tüm hook'lar ve script'ler maksimum uyumluluk için Node.js ile yeniden yazıldı.
 
 ### Paket Yöneticisi Algılama
 
@@ -401,11 +399,9 @@ Her component tamamen bağımsızdır.
 </details>
 
 <details>
-<summary><b>Bu OpenCode / Codex / Zed / Antigravity ile çalışır mı?</b></summary>
+<summary><b>Bu Codex / Antigravity ile çalışır mı?</b></summary>
 
 Evet. ECC çapraz platformdur:
-- **Zed**: `.zed/` içinde proje ayarları, düzleştirilmiş kurallar, komutlar, agent'lar ve skill'ler. [Platform Desteği](../../README.md#platform-support) bölümüne bakın.
-- **OpenCode**: `.opencode/` içinde tam plugin desteği. [OpenCode Desteği](../../README.md#opencode-support) bölümüne bakın.
 - **Codex**: macOS app ve CLI için birinci sınıf destek. PR [#257](https://github.com/affaan-m/everything-claude-code/pull/257)'ye bakın.
 - **Antigravity**: İş akışları, skill'ler ve `.agent/` içinde düzleştirilmiş rule'lar için sıkı entegre kurulum.
 - **Claude Code**: Native — bu birincil hedeftir.

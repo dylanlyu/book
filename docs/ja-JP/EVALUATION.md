@@ -42,7 +42,7 @@
 | スクリプト/CLI | 46以上のNode.jsモジュール + 複数のCLI |
 | テスト | 58のテストファイル |
 | インストールプロファイル | core、developer、security、research、full |
-| 対応ハーネス | Claude Code、Codex、Cursor、OpenCode |
+| 対応ハーネス | Claude Code、Codex、Antigravity、JoyCode |
 
 ---
 

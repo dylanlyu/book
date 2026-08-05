@@ -134,7 +134,7 @@ node scripts/install-apply.js --skills <skill-id> --target claude --dry-run
 先询问目标运行环境和安装路径，然后检查：
 
 - 插件安装元数据
-- `.claude/`、`.codex/`、`.opencode/`、`.joycode/`、`.zed/` 或 `.qwen/`
+- `.claude/`、`.codex/` 或 `.joycode/`
 - `hooks/hooks.json`
 - 安装状态文件
 - 相关的命令/skill 文件
@@ -186,4 +186,4 @@ Needs approval before apply: <yes/no>
 - `/harness-audit`：确定性的就绪度评分卡
 - `/skill-health`：skill 质量审查
 - `/skill-create`：从本地 git 历史生成新 skill
-- `/security-scan`：检查 Claude/OpenCode 配置安全性
+- `/security-scan`：检查 Claude/Codex 配置安全性
