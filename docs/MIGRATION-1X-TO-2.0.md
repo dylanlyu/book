@@ -45,7 +45,6 @@ Do not stack the plugin install with the manual installer (`install.sh` / `insta
 
 ```bash
 npx ecc-install --profile core --target codex      # Codex CLI
-npx ecc-install --profile core --target cursor     # Cursor
 ```
 
 Run `npx ecc consult "<what you need>" --target <harness>` to preview which components fit before installing. Harness-specific guides: [ANTIGRAVITY-GUIDE.md](./ANTIGRAVITY-GUIDE.md), [JOYCODE-GUIDE.md](./JOYCODE-GUIDE.md).

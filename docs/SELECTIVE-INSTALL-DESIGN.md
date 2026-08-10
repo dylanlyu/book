@@ -45,8 +45,7 @@ until the underlying module graph is split more finely.
    - framework packs
    - capability packs
    - target/platform configs
-3. Keep one consistent UX across Claude, Cursor, Antigravity, Codex, and
-   OpenCode.
+3. Keep one consistent UX across Claude, Antigravity, Codex, and JoyCode.
 4. Keep installs inspectable, repairable, and uninstallable.
 5. Preserve backward compatibility with the current `ecc-install typescript`
    style during rollout.
@@ -87,7 +86,7 @@ The user should not have to know raw internal repo paths.
 Every install path should support dry-run planning:
 
 ```bash
-ecc install --target cursor --profile developer --with lang:typescript --with framework:nextjs --dry-run
+ecc install --target codex --profile developer --with lang:typescript --with framework:nextjs --dry-run
 ```
 
 The plan should clearly show:
@@ -236,7 +235,7 @@ Examples:
 
 ```bash
 ecc install --target claude --profile core
-ecc install --target cursor --profile developer --with lang:typescript --with framework:nextjs
+ecc install --target codex --profile developer --with lang:typescript --with framework:nextjs
 ecc install --target antigravity --with capability:security --with lang:python
 ecc install --config ecc-install.json
 ```
@@ -276,7 +275,7 @@ These legacy flows should still work during migration:
 
 ```bash
 ecc-install typescript
-ecc-install --target cursor typescript
+ecc-install --target codex typescript
 ecc typescript
 ```
 
@@ -301,7 +300,7 @@ Optional future support:
 {
   "$schema": "./schemas/ecc-install-config.schema.json",
   "version": 1,
-  "target": "cursor",
+  "target": "codex",
   "profile": "developer",
   "include": [
     "lang:typescript",
@@ -323,7 +322,7 @@ Optional future support:
 ### Field Semantics
 
 - `target`
-  selected harness target such as `claude`, `cursor`, or `antigravity`
+  selected harness target such as `claude`, `codex`, or `antigravity`
 - `profile`
   baseline profile to start from
 - `include`
@@ -377,7 +376,7 @@ Best fit for:
 - home-scoped ECC baseline
 - commands, agents, rules, hooks, platform config, orchestration
 
-### Cursor
+### JoyCode
 
 Best fit for:
 
@@ -390,7 +389,7 @@ Best fit for:
 
 - project-scoped agent/rule/workflow installs
 
-### Codex / OpenCode
+### Codex
 
 Should remain additive targets rather than special forks of the installer.
 

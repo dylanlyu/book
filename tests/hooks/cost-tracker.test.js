@@ -208,7 +208,7 @@ function runTests() {
     fs.rmSync(tmpHome, { recursive: true, force: true });
   }) ? passed++ : failed++);
 
-  // 6. Prefers ECC_SESSION_ID for ECC2 session correlation
+  // 6. Prefers ECC_SESSION_ID for session correlation
   (test('prefers ECC_SESSION_ID over CLAUDE_SESSION_ID when both are present', () => {
     const tmpHome = makeTempDir();
     const input = {

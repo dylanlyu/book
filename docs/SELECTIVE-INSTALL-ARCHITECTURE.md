@@ -1,5 +1,10 @@
 # ECC 2.0 Selective Install Discovery
 
+> **Status note.** This is a discovery-stage design record and is kept as written.
+> Some harness targets discussed below (Cursor, OpenCode, Gemini, Qwen, Zed, Hermes,
+> OpenClaw, Kimi, CodeBuddy) have since been removed from ECC. The currently supported
+> install targets are `claude`, `claude-project`, `codex`, `antigravity`, and `joycode`.
+
 ## Purpose
 
 This document turns the March 11 mega-plan selective-install requirement into a
@@ -703,7 +708,7 @@ Suggested payload:
     "skippedModules": []
   },
   "source": {
-    "repoVersion": "2.1.0",
+    "repoVersion": "2.2.0",
     "repoCommit": "git-sha",
     "manifestVersion": 1
   },

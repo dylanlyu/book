@@ -3,7 +3,7 @@
  * Session Activity Tracker Hook
  *
  * PostToolUse hook that records sanitized per-tool activity to
- * ~/.claude/metrics/tool-usage.jsonl for ECC2 metric sync.
+ * ~/.claude/metrics/tool-usage.jsonl for metric sync.
  */
 
 'use strict';
