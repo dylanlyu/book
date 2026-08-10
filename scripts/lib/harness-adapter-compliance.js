@@ -87,7 +87,7 @@ const ADAPTER_RECORDS = Object.freeze(
       supported_assets: ['worktree lifecycle', 'review state', 'notification', 'provider-identity design pressure'],
       unsupported_surfaces: ['No ECC installer or direct adapter today'],
       install_or_onramp: ['Use as a comparison target for worktree/session state requirements'],
-      verification_commands: ['`npm run observability:ready`'],
+      verification_commands: ['`npm run harness:audit -- --format json`'],
       risk_notes: ['Do not import product-specific assumptions; convert lessons into ECC event fields.'],
       last_verified_at: '2026-05-12',
       owner: 'ECC maintainers',
@@ -100,7 +100,7 @@ const ADAPTER_RECORDS = Object.freeze(
       supported_assets: ['workspace presets', 'parallel-agent review loops', 'worktree isolation design pressure'],
       unsupported_surfaces: ['No ECC installer or direct adapter today'],
       install_or_onramp: ['Use as a comparison target for workspace preset taxonomy'],
-      verification_commands: ['`npm run observability:ready`'],
+      verification_commands: ['`npm run harness:audit -- --format json`'],
       risk_notes: ['Keep ECC portable; do not require a desktop workspace to get basic value.'],
       last_verified_at: '2026-05-12',
       owner: 'ECC maintainers',
@@ -123,14 +123,14 @@ const ADAPTER_RECORDS = Object.freeze(
       id: 'terminal-only',
       harness: 'Terminal-only',
       state: 'Native',
-      supported_assets: ['skills', 'rules', 'commands', 'scripts', 'harness audit', 'observability readiness', 'handoffs'],
+      supported_assets: ['skills', 'rules', 'commands', 'scripts', 'harness audit', 'handoffs'],
       unsupported_surfaces: ['No external UI, no automatic session control unless scripts are run explicitly'],
       install_or_onramp: ['Clone repo', 'run commands directly', 'use minimal profile for project installs'],
-      verification_commands: ['`npm run harness:audit -- --format json`', '`npm run observability:ready`'],
+      verification_commands: ['`npm run harness:audit -- --format json`'],
       risk_notes: ['This is the fallback contract; every higher-level adapter should degrade to it.'],
       last_verified_at: '2026-05-12',
       owner: 'ECC maintainers',
-      source_docs: ['scripts/harness-audit.js', 'scripts/observability-readiness.js', 'docs/architecture/observability-readiness.md']
+      source_docs: ['scripts/harness-audit.js']
     }
   ].map(freezeRecord)
 );

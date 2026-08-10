@@ -92,9 +92,6 @@ temp/
 # Observer temp files (continuous-learning-v2)
 .observer-tmp/
 
-# Rust build artifacts
-ecc2/target/
-
 # Bootstrap pipeline outputs
 
 # yarn is the canonical package manager for this repo (see package.json

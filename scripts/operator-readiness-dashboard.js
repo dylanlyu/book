@@ -601,7 +601,6 @@ function buildRequirements(rootDir, platformReport) {
   const previewPackSmoke = readText(rootDir, 'scripts/preview-pack-smoke.js');
   const releaseVideoSuite = readText(rootDir, 'scripts/release-video-suite.js');
   const progressSync = readText(rootDir, 'docs/architecture/progress-sync-contract.md');
-  const observabilityReadiness = readText(rootDir, 'docs/architecture/observability-readiness.md');
   const stalePrSalvage = readText(rootDir, 'docs/stale-pr-salvage-ledger.md');
   const legacyInventory = readText(rootDir, 'docs/legacy-artifact-inventory.md');
   const supplyChainRunbook = readText(rootDir, 'docs/security/supply-chain-incident-response.md');
@@ -826,14 +825,6 @@ function buildRequirements(rootDir, platformReport) {
       linearProgressStatus({ roadmap, progressSync }),
       linearProgressEvidence({ roadmap, progressSync }),
       linearProgressGap({ roadmap, progressSync })
-    ),
-    buildRequirement(
-      'observability-for-self-use',
-      'Provide ECC 2.0 observability for self-use',
-      'observability readiness gate',
-      scripts['observability:ready'] === 'node scripts/observability-readiness.js' && includesAll(observabilityReadiness, ['observability-readiness.js']) ? 'complete' : 'in_progress',
-      scripts['observability:ready'] === 'node scripts/observability-readiness.js' ? 'observability:ready command and readiness doc exist' : 'observability readiness command missing',
-      'runtime/dashboard implementation can continue after release gates'
     ),
     buildRequirement(
       'supply-chain-local-protection',

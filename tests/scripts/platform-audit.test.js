@@ -9,10 +9,7 @@ const path = require('path');
 const { execFileSync, spawnSync } = require('child_process');
 
 const SCRIPT = path.join(__dirname, '..', '..', 'scripts', 'platform-audit.js');
-const {
-  DISCUSSION_ENABLED_QUERY,
-  DISCUSSION_QUERY
-} = require(path.join(__dirname, '..', '..', 'scripts', 'lib', 'github-discussions'));
+const { DISCUSSION_ENABLED_QUERY, DISCUSSION_QUERY } = require(path.join(__dirname, '..', '..', 'scripts', 'lib', 'github-discussions'));
 
 function createTempDir(prefix) {
   return fs.mkdtempSync(path.join(os.tmpdir(), prefix));
@@ -30,38 +27,24 @@ function writeFile(rootDir, relativePath, content) {
 
 function seedRepo(rootDir, overrides = {}) {
   const files = {
-    'package.json': JSON.stringify({
-      name: 'everything-claude-code',
-      scripts: {
-        'platform:audit': 'node scripts/platform-audit.js',
-        'discussion:audit': 'node scripts/discussion-audit.js',
-        'operator:dashboard': 'node scripts/operator-readiness-dashboard.js',
-        'observability:ready': 'node scripts/observability-readiness.js',
-        'security:ioc-scan': 'node scripts/ci/scan-supply-chain-iocs.js',
-        'security:advisory-sources': 'node scripts/ci/supply-chain-advisory-sources.js',
-        'harness:audit': 'node scripts/harness-audit.js'
-      }
-    }, null, 2),
-    'docs/ECC-2.0-GA-ROADMAP.md': [
-      'ECC Platform Roadmap',
-      'https://linear.app/itomarkets/project/ecc-platform-roadmap-52b328ee03e1',
-      'ITO-44',
-      'ITO-59'
-    ].join('\n'),
-    'docs/architecture/progress-sync-contract.md': [
-      'GitHub PRs/issues/discussions',
-      'Linear project',
-      'local handoff',
-      'repo roadmap',
-      'scripts/work-items.js'
-    ].join('\n'),
-    'docs/security/supply-chain-incident-response.md': [
-      'TanStack',
-      'Mini Shai-Hulud',
-      'node-ipc',
-      'scan-supply-chain-iocs.js',
-      'supply-chain-advisory-sources.js'
-    ].join('\n'),
+    'package.json': JSON.stringify(
+      {
+        name: 'everything-claude-code',
+        scripts: {
+          'platform:audit': 'node scripts/platform-audit.js',
+          'discussion:audit': 'node scripts/discussion-audit.js',
+          'operator:dashboard': 'node scripts/operator-readiness-dashboard.js',
+          'security:ioc-scan': 'node scripts/ci/scan-supply-chain-iocs.js',
+          'security:advisory-sources': 'node scripts/ci/supply-chain-advisory-sources.js',
+          'harness:audit': 'node scripts/harness-audit.js'
+        }
+      },
+      null,
+      2
+    ),
+    'docs/ECC-2.0-GA-ROADMAP.md': ['ECC Platform Roadmap', 'https://linear.app/itomarkets/project/ecc-platform-roadmap-52b328ee03e1', 'ITO-44', 'ITO-59'].join('\n'),
+    'docs/architecture/progress-sync-contract.md': ['GitHub PRs/issues/discussions', 'Linear project', 'local handoff', 'repo roadmap', 'scripts/work-items.js'].join('\n'),
+    'docs/security/supply-chain-incident-response.md': ['TanStack', 'Mini Shai-Hulud', 'node-ipc', 'scan-supply-chain-iocs.js', 'supply-chain-advisory-sources.js'].join('\n'),
     'docs/releases/2.0.0-rc.1/publication-evidence-2026-05-19.md': [
       'Release video suite',
       'growth outreach',
@@ -103,7 +86,9 @@ function discussionEnabledGhKey(owner, name) {
 
 function writeGhShim(rootDir, responses) {
   const shimPath = path.join(rootDir, 'gh-shim.js');
-  fs.writeFileSync(shimPath, `
+  fs.writeFileSync(
+    shimPath,
+    `
 const responses = ${JSON.stringify(responses)};
 const args = process.argv.slice(2);
 const key = args.join(' ');
@@ -116,7 +101,8 @@ if (!Object.prototype.hasOwnProperty.call(responses, key)) {
   process.exit(3);
 }
 process.stdout.write(JSON.stringify(responses[key]));
-`);
+`
+  );
   return shimPath;
 }
 
@@ -168,285 +154,300 @@ function runTests() {
   let passed = 0;
   let failed = 0;
 
-  if (test('parseArgs accepts supported flags and rejects invalid values', () => {
-    const { parseArgs } = require(SCRIPT);
-    const rootDir = createTempDir('platform-audit-args-');
+  if (
+    test('parseArgs accepts supported flags and rejects invalid values', () => {
+      const { parseArgs } = require(SCRIPT);
+      const rootDir = createTempDir('platform-audit-args-');
 
-    try {
-      const parsed = parseArgs([
-        'node',
-        'script',
-        '--format=json',
-        `--root=${rootDir}`,
-        '--json',
-        '--repo',
-        'affaan-m/ECC',
-        '--max-open-prs',
-        '5',
-        '--max-open-issues',
-        '6',
-        '--allow-untracked',
-        'docs/drafts/'
-      ]);
+      try {
+        const parsed = parseArgs([
+          'node',
+          'script',
+          '--format=json',
+          `--root=${rootDir}`,
+          '--json',
+          '--repo',
+          'affaan-m/ECC',
+          '--max-open-prs',
+          '5',
+          '--max-open-issues',
+          '6',
+          '--allow-untracked',
+          'docs/drafts/'
+        ]);
 
-      assert.strictEqual(parsed.format, 'json');
-      assert.strictEqual(parsed.root, path.resolve(rootDir));
-      assert.deepStrictEqual(parsed.repos, ['affaan-m/ECC']);
-      assert.strictEqual(parsed.thresholds.maxOpenPrs, 5);
-      assert.strictEqual(parsed.thresholds.maxOpenIssues, 6);
-      assert.deepStrictEqual(parsed.allowUntracked, ['docs/drafts/']);
+        assert.strictEqual(parsed.format, 'json');
+        assert.strictEqual(parsed.root, path.resolve(rootDir));
+        assert.deepStrictEqual(parsed.repos, ['affaan-m/ECC']);
+        assert.strictEqual(parsed.thresholds.maxOpenPrs, 5);
+        assert.strictEqual(parsed.thresholds.maxOpenIssues, 6);
+        assert.deepStrictEqual(parsed.allowUntracked, ['docs/drafts/']);
 
-      assert.throws(() => parseArgs(['node', 'script', '--format', 'xml']), /Invalid format/);
-      assert.throws(() => parseArgs(['node', 'script', '--write', 'audit.md']), /--write requires/);
-      assert.throws(() => parseArgs(['node', 'script', '--repo']), /--repo requires a value/);
-      assert.throws(() => parseArgs(['node', 'script', '--max-open-prs', 'x']), /Invalid --max-open-prs/);
-      assert.throws(() => parseArgs(['node', 'script', '--unknown']), /Unknown argument/);
-    } finally {
-      cleanup(rootDir);
-    }
-  })) passed++; else failed++;
+        assert.throws(() => parseArgs(['node', 'script', '--format', 'xml']), /Invalid format/);
+        assert.throws(() => parseArgs(['node', 'script', '--write', 'audit.md']), /--write requires/);
+        assert.throws(() => parseArgs(['node', 'script', '--repo']), /--repo requires a value/);
+        assert.throws(() => parseArgs(['node', 'script', '--max-open-prs', 'x']), /Invalid --max-open-prs/);
+        assert.throws(() => parseArgs(['node', 'script', '--unknown']), /Unknown argument/);
+      } finally {
+        cleanup(rootDir);
+      }
+    })
+  )
+    passed++;
+  else failed++;
 
-  if (test('skip-github report checks local release and security evidence', () => {
-    const projectRoot = createTempDir('platform-audit-local-');
+  if (
+    test('skip-github report checks local release and security evidence', () => {
+      const projectRoot = createTempDir('platform-audit-local-');
 
-    try {
-      seedRepo(projectRoot);
-      const parsed = JSON.parse(run(['--format=json', `--root=${projectRoot}`, '--skip-github'], { cwd: projectRoot }));
+      try {
+        seedRepo(projectRoot);
+        const parsed = JSON.parse(run(['--format=json', `--root=${projectRoot}`, '--skip-github'], { cwd: projectRoot }));
 
-      assert.strictEqual(parsed.schema_version, 'ecc.platform-audit.v1');
-      assert.strictEqual(parsed.ready, true);
-      assert.strictEqual(parsed.github.skipped, true);
-      assert.ok(parsed.checks.some(check => check.id === 'roadmap-linear-mirror' && check.status === 'pass'));
-      assert.ok(parsed.checks.some(check => check.id === 'supply-chain-runbook' && check.status === 'pass'));
-      assert.ok(parsed.checks.some(check => check.id === 'operator-dashboard-command' && check.status === 'pass'));
-      assert.ok(parsed.checks.some(check => check.id === 'operator-readiness-dashboard' && check.status === 'pass'));
-      assert.ok(parsed.checks.some(check => check.id === 'release-evidence-current' && check.status === 'pass'));
-      assert.deepStrictEqual(parsed.top_actions, []);
-    } finally {
-      cleanup(projectRoot);
-    }
-  })) passed++; else failed++;
+        assert.strictEqual(parsed.schema_version, 'ecc.platform-audit.v1');
+        assert.strictEqual(parsed.ready, true);
+        assert.strictEqual(parsed.github.skipped, true);
+        assert.ok(parsed.checks.some(check => check.id === 'roadmap-linear-mirror' && check.status === 'pass'));
+        assert.ok(parsed.checks.some(check => check.id === 'supply-chain-runbook' && check.status === 'pass'));
+        assert.ok(parsed.checks.some(check => check.id === 'operator-dashboard-command' && check.status === 'pass'));
+        assert.ok(parsed.checks.some(check => check.id === 'operator-readiness-dashboard' && check.status === 'pass'));
+        assert.ok(parsed.checks.some(check => check.id === 'release-evidence-current' && check.status === 'pass'));
+        assert.deepStrictEqual(parsed.top_actions, []);
+      } finally {
+        cleanup(projectRoot);
+      }
+    })
+  )
+    passed++;
+  else failed++;
 
-  if (test('release evidence gate rejects stale root suite counts', () => {
-    const projectRoot = createTempDir('platform-audit-stale-release-evidence-');
+  if (
+    test('release evidence gate rejects stale root suite counts', () => {
+      const projectRoot = createTempDir('platform-audit-stale-release-evidence-');
 
-    try {
-      seedRepo(projectRoot, {
-        'docs/releases/2.0.0-rc.1/publication-evidence-2026-05-19.md': [
-          'Release video suite',
-          'growth outreach',
-          'Operator dashboard',
-          'GitGuardian',
-          'macOS/Ubuntu/Windows test matrix',
-          '2560 passed'
-        ].join('\n')
-      });
+      try {
+        seedRepo(projectRoot, {
+          'docs/releases/2.0.0-rc.1/publication-evidence-2026-05-19.md': [
+            'Release video suite',
+            'growth outreach',
+            'Operator dashboard',
+            'GitGuardian',
+            'macOS/Ubuntu/Windows test matrix',
+            '2560 passed'
+          ].join('\n')
+        });
 
-      const parsed = JSON.parse(run(['--format=json', `--root=${projectRoot}`, '--skip-github'], { cwd: projectRoot }));
-      const releaseEvidence = parsed.checks.find(check => check.id === 'release-evidence-current');
+        const parsed = JSON.parse(run(['--format=json', `--root=${projectRoot}`, '--skip-github'], { cwd: projectRoot }));
+        const releaseEvidence = parsed.checks.find(check => check.id === 'release-evidence-current');
 
-      assert.strictEqual(releaseEvidence.status, 'fail');
-      assert.ok(parsed.top_actions.some(action => action.id === 'release-evidence-current'));
-    } finally {
-      cleanup(projectRoot);
-    }
-  })) passed++; else failed++;
+        assert.strictEqual(releaseEvidence.status, 'fail');
+        assert.ok(parsed.top_actions.some(action => action.id === 'release-evidence-current'));
+      } finally {
+        cleanup(projectRoot);
+      }
+    })
+  )
+    passed++;
+  else failed++;
 
-  if (test('markdown output can be written as an operator artifact', () => {
-    const projectRoot = createTempDir('platform-audit-markdown-');
-    const outputPath = path.join(projectRoot, 'artifacts', 'platform-audit.md');
+  if (
+    test('markdown output can be written as an operator artifact', () => {
+      const projectRoot = createTempDir('platform-audit-markdown-');
+      const outputPath = path.join(projectRoot, 'artifacts', 'platform-audit.md');
 
-    try {
-      seedRepo(projectRoot);
-      const stdout = run([
-        '--markdown',
-        '--write',
-        outputPath,
-        `--root=${projectRoot}`,
-        '--skip-github'
-      ], { cwd: projectRoot });
-      const written = fs.readFileSync(outputPath, 'utf8');
+      try {
+        seedRepo(projectRoot);
+        const stdout = run(['--markdown', '--write', outputPath, `--root=${projectRoot}`, '--skip-github'], { cwd: projectRoot });
+        const written = fs.readFileSync(outputPath, 'utf8');
 
-      assert.strictEqual(stdout, written);
-      assert.ok(written.includes('# ECC Platform Audit'));
-      assert.ok(written.includes('## Queue Summary'));
-      assert.ok(written.includes('| Open PRs | 0 | 20 | PASS |'));
-      assert.ok(written.includes('`roadmap-linear-mirror`'));
-      assert.ok(written.includes('## Top Actions'));
-      assert.ok(written.includes('- none'));
-    } finally {
-      cleanup(projectRoot);
-    }
-  })) passed++; else failed++;
+        assert.strictEqual(stdout, written);
+        assert.ok(written.includes('# ECC Platform Audit'));
+        assert.ok(written.includes('## Queue Summary'));
+        assert.ok(written.includes('| Open PRs | 0 | 20 | PASS |'));
+        assert.ok(written.includes('`roadmap-linear-mirror`'));
+        assert.ok(written.includes('## Top Actions'));
+        assert.ok(written.includes('- none'));
+      } finally {
+        cleanup(projectRoot);
+      }
+    })
+  )
+    passed++;
+  else failed++;
 
-  if (test('github queue and discussion budgets pass with maintainer touch', () => {
-    const projectRoot = createTempDir('platform-audit-github-pass-');
+  if (
+    test('github queue and discussion budgets pass with maintainer touch', () => {
+      const projectRoot = createTempDir('platform-audit-github-pass-');
 
-    try {
-      seedRepo(projectRoot);
-      const shimPath = writeGhShim(projectRoot, {
-        'pr list --repo affaan-m/ECC --state open --json number,title,isDraft,mergeStateStatus,updatedAt,url,author': [],
-        'issue list --repo affaan-m/ECC --state open --json number,title,updatedAt,url,author,labels': [],
-        [discussionEnabledGhKey('affaan-m', 'ECC')]: {
-          data: { repository: { hasDiscussionsEnabled: true } }
-        },
-        [discussionGhKey('affaan-m', 'ECC')]: {
-          data: {
-            repository: {
-              hasDiscussionsEnabled: true,
-              discussions: {
-                totalCount: 1,
-                nodes: [
-                  {
-                    number: 73,
-                    title: 'Compacting during workflow',
-                    url: 'https://github.com/example/discussions/73',
-                    updatedAt: '2026-05-15T00:00:00Z',
-                    authorAssociation: 'NONE',
-                    category: { name: 'General', isAnswerable: false },
-                    answer: null,
-                    comments: { nodes: [{ authorAssociation: 'OWNER' }] }
-                  }
-                ]
+      try {
+        seedRepo(projectRoot);
+        const shimPath = writeGhShim(projectRoot, {
+          'pr list --repo affaan-m/ECC --state open --json number,title,isDraft,mergeStateStatus,updatedAt,url,author': [],
+          'issue list --repo affaan-m/ECC --state open --json number,title,updatedAt,url,author,labels': [],
+          [discussionEnabledGhKey('affaan-m', 'ECC')]: {
+            data: { repository: { hasDiscussionsEnabled: true } }
+          },
+          [discussionGhKey('affaan-m', 'ECC')]: {
+            data: {
+              repository: {
+                hasDiscussionsEnabled: true,
+                discussions: {
+                  totalCount: 1,
+                  nodes: [
+                    {
+                      number: 73,
+                      title: 'Compacting during workflow',
+                      url: 'https://github.com/example/discussions/73',
+                      updatedAt: '2026-05-15T00:00:00Z',
+                      authorAssociation: 'NONE',
+                      category: { name: 'General', isAnswerable: false },
+                      answer: null,
+                      comments: { nodes: [{ authorAssociation: 'OWNER' }] }
+                    }
+                  ]
+                }
               }
             }
           }
-        }
-      });
+        });
 
-      const parsed = JSON.parse(run([
-        '--format=json',
-        `--root=${projectRoot}`,
-        '--repo',
-        'affaan-m/ECC'
-      ], {
-        cwd: projectRoot,
-        env: {
-          ECC_GH_SHIM: shimPath,
-          GITHUB_TOKEN: 'must-be-removed'
-        }
-      }));
+        const parsed = JSON.parse(
+          run(['--format=json', `--root=${projectRoot}`, '--repo', 'affaan-m/ECC'], {
+            cwd: projectRoot,
+            env: {
+              ECC_GH_SHIM: shimPath,
+              GITHUB_TOKEN: 'must-be-removed'
+            }
+          })
+        );
 
-      assert.strictEqual(parsed.ready, true);
-      assert.strictEqual(parsed.github.totals.openPrs, 0);
-      assert.strictEqual(parsed.github.totals.openIssues, 0);
-      assert.strictEqual(parsed.github.totals.discussionsNeedingMaintainerTouch, 0);
-      assert.strictEqual(parsed.github.totals.discussionsMissingAcceptedAnswer, 0);
-      assert.ok(parsed.checks.some(check => check.id === 'github-discussion-touch' && check.status === 'pass'));
-      assert.ok(parsed.checks.some(check => check.id === 'github-discussion-answers' && check.status === 'pass'));
-    } finally {
-      cleanup(projectRoot);
-    }
-  })) passed++; else failed++;
+        assert.strictEqual(parsed.ready, true);
+        assert.strictEqual(parsed.github.totals.openPrs, 0);
+        assert.strictEqual(parsed.github.totals.openIssues, 0);
+        assert.strictEqual(parsed.github.totals.discussionsNeedingMaintainerTouch, 0);
+        assert.strictEqual(parsed.github.totals.discussionsMissingAcceptedAnswer, 0);
+        assert.ok(parsed.checks.some(check => check.id === 'github-discussion-touch' && check.status === 'pass'));
+        assert.ok(parsed.checks.some(check => check.id === 'github-discussion-answers' && check.status === 'pass'));
+      } finally {
+        cleanup(projectRoot);
+      }
+    })
+  )
+    passed++;
+  else failed++;
 
-  if (test('threshold failures and untouched discussions become top actions', () => {
-    const projectRoot = createTempDir('platform-audit-github-fail-');
+  if (
+    test('threshold failures and untouched discussions become top actions', () => {
+      const projectRoot = createTempDir('platform-audit-github-fail-');
 
-    try {
-      seedRepo(projectRoot);
-      const prs = Array.from({ length: 3 }, (_, index) => ({
-        number: index + 1,
-        title: `PR ${index + 1}`,
-        isDraft: false,
-        mergeStateStatus: 'CLEAN',
-        updatedAt: '2026-05-15T00:00:00Z',
-        url: `https://github.com/example/pull/${index + 1}`,
-        author: { login: 'contributor' }
-      }));
-      const shimPath = writeGhShim(projectRoot, {
-        'pr list --repo affaan-m/ECC --state open --json number,title,isDraft,mergeStateStatus,updatedAt,url,author': prs,
-        'issue list --repo affaan-m/ECC --state open --json number,title,updatedAt,url,author,labels': [],
-        [discussionEnabledGhKey('affaan-m', 'ECC')]: {
-          data: { repository: { hasDiscussionsEnabled: true } }
-        },
-        [discussionGhKey('affaan-m', 'ECC')]: {
-          data: {
-            repository: {
-              hasDiscussionsEnabled: true,
-              discussions: {
-                totalCount: 1,
-                nodes: [
-                  {
-                    number: 1239,
-                    title: 'Losing context',
-                    url: 'https://github.com/example/discussions/1239',
-                    updatedAt: '2026-05-15T00:00:00Z',
-                    authorAssociation: 'NONE',
-                    category: { name: 'Q&A', isAnswerable: true },
-                    answer: null,
-                    comments: { nodes: [] }
-                  }
-                ]
+      try {
+        seedRepo(projectRoot);
+        const prs = Array.from({ length: 3 }, (_, index) => ({
+          number: index + 1,
+          title: `PR ${index + 1}`,
+          isDraft: false,
+          mergeStateStatus: 'CLEAN',
+          updatedAt: '2026-05-15T00:00:00Z',
+          url: `https://github.com/example/pull/${index + 1}`,
+          author: { login: 'contributor' }
+        }));
+        const shimPath = writeGhShim(projectRoot, {
+          'pr list --repo affaan-m/ECC --state open --json number,title,isDraft,mergeStateStatus,updatedAt,url,author': prs,
+          'issue list --repo affaan-m/ECC --state open --json number,title,updatedAt,url,author,labels': [],
+          [discussionEnabledGhKey('affaan-m', 'ECC')]: {
+            data: { repository: { hasDiscussionsEnabled: true } }
+          },
+          [discussionGhKey('affaan-m', 'ECC')]: {
+            data: {
+              repository: {
+                hasDiscussionsEnabled: true,
+                discussions: {
+                  totalCount: 1,
+                  nodes: [
+                    {
+                      number: 1239,
+                      title: 'Losing context',
+                      url: 'https://github.com/example/discussions/1239',
+                      updatedAt: '2026-05-15T00:00:00Z',
+                      authorAssociation: 'NONE',
+                      category: { name: 'Q&A', isAnswerable: true },
+                      answer: null,
+                      comments: { nodes: [] }
+                    }
+                  ]
+                }
               }
             }
           }
-        }
-      });
+        });
 
-      const parsed = JSON.parse(run([
-        '--format=json',
-        `--root=${projectRoot}`,
-        '--repo',
-        'affaan-m/ECC',
-        '--max-open-prs',
-        '2'
-      ], {
-        cwd: projectRoot,
-        env: { ECC_GH_SHIM: shimPath }
-      }));
+        const parsed = JSON.parse(
+          run(['--format=json', `--root=${projectRoot}`, '--repo', 'affaan-m/ECC', '--max-open-prs', '2'], {
+            cwd: projectRoot,
+            env: { ECC_GH_SHIM: shimPath }
+          })
+        );
 
-      assert.strictEqual(parsed.ready, false);
-      assert.ok(parsed.top_actions.some(action => action.id === 'github-open-pr-budget'));
-      assert.ok(parsed.top_actions.some(action => action.id === 'github-discussion-touch'));
-      assert.ok(parsed.top_actions.some(action => action.id === 'github-discussion-answers'));
-      assert.strictEqual(parsed.github.totals.discussionsNeedingMaintainerTouch, 1);
-      assert.strictEqual(parsed.github.totals.discussionsMissingAcceptedAnswer, 1);
-    } finally {
-      cleanup(projectRoot);
-    }
-  })) passed++; else failed++;
+        assert.strictEqual(parsed.ready, false);
+        assert.ok(parsed.top_actions.some(action => action.id === 'github-open-pr-budget'));
+        assert.ok(parsed.top_actions.some(action => action.id === 'github-discussion-touch'));
+        assert.ok(parsed.top_actions.some(action => action.id === 'github-discussion-answers'));
+        assert.strictEqual(parsed.github.totals.discussionsNeedingMaintainerTouch, 1);
+        assert.strictEqual(parsed.github.totals.discussionsMissingAcceptedAnswer, 1);
+      } finally {
+        cleanup(projectRoot);
+      }
+    })
+  )
+    passed++;
+  else failed++;
 
-  if (test('discussion-disabled repos skip the heavy discussion query', () => {
-    const projectRoot = createTempDir('platform-audit-discussions-disabled-');
+  if (
+    test('discussion-disabled repos skip the heavy discussion query', () => {
+      const projectRoot = createTempDir('platform-audit-discussions-disabled-');
 
-    try {
-      seedRepo(projectRoot);
-      const shimPath = writeGhShim(projectRoot, {
-        'pr list --repo ECC-Tools/ECC-website --state open --json number,title,isDraft,mergeStateStatus,updatedAt,url,author': [],
-        'issue list --repo ECC-Tools/ECC-website --state open --json number,title,updatedAt,url,author,labels': [],
-        [discussionEnabledGhKey('ECC-Tools', 'ECC-website')]: {
-          data: { repository: { hasDiscussionsEnabled: false } }
-        }
-      });
+      try {
+        seedRepo(projectRoot);
+        const shimPath = writeGhShim(projectRoot, {
+          'pr list --repo ECC-Tools/ECC-website --state open --json number,title,isDraft,mergeStateStatus,updatedAt,url,author': [],
+          'issue list --repo ECC-Tools/ECC-website --state open --json number,title,updatedAt,url,author,labels': [],
+          [discussionEnabledGhKey('ECC-Tools', 'ECC-website')]: {
+            data: { repository: { hasDiscussionsEnabled: false } }
+          }
+        });
 
-      const parsed = JSON.parse(run([
-        '--format=json',
-        `--root=${projectRoot}`,
-        '--repo',
-        'ECC-Tools/ECC-website'
-      ], {
-        cwd: projectRoot,
-        env: { ECC_GH_SHIM: shimPath }
-      }));
+        const parsed = JSON.parse(
+          run(['--format=json', `--root=${projectRoot}`, '--repo', 'ECC-Tools/ECC-website'], {
+            cwd: projectRoot,
+            env: { ECC_GH_SHIM: shimPath }
+          })
+        );
 
-      assert.strictEqual(parsed.ready, true);
-      assert.strictEqual(parsed.github.repos[0].discussions.enabled, false);
-      assert.strictEqual(parsed.github.repos[0].discussions.totalCount, 0);
-      assert.strictEqual(parsed.github.totals.errors, 0);
-    } finally {
-      cleanup(projectRoot);
-    }
-  })) passed++; else failed++;
+        assert.strictEqual(parsed.ready, true);
+        assert.strictEqual(parsed.github.repos[0].discussions.enabled, false);
+        assert.strictEqual(parsed.github.repos[0].discussions.totalCount, 0);
+        assert.strictEqual(parsed.github.totals.errors, 0);
+      } finally {
+        cleanup(projectRoot);
+      }
+    })
+  )
+    passed++;
+  else failed++;
 
-  if (test('cli help and invalid args exit cleanly', () => {
-    const help = runProcess(['--help']);
-    assert.strictEqual(help.status, 0);
-    assert.ok(help.stdout.includes('Usage: node scripts/platform-audit.js'));
+  if (
+    test('cli help and invalid args exit cleanly', () => {
+      const help = runProcess(['--help']);
+      assert.strictEqual(help.status, 0);
+      assert.ok(help.stdout.includes('Usage: node scripts/platform-audit.js'));
 
-    const invalid = runProcess(['--format', 'xml']);
-    assert.strictEqual(invalid.status, 1);
-    assert.ok(invalid.stderr.includes('Invalid format'));
-  })) passed++; else failed++;
+      const invalid = runProcess(['--format', 'xml']);
+      assert.strictEqual(invalid.status, 1);
+      assert.ok(invalid.stderr.includes('Invalid format'));
+    })
+  )
+    passed++;
+  else failed++;
 
   console.log(`\nPassed: ${passed}`);
   console.log(`Failed: ${failed}`);

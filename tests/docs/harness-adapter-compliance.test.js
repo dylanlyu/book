@@ -74,7 +74,6 @@ test('scorecard onramp names the local verification commands', () => {
   for (const command of [
     'npm run harness:adapters -- --check',
     'npm run harness:audit -- --format json',
-    'npm run observability:ready',
     'node scripts/session-inspect.js --list-adapters',
     'node scripts/loop-status.js --json --write-dir .ecc/loop-status'
   ]) {

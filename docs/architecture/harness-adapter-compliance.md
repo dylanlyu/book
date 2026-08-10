@@ -39,10 +39,10 @@ The matrix below is rendered from
 | Claude Code | Native | Claude plugin assets; skills; commands; hooks; MCP config; local rules; statusline-oriented workflows | Claude-native hooks do not imply parity in other harnesses | `./install.sh --profile minimal --target claude`; Claude plugin install | `npm run harness:audit -- --format json`; `node scripts/session-inspect.js --list-adapters` | Avoid loading every skill by default; keep hooks opt-in and inspectable. |
 | Codex | Instruction-backed | `AGENTS.md`; Codex plugin metadata; skills; MCP reference config; command patterns | Native hook enforcement and Claude slash-command semantics are not equivalent | `./install.sh --profile minimal --target codex`; repo-local `AGENTS.md` review | `npm run harness:audit -- --format json` | Treat hooks as policy text unless a native Codex hook surface exists. |
 | dmux | Adapter-backed | session snapshots; tmux/worktree orchestration status; handoff exports | dmux is an orchestration runtime, not an install target for skills/rules | `node scripts/session-inspect.js --list-adapters`; dmux session target inspection | `node tests/lib/session-adapters.test.js` | Treat dmux events as session/runtime signals, not as a replacement for repo validation. |
-| Orca | Reference-only | worktree lifecycle; review state; notification; provider-identity design pressure | No ECC installer or direct adapter today | Use as a comparison target for worktree/session state requirements | `npm run observability:ready` | Do not import product-specific assumptions; convert lessons into ECC event fields. |
-| Superset | Reference-only | workspace presets; parallel-agent review loops; worktree isolation design pressure | No ECC installer or direct adapter today | Use as a comparison target for workspace preset taxonomy | `npm run observability:ready` | Keep ECC portable; do not require a desktop workspace to get basic value. |
+| Orca | Reference-only | worktree lifecycle; review state; notification; provider-identity design pressure | No ECC installer or direct adapter today | Use as a comparison target for worktree/session state requirements | `npm run harness:audit -- --format json` | Do not import product-specific assumptions; convert lessons into ECC event fields. |
+| Superset | Reference-only | workspace presets; parallel-agent review loops; worktree isolation design pressure | No ECC installer or direct adapter today | Use as a comparison target for workspace preset taxonomy | `npm run harness:audit -- --format json` | Keep ECC portable; do not require a desktop workspace to get basic value. |
 | Ghast | Reference-only | terminal-native pane grouping; cwd grouping; search; notifications | No ECC installer or direct adapter today | Use as a comparison target for terminal-first session grouping | `node scripts/session-inspect.js --list-adapters` | Preserve terminal ergonomics before adding visual UI assumptions. |
-| Terminal-only | Native | skills; rules; commands; scripts; harness audit; observability readiness; handoffs | No external UI, no automatic session control unless scripts are run explicitly | Clone repo; run commands directly; use minimal profile for project installs | `npm run harness:audit -- --format json`; `npm run observability:ready` | This is the fallback contract; every higher-level adapter should degrade to it. |
+| Terminal-only | Native | skills; rules; commands; scripts; harness audit; handoffs | No external UI, no automatic session control unless scripts are run explicitly | Clone repo; run commands directly; use minimal profile for project installs | `npm run harness:audit -- --format json` | This is the fallback contract; every higher-level adapter should degrade to it. |
 <!-- harness-adapter-compliance:matrix-end -->
 
 ## Scorecard Onramp
@@ -53,7 +53,6 @@ autonomous:
 ```bash
 npm run harness:adapters -- --check
 npm run harness:audit -- --format json
-npm run observability:ready
 node scripts/session-inspect.js --list-adapters
 node scripts/loop-status.js --json --write-dir .ecc/loop-status
 ```
@@ -64,8 +63,6 @@ Read the result as a setup scorecard, not a product badge:
   adapter source data and required evidence fields.
 - `harness:audit` scores tool coverage, context efficiency, quality gates,
   memory persistence, eval coverage, security guardrails, and cost efficiency.
-- `observability:ready` proves the repo still exposes the local status,
-  session, tool-activity, risk-ledger, and release-onramp signals.
 - `session-inspect --list-adapters` shows which session surfaces are actually
   inspectable in the current environment.
 - `loop-status --json` creates a machine-readable handoff/status payload for

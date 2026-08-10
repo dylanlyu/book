@@ -51,13 +51,10 @@ const REQUIRED_VERIFICATION_COMMANDS = [
   'npm run release:video-suite -- --format json',
   'npm run harness:adapters -- --check',
   'npm run harness:audit -- --format json',
-  'npm run observability:ready',
   'npm run security:ioc-scan',
   'npm audit --audit-level=moderate',
   'npm audit signatures',
-  'node tests/docs/ecc2-release-surface.test.js',
-  'node tests/run-all.js',
-  'cd ecc2 && cargo test'
+  'node tests/run-all.js'
 ];
 
 const REQUIRED_PUBLICATION_BLOCKERS = [
