@@ -28,7 +28,6 @@ Targets:
   claude       (default) - Install ECC into ~/.claude/ with managed rules under rules/ecc and flat skills under skills/
   claude-project - Install ECC into ./.claude/ (per-project) with managed rules under rules/ecc and flat skills under skills/
   codex        - Install shared agents/config into ~/.codex/
-  joycode      - Install commands, agents, skills, and flattened rules into ./.joycode/
 
 Options:
   --profile <name>    Resolve and install a manifest profile
@@ -152,14 +151,12 @@ async function main() {
     let result = applyInstallPlan(rawPlan);
     const { projectCanonicalInstallState } = require('./lib/install-state-store-sync');
     const installStateProjection = await projectCanonicalInstallState(result.statePreview, {
-      homeDir: process.env.HOME || os.homedir(),
+      homeDir: process.env.HOME || os.homedir()
     });
     result = {
       ...result,
       installStateProjection,
-      warnings: installStateProjection.warning
-        ? [...result.warnings, `Install health projection warning: ${installStateProjection.warning.message}`]
-        : result.warnings,
+      warnings: installStateProjection.warning ? [...result.warnings, `Install health projection warning: ${installStateProjection.warning.message}`] : result.warnings
     };
     if (options.json) {
       console.log(JSON.stringify({ dryRun: false, result }, null, 2));

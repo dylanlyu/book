@@ -182,7 +182,7 @@ npx ecc-install typescript
 
 ## Suporte Multiplataforma
 
-Este plugin agora suporta totalmente **Windows, macOS e Linux**, com integração estreita em principais IDEs (Antigravity, JoyCode) e harnesses CLI. Todos os hooks e scripts foram reescritos em Node.js para máxima compatibilidade.
+Este plugin agora suporta totalmente **Windows, macOS e Linux**, com integração estreita em principais IDEs (Antigravity) e harnesses CLI. Todos os hooks e scripts foram reescritos em Node.js para máxima compatibilidade.
 
 ### Detecção de Gerenciador de Pacotes
 

@@ -9,15 +9,15 @@ const { createSafeItoInvocationEnvironment, getInvocationCommand } = require('./
 const COMMANDS = {
   setup: {
     script: 'setup.js',
-    description: 'Install or update the Claude plugin with guided scope and hook choices',
+    description: 'Install or update the Claude plugin with guided scope and hook choices'
   },
   welcome: {
     script: 'welcome.js',
-    description: 'Show the ECC welcome artwork and community links',
+    description: 'Show the ECC welcome artwork and community links'
   },
   install: {
     script: 'install-apply.js',
-    description: 'Install ECC content, including the guided multi-harness wizard',
+    description: 'Install ECC content, including the guided multi-harness wizard'
   },
   plan: {
     script: 'install-plan.js',
@@ -37,7 +37,7 @@ const COMMANDS = {
   },
   nasiko: {
     script: 'nasiko.js',
-    description: 'Install or inspect the optional pinned Nasiko control-plane CLI',
+    description: 'Install or inspect the optional pinned Nasiko control-plane CLI'
   },
   memory: {
     script: 'memory.js',
@@ -57,7 +57,7 @@ const COMMANDS = {
   },
   feedback: {
     script: 'feedback.js',
-    description: 'Open the shortest path to report a problem, feedback, or an idea',
+    description: 'Open the shortest path to report a problem, feedback, or an idea'
   },
   repair: {
     script: 'repair.js',
@@ -190,7 +190,7 @@ Examples:
   ecc work-items sync-github --repo affaan-m/ECC
   ecc session-inspect claude:latest
   ecc loop-status --json
-  ecc uninstall --target joycode --dry-run
+  ecc uninstall --target codex --dry-run
 `);
 
   process.exit(exitCode);
@@ -258,27 +258,20 @@ function runCommand(commandName, args) {
     throw new Error(`Unknown command: ${commandName}`);
   }
   const isItoLogin = commandName === 'ito' && getInvocationCommand(args) === 'login';
-  const result = spawnSync(
-    process.execPath,
-    [path.join(__dirname, command.script), ...args],
-    {
-      cwd: process.cwd(),
-      env: commandName === 'ito'
+  const result = spawnSync(process.execPath, [path.join(__dirname, command.script), ...args], {
+    cwd: process.cwd(),
+    env:
+      commandName === 'ito'
         ? {
             ...createSafeItoInvocationEnvironment(process.env, args, {
               includeControls: true
             })
           }
         : process.env,
-      stdio: isItoLogin || commandName === 'setup' || commandName === 'install'
-        ? 'inherit'
-        : commandName === 'memory'
-          ? ['inherit', 'pipe', 'pipe']
-          : ['pipe', 'pipe', 'pipe'],
-      encoding: 'utf8',
-      maxBuffer: 10 * 1024 * 1024,
-    }
-  );
+    stdio: isItoLogin || commandName === 'setup' || commandName === 'install' ? 'inherit' : commandName === 'memory' ? ['inherit', 'pipe', 'pipe'] : ['pipe', 'pipe', 'pipe'],
+    encoding: 'utf8',
+    maxBuffer: 10 * 1024 * 1024
+  });
 
   if (result.error) {
     throw result.error;

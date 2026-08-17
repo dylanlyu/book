@@ -216,7 +216,7 @@ Copy-Item -Recurse rules/typescript "$HOME/.claude/rules/"
 
 ## 跨平台支持
 
-该插件现已**全面支持 Windows、macOS 和 Linux**，并与主流 IDE（Antigravity、JoyCode）及命令行工具深度集成。所有钩子与脚本均已使用 Node.js 重写，以实现最佳兼容性。
+该插件现已**全面支持 Windows、macOS 和 Linux**，并与主流 IDE（Antigravity）及命令行工具深度集成。所有钩子与脚本均已使用 Node.js 重写，以实现最佳兼容性。
 
 ### 包管理器检测
 

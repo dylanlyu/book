@@ -275,7 +275,7 @@ Copy-Item -Recurse rules/typescript "$HOME/.claude/rules/"
 
 ## 跨平台支持
 
-此插件现已完全支持 **Windows、macOS 和 Linux**，并与主流 IDE（Antigravity、JoyCode）和 CLI 平台紧密集成。所有钩子和脚本都已用 Node.js 重写，以实现最大兼容性。
+此插件现已完全支持 **Windows、macOS 和 Linux**，并与主流 IDE（Antigravity）和 CLI 平台紧密集成。所有钩子和脚本都已用 Node.js 重写，以实现最大兼容性。
 
 ### 包管理器检测
 
@@ -938,7 +938,7 @@ cp -r everything-claude-code/rules/common ~/.claude/rules/common
 </details>
 
 <details>
-<summary><b>这能与 Codex / Antigravity / JoyCode 一起使用吗？</b></summary>
+<summary><b>这能与 Codex / Antigravity 一起使用吗？</b></summary>
 
 是的。ECC 是跨平台的：
 

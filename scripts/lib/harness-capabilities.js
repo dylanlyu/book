@@ -24,7 +24,7 @@ function hooks(mode, eccConfigured, note) {
     mode,
     eccConfigured,
     note,
-    summary: note,
+    summary: note
   };
 }
 
@@ -38,17 +38,9 @@ const HARNESS_CAPABILITIES = deepFreeze([
     guidedReady: true,
     availability: 'guided',
     destination: 'Selected Claude plugin scope: ~/.claude or ./.claude',
-    scopes: [
-      scope('user', 'claude', '~/.claude'),
-      scope('project', 'claude-project', './.claude'),
-      scope('local', 'claude-project', './.claude'),
-    ],
-    hooks: hooks(
-      'profile-selection',
-      true,
-      'ECC hooks are configured through the selected off, minimal, standard, or strict profile.'
-    ),
-    aliases: ['claude-code'],
+    scopes: [scope('user', 'claude', '~/.claude'), scope('project', 'claude-project', './.claude'), scope('local', 'claude-project', './.claude')],
+    hooks: hooks('profile-selection', true, 'ECC hooks are configured through the selected off, minimal, standard, or strict profile.'),
+    aliases: ['claude-code']
   },
   {
     id: 'codex',
@@ -60,36 +52,18 @@ const HARNESS_CAPABILITIES = deepFreeze([
     availability: 'guided',
     destination: '~/.codex through the Codex native plugin lifecycle',
     scopes: [scope('native', 'codex', '~/.codex')],
-    hooks: hooks(
-      'native-trust',
-      true,
-      'ECC hooks use Codex native plugin discovery and remain subject to Codex review and trust.'
-    ),
-    aliases: ['openai-codex'],
-  },
-  {
-    id: 'joycode',
-    label: 'JoyCode',
-    targetIds: ['joycode'],
-    channel: 'managed-project',
-    installMode: 'managed-project',
-    guidedReady: false,
-    availability: 'advanced',
-    destination: './.joycode',
-    scopes: [scope('project', 'joycode', './.joycode')],
-    hooks: hooks('not-configured', false, 'ECC hooks are not configured by this adapter.'),
-    aliases: ['joy-code'],
-  },
+    hooks: hooks('native-trust', true, 'ECC hooks use Codex native plugin discovery and remain subject to Codex review and trust.'),
+    aliases: ['openai-codex']
+  }
 ]);
 
-const GUIDED_HARNESS_IDS = deepFreeze(
-  HARNESS_CAPABILITIES
-    .filter(harness => harness.guidedReady)
-    .map(harness => harness.id)
-);
+const GUIDED_HARNESS_IDS = deepFreeze(HARNESS_CAPABILITIES.filter(harness => harness.guidedReady).map(harness => harness.id));
 
 function normalizeLookupToken(value) {
-  return String(value).trim().toLowerCase().replace(/[\s_]+/g, '-');
+  return String(value)
+    .trim()
+    .toLowerCase()
+    .replace(/[\s_]+/g, '-');
 }
 
 const LOOKUP = new Map();
@@ -121,10 +95,7 @@ function validateCatalog() {
   const supported = [...SUPPORTED_INSTALL_TARGETS].sort();
   const registered = adapters.map(adapter => adapter.target).sort();
   const catalogued = [...catalogTargetIds].sort();
-  if (
-    JSON.stringify(catalogued) !== JSON.stringify(supported)
-    || JSON.stringify(catalogued) !== JSON.stringify(registered)
-  ) {
+  if (JSON.stringify(catalogued) !== JSON.stringify(supported) || JSON.stringify(catalogued) !== JSON.stringify(registered)) {
     throw new Error('Harness capability catalog is out of sync with install targets');
   }
 
@@ -132,9 +103,7 @@ function validateCatalog() {
     for (const declaredScope of harness.scopes) {
       const adapter = adapterByTarget.get(declaredScope.targetId);
       if (!adapter || expectedRootForAdapter(adapter) !== declaredScope.root) {
-        throw new Error(
-          `Harness capability root is out of sync for target ${declaredScope.targetId}`
-        );
+        throw new Error(`Harness capability root is out of sync for target ${declaredScope.targetId}`);
       }
     }
   }
@@ -160,9 +129,10 @@ function getHarnessCapability(value) {
 
 function tokenizeSelection(selection) {
   const values = Array.isArray(selection) ? selection : [selection];
-  return values.flatMap(value => (
-    typeof value === 'string' ? value.split(',') : []
-  )).map(value => value.trim()).filter(Boolean);
+  return values
+    .flatMap(value => (typeof value === 'string' ? value.split(',') : []))
+    .map(value => value.trim())
+    .filter(Boolean);
 }
 
 function normalizeHarnessSelection(selection) {
@@ -184,9 +154,7 @@ function normalizeHarnessSelection(selection) {
   for (const token of tokens) {
     const normalizedToken = normalizeLookupToken(token);
     const menuIndex = /^\d+$/.test(normalizedToken) ? Number(normalizedToken) - 1 : -1;
-    const harness = menuIndex >= 0
-      ? listGuidedHarnesses()[menuIndex] || null
-      : getHarnessCapability(token);
+    const harness = menuIndex >= 0 ? listGuidedHarnesses()[menuIndex] || null : getHarnessCapability(token);
 
     if (!harness) {
       throw new Error(`Unknown guided harness selection: ${token}`);
@@ -210,5 +178,5 @@ module.exports = {
   getHarnessCapability,
   listGuidedHarnesses,
   listHarnessCapabilities,
-  normalizeHarnessSelection,
+  normalizeHarnessSelection
 };

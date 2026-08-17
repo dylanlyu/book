@@ -245,7 +245,7 @@ node tests/run-all.js
 
 ## کراس-پلیٹ فارم سپورٹ
 
-یہ پلگ ان **Windows، macOS، اور Linux** کو مکمل طور پر سپورٹ کرتا ہے، ساتھ ہی بڑے IDEs (Antigravity، JoyCode) اور CLI ہارنسز کے ساتھ تنگ انضمام۔ تمام hooks اور اسکرپٹس زیادہ سے زیادہ مطابقت کے لیے Node.js میں دوبارہ لکھے گئے ہیں۔
+یہ پلگ ان **Windows، macOS، اور Linux** کو مکمل طور پر سپورٹ کرتا ہے، ساتھ ہی بڑے IDEs (Antigravity) اور CLI ہارنسز کے ساتھ تنگ انضمام۔ تمام hooks اور اسکرپٹس زیادہ سے زیادہ مطابقت کے لیے Node.js میں دوبارہ لکھے گئے ہیں۔
 
 ---
 
@@ -292,7 +292,7 @@ cp -r rules/common ~/.claude/rules/ecc/
 
 **کیا یہ Codex / Antigravity کے ساتھ کام کرتا ہے؟**
 
-ہاں۔ ECC کراس-پلیٹ فارم ہے — Claude Code، Codex، GitHub Copilot، Antigravity، JoyCode، اور مزید کے ساتھ۔
+ہاں۔ ECC کراس-پلیٹ فارم ہے — Claude Code، Codex، GitHub Copilot، Antigravity، اور مزید کے ساتھ۔
 
 ---
 

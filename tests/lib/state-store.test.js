@@ -557,7 +557,7 @@ async function runTests() {
         id: 'github-pr-1738',
         source: 'github',
         sourceId: '1738',
-        title: 'Add JoyCode install target',
+        title: 'Add managed install target',
         status: 'merged',
         priority: 'normal',
         url: 'https://github.com/affaan-m/everything-claude-code/pull/1738',

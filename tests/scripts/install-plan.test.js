@@ -77,13 +77,13 @@ function runTests() {
       '--profile', 'developer',
       '--with', 'capability:security',
       '--without', 'capability:orchestration',
-      '--target', 'joycode'
+      '--target', 'claude-project'
     ]);
     assert.strictEqual(result.code, 0);
     assert.ok(result.stdout.includes('Install plan'));
     assert.ok(result.stdout.includes('Included components: capability:security'));
     assert.ok(result.stdout.includes('Excluded components: capability:orchestration'));
-    assert.ok(result.stdout.includes('Adapter: joycode-project'));
+    assert.ok(result.stdout.includes('Adapter: claude-project'));
     assert.ok(result.stdout.includes('Target root:'));
     assert.ok(result.stdout.includes('Install-state:'));
     assert.ok(result.stdout.includes('Operation plan'));
@@ -95,7 +95,7 @@ function runTests() {
     const result = run([
       '--modules', 'security',
       '--with', 'capability:research',
-      '--target', 'joycode',
+      '--target', 'claude-project',
       '--json'
     ]);
     assert.strictEqual(result.code, 0);
@@ -104,7 +104,7 @@ function runTests() {
     assert.ok(parsed.selectedModuleIds.includes('research-apis'));
     assert.ok(parsed.selectedModuleIds.includes('workflow-quality'));
     assert.deepStrictEqual(parsed.includedComponentIds, ['capability:research']);
-    assert.strictEqual(parsed.targetAdapterId, 'joycode-project');
+    assert.strictEqual(parsed.targetAdapterId, 'claude-project');
     assert.ok(Array.isArray(parsed.operations));
     assert.ok(parsed.operations.length > 0);
   })) passed++; else failed++;
@@ -131,7 +131,7 @@ function runTests() {
       require('fs').mkdirSync(configDir, { recursive: true });
       require('fs').writeFileSync(configPath, JSON.stringify({
         version: 1,
-        target: 'joycode',
+        target: 'claude-project',
         profile: 'core',
         include: ['capability:security'],
         exclude: ['capability:orchestration'],
@@ -140,7 +140,7 @@ function runTests() {
       const result = run(['--config', configPath, '--json']);
       assert.strictEqual(result.code, 0);
       const parsed = JSON.parse(result.stdout);
-      assert.strictEqual(parsed.target, 'joycode');
+      assert.strictEqual(parsed.target, 'claude-project');
       assert.deepStrictEqual(parsed.includedComponentIds, ['capability:security']);
       assert.deepStrictEqual(parsed.excludedComponentIds, ['capability:orchestration']);
       assert.ok(parsed.selectedModuleIds.includes('security'));
@@ -158,7 +158,7 @@ function runTests() {
       require('fs').mkdirSync(configDir, { recursive: true });
       require('fs').writeFileSync(configPath, JSON.stringify({
         version: 1,
-        target: 'joycode',
+        target: 'claude-project',
         profile: 'core',
         include: ['capability:security'],
       }, null, 2));
@@ -166,7 +166,7 @@ function runTests() {
       const result = run(['--json'], { cwd: configDir });
       assert.strictEqual(result.code, 0, result.stderr);
       const parsed = JSON.parse(result.stdout);
-      assert.strictEqual(parsed.target, 'joycode');
+      assert.strictEqual(parsed.target, 'claude-project');
       assert.strictEqual(parsed.profileId, 'core');
       assert.deepStrictEqual(parsed.includedComponentIds, ['capability:security']);
       assert.ok(parsed.selectedModuleIds.includes('security'));

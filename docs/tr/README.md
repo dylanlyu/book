@@ -185,7 +185,7 @@ Manuel kurulum talimatları için `rules/` klasöründeki README'ye bakın.
 
 ## Çapraz Platform Desteği
 
-Bu plugin artık **Windows, macOS ve Linux**'u tam olarak destekliyor, ana IDE'ler (Antigravity, JoyCode) ve CLI harness'lar arasında sıkı entegrasyon ile birlikte. Tüm hook'lar ve script'ler maksimum uyumluluk için Node.js ile yeniden yazıldı.
+Bu plugin artık **Windows, macOS ve Linux**'u tam olarak destekliyor, ana IDE'ler (Antigravity) ve CLI harness'lar arasında sıkı entegrasyon ile birlikte. Tüm hook'lar ve script'ler maksimum uyumluluk için Node.js ile yeniden yazıldı.
 
 ### Paket Yöneticisi Algılama
 

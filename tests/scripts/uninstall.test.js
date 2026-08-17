@@ -86,7 +86,7 @@ function runTests() {
     const projectRoot = createTempDir('uninstall-project-');
 
     try {
-      const installStdout = execFileSync('node', [INSTALL_SCRIPT, '--target', 'joycode', '--profile', 'minimal'], {
+      const installStdout = execFileSync('node', [INSTALL_SCRIPT, '--target', 'claude-project', '--profile', 'minimal'], {
         cwd: projectRoot,
         env: {
           ...process.env,
@@ -99,12 +99,12 @@ function runTests() {
       assert.ok(installStdout.includes('Done. Install-state written'));
 
       const normalizedProjectRoot = fs.realpathSync(projectRoot);
-      const managedPath = path.join(normalizedProjectRoot, '.joycode', 'hooks.json');
-      const statePath = path.join(normalizedProjectRoot, '.joycode', 'ecc-install-state.json');
-      const unrelatedPath = path.join(normalizedProjectRoot, '.joycode', 'custom-user-note.txt');
+      const managedPath = path.join(normalizedProjectRoot, '.claude', 'hooks.json');
+      const statePath = path.join(normalizedProjectRoot, '.claude', 'ecc', 'install-state.json');
+      const unrelatedPath = path.join(normalizedProjectRoot, '.claude', 'custom-user-note.txt');
       fs.writeFileSync(unrelatedPath, 'leave me alone');
 
-      const uninstallResult = run(['--target', 'joycode'], {
+      const uninstallResult = run(['--target', 'claude-project'], {
         cwd: projectRoot,
         homeDir,
       });
@@ -126,10 +126,10 @@ function runTests() {
     const projectRoot = createTempDir('uninstall-project-');
 
     try {
-      const targetRoot = path.join(projectRoot, '.joycode');
+      const targetRoot = path.join(projectRoot, '.claude');
       fs.mkdirSync(targetRoot, { recursive: true });
       const normalizedTargetRoot = fs.realpathSync(targetRoot);
-      const statePath = path.join(normalizedTargetRoot, 'ecc-install-state.json');
+      const statePath = path.join(normalizedTargetRoot, 'ecc', 'install-state.json');
       const copiedPath = path.join(normalizedTargetRoot, 'managed-rule.md');
       const mergedPath = path.join(normalizedTargetRoot, 'hooks.json');
       const removedPath = path.join(normalizedTargetRoot, 'legacy-note.txt');
@@ -142,7 +142,7 @@ function runTests() {
       fs.writeFileSync(unrelatedPath, 'leave me alone');
 
       writeState(statePath, {
-        adapter: { id: 'joycode-project', target: 'joycode', kind: 'project' },
+        adapter: { id: 'claude-project', target: 'claude-project', kind: 'project' },
         targetRoot: normalizedTargetRoot,
         installStatePath: statePath,
         request: {
@@ -171,7 +171,7 @@ function runTests() {
           {
             kind: 'merge-json',
             moduleId: 'platform-configs',
-            sourceRelativePath: '.joycode/hooks.json',
+            sourceRelativePath: '.claude/hooks.json',
             destinationPath: mergedPath,
             strategy: 'merge-json',
             ownership: 'managed',
@@ -186,7 +186,7 @@ function runTests() {
           {
             kind: 'remove',
             moduleId: 'platform-configs',
-            sourceRelativePath: '.joycode/legacy-note.txt',
+            sourceRelativePath: '.claude/legacy-note.txt',
             destinationPath: removedPath,
             strategy: 'remove',
             ownership: 'managed',
@@ -201,7 +201,7 @@ function runTests() {
         },
       });
 
-      const uninstallResult = run(['--target', 'joycode'], {
+      const uninstallResult = run(['--target', 'claude-project'], {
         cwd: projectRoot,
         homeDir,
       });
@@ -225,15 +225,15 @@ function runTests() {
     const projectRoot = createTempDir('uninstall-project-');
 
     try {
-      const targetRoot = path.join(projectRoot, '.joycode');
+      const targetRoot = path.join(projectRoot, '.claude');
       fs.mkdirSync(targetRoot, { recursive: true });
       const normalizedTargetRoot = fs.realpathSync(targetRoot);
-      const statePath = path.join(normalizedTargetRoot, 'ecc-install-state.json');
+      const statePath = path.join(normalizedTargetRoot, 'ecc', 'install-state.json');
       const renderedPath = path.join(normalizedTargetRoot, 'generated.md');
       fs.writeFileSync(renderedPath, '# generated\n');
 
       writeState(statePath, {
-        adapter: { id: 'joycode-project', target: 'joycode', kind: 'project' },
+        adapter: { id: 'claude-project', target: 'claude-project', kind: 'project' },
         targetRoot: normalizedTargetRoot,
         installStatePath: statePath,
         request: {
@@ -252,7 +252,7 @@ function runTests() {
           {
             kind: 'render-template',
             moduleId: 'platform-configs',
-            sourceRelativePath: '.joycode/generated.md.template',
+            sourceRelativePath: '.claude/generated.md.template',
             destinationPath: renderedPath,
             strategy: 'render-template',
             ownership: 'managed',
@@ -267,7 +267,7 @@ function runTests() {
         },
       });
 
-      const uninstallResult = run(['--target', 'joycode', '--dry-run', '--json'], {
+      const uninstallResult = run(['--target', 'claude-project', '--dry-run', '--json'], {
         cwd: projectRoot,
         homeDir,
       });

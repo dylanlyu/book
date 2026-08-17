@@ -3,23 +3,11 @@
 
 const readline = require('readline/promises');
 
-const {
-  getHarnessCapability,
-  listGuidedHarnesses,
-  normalizeHarnessSelection,
-} = require('./lib/harness-capabilities');
-const {
-  VALID_CLAUDE_HOOKS,
-  VALID_CLAUDE_SCOPES,
-  applyMultiHarnessPlan,
-  createMultiHarnessPlan,
-  normalizeGuidedInstallRequest,
-} = require('./lib/multi-harness-setup');
+const { getHarnessCapability, listGuidedHarnesses, normalizeHarnessSelection } = require('./lib/harness-capabilities');
+const { VALID_CLAUDE_HOOKS, VALID_CLAUDE_SCOPES, applyMultiHarnessPlan, createMultiHarnessPlan, normalizeGuidedInstallRequest } = require('./lib/multi-harness-setup');
 const { startTerminalSpinner } = require('./lib/terminal-spinner');
 const { showTerminalWelcome } = require('./lib/terminal-welcome');
 const { stripAnsi } = require('./lib/utils');
-
-const ADVANCED_HARNESSES = 'JoyCode';
 
 function showHelp(output = process.stdout) {
   output.write(`
@@ -43,9 +31,6 @@ Options:
   --json                  Emit machine-readable output
   --help, -h              Show this help
 
-Advanced managed adapters remain available through explicit ecc install --target commands:
-  ${ADVANCED_HARNESSES}
-
 This command configures ECC. It does not install or authenticate provider CLIs.
 `);
 }
@@ -59,12 +44,12 @@ function parseArgs(argv) {
     harnesses: [],
     help: false,
     json: false,
-    yes: false,
+    yes: false
   };
   const valueFlags = new Map([
     ['--harness', 'harnesses'],
     ['--claude-scope', 'claudeScope'],
-    ['--claude-hooks', 'claudeHooks'],
+    ['--claude-hooks', 'claudeHooks']
   ]);
 
   for (let index = 0; index < argv.length; index += 1) {
@@ -78,9 +63,7 @@ function parseArgs(argv) {
         throw new Error(`Value for ${argument} is too long.`);
       }
       const key = valueFlags.get(argument);
-      options = key === 'harnesses'
-        ? { ...options, harnesses: [...options.harnesses, value] }
-        : { ...options, [key]: value };
+      options = key === 'harnesses' ? { ...options, harnesses: [...options.harnesses, value] } : { ...options, [key]: value };
       index += 1;
     } else if (argument === '--all-harnesses') {
       options = { ...options, allHarnesses: true };
@@ -110,9 +93,7 @@ async function askChoice(terminal, output, prompt, values, defaultValue) {
   output.write(`\n${prompt}\n`);
   values.forEach((value, index) => output.write(`  ${index + 1}. ${value}\n`));
   while (true) {
-    const question = defaultValue
-      ? `Choose [Recommended: ${defaultValue}] (one option only): `
-      : 'Choose one option: ';
+    const question = defaultValue ? `Choose [Recommended: ${defaultValue}] (one option only): ` : 'Choose one option: ';
     const answer = (await terminal.question(question)).trim().toLowerCase();
     if (!answer && defaultValue) return defaultValue;
     const numeric = /^\d+$/.test(answer) ? values[Number(answer) - 1] : undefined;
@@ -128,8 +109,7 @@ async function askHarnesses(terminal, output) {
   guided.forEach((harness, index) => {
     output.write(`  ${index + 1}. ${harness.label} — ${harness.destination}\n`);
   });
-  output.write('  all. All guided harnesses\n');
-  output.write(`\nAdvanced adapters (use ecc install --target): ${ADVANCED_HARNESSES}.\n\n`);
+  output.write('  all. All guided harnesses\n\n');
   while (true) {
     const answer = await terminal.question('Choose one or more (for example 1,3 or all): ');
     if (answer.length > 1024) {
@@ -151,17 +131,13 @@ async function collectInteractiveOptions(options, dependencies = {}) {
   if (harnesses.length === 0) harnesses = await askHarnesses(terminal, output);
   const normalizedHarnesses = normalizeHarnessSelection(harnesses);
   const includesClaude = normalizedHarnesses.includes('claude');
-  const claudeScope = includesClaude && !options.claudeScope
-    ? await askChoice(terminal, output, 'Where should Claude enable ecc@ecc?', [...VALID_CLAUDE_SCOPES], 'user')
-    : options.claudeScope;
-  const claudeHooks = includesClaude && !options.claudeHooks
-    ? await askChoice(terminal, output, 'How should ECC hooks run in Claude?', [...VALID_CLAUDE_HOOKS], 'standard')
-    : options.claudeHooks;
+  const claudeScope = includesClaude && !options.claudeScope ? await askChoice(terminal, output, 'Where should Claude enable ecc@ecc?', [...VALID_CLAUDE_SCOPES], 'user') : options.claudeScope;
+  const claudeHooks = includesClaude && !options.claudeHooks ? await askChoice(terminal, output, 'How should ECC hooks run in Claude?', [...VALID_CLAUDE_HOOKS], 'standard') : options.claudeHooks;
   return {
     ...options,
     harnesses: normalizedHarnesses,
     claudeScope,
-    claudeHooks,
+    claudeHooks
   };
 }
 
@@ -207,18 +183,14 @@ function sanitizeTerminalText(value) {
 function buildRetryArguments(plan, retryHarnesses) {
   const harnesses = [...retryHarnesses];
   const harnessArguments = harnesses.flatMap(id => ['--harness', id]);
-  const claudeArguments = harnesses.includes('claude')
-    ? ['--claude-scope', plan.request.claudeScope, '--claude-hooks', plan.request.claudeHooks]
-    : [];
+  const claudeArguments = harnesses.includes('claude') ? ['--claude-scope', plan.request.claudeScope, '--claude-hooks', plan.request.claudeHooks] : [];
   return [...harnessArguments, ...claudeArguments].join(' ');
 }
 
 async function main(argv = process.argv.slice(2), injected = {}) {
   const output = injected.output || process.stdout;
   const errorOutput = injected.errorOutput || process.stderr;
-  const interactive = injected.interactive !== undefined
-    ? injected.interactive
-    : Boolean(process.stdin.isTTY && output.isTTY);
+  const interactive = injected.interactive !== undefined ? injected.interactive : Boolean(process.stdin.isTTY && output.isTTY);
   const createPlan = injected.createPlan || createMultiHarnessPlan;
   const applyPlan = injected.applyPlan || applyMultiHarnessPlan;
   const renderWelcome = injected.showWelcome || showTerminalWelcome;
@@ -233,8 +205,7 @@ async function main(argv = process.argv.slice(2), injected = {}) {
       return 0;
     }
     validateExecutionMode(options, interactive);
-    const needsChoices = selectedHarnessIds(options).length === 0
-      || (selectedHarnessIds(options).includes('claude') && (!options.claudeScope || !options.claudeHooks));
+    const needsChoices = selectedHarnessIds(options).length === 0 || (selectedHarnessIds(options).includes('claude') && (!options.claudeScope || !options.claudeHooks));
     if (interactive && needsChoices) {
       if (!terminal) {
         terminal = readline.createInterface({ input: process.stdin, output });
@@ -244,7 +215,7 @@ async function main(argv = process.argv.slice(2), injected = {}) {
     }
     const request = normalizeGuidedInstallRequest({
       ...options,
-      harnesses: options.allHarnesses ? ['all'] : options.harnesses,
+      harnesses: options.allHarnesses ? ['all'] : options.harnesses
     });
     const plan = await createPlan(request);
 
@@ -262,15 +233,13 @@ async function main(argv = process.argv.slice(2), injected = {}) {
         terminal = readline.createInterface({ input: process.stdin, output });
         ownsTerminal = true;
       }
-      if (!await confirmPlan(terminal, output)) {
+      if (!(await confirmPlan(terminal, output))) {
         output.write('\nECC install cancelled. No changes were made.\n');
         return 0;
       }
     }
 
-    const spinner = interactive && !options.json
-      ? makeSpinner('Applying ECC to selected harnesses...')
-      : undefined;
+    const spinner = interactive && !options.json ? makeSpinner('Applying ECC to selected harnesses...') : undefined;
     let result;
     try {
       result = await applyPlan(plan);
@@ -284,11 +253,7 @@ async function main(argv = process.argv.slice(2), injected = {}) {
       renderWelcome({ action: 'installed', interactive, json: false, output });
     } else {
       const retry = buildRetryArguments(plan, result.retryHarnesses);
-      errorOutput.write(
-        `ECC stopped at ${sanitizeTerminalText(result.failure.id)}: `
-        + `${sanitizeTerminalText(result.failure.message)}\n`
-        + `Retry with: ecc-universal install --guided ${retry}\n`
-      );
+      errorOutput.write(`ECC stopped at ${sanitizeTerminalText(result.failure.id)}: ` + `${sanitizeTerminalText(result.failure.message)}\n` + `Retry with: ecc-universal install --guided ${retry}\n`);
     }
     return result.status === 'complete' ? 0 : 1;
   } catch (error) {
@@ -313,5 +278,5 @@ module.exports = {
   parseArgs,
   printPlan,
   showHelp,
-  validateExecutionMode,
+  validateExecutionMode
 };

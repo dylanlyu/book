@@ -36,7 +36,7 @@
 - `ecc-universal` と `ecc-agentshield` のライブnpmインストール/ダウンロードメトリクス
 - MarketplaceインストールによるGitHub Appの配布
 - 公開採用シグナル：スター、フォーク、コントリビューター、リリース頻度
-- クロスハーネスサポート：Claude Code、Codex、Antigravity、JoyCode
+- クロスハーネスサポート：Claude Code、Codex、Antigravity
 
 コピー＆ペースト可能なメトリクスプルワークフローについては、[`docs/business/metrics-and-sponsorship.md`](../business/metrics-and-sponsorship.md)を参照してください。
 

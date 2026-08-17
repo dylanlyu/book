@@ -83,7 +83,7 @@ function runTests() {
       const configPath = path.join(cwd, 'ecc-install.json');
       writeJson(configPath, {
         version: 1,
-        target: 'joycode',
+        target: 'claude-project',
         profile: 'developer',
         modules: ['platform-configs', 'platform-configs'],
         include: ['lang:typescript', 'framework:nextjs', 'lang:typescript'],
@@ -95,7 +95,7 @@ function runTests() {
 
       const config = loadInstallConfig('ecc-install.json', { cwd });
       assert.strictEqual(config.path, configPath);
-      assert.strictEqual(config.target, 'joycode');
+      assert.strictEqual(config.target, 'claude-project');
       assert.strictEqual(config.profileId, 'developer');
       assert.deepStrictEqual(config.moduleIds, ['platform-configs']);
       assert.deepStrictEqual(config.includeComponentIds, ['lang:typescript', 'framework:nextjs']);

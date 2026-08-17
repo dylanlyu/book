@@ -262,26 +262,19 @@ function runTests() {
   else failed++;
 
   if (
-    test('resolves a real project profile with target-specific skips', () => {
-      const projectRoot = '/workspace/app';
-      const plan = resolveInstallPlan({ profileId: 'developer', target: 'joycode', projectRoot });
-      assert.ok(plan.selectedModuleIds.includes('rules-core'), 'Should keep rules-core');
-      assert.ok(plan.selectedModuleIds.includes('commands-core'), 'Should keep commands-core');
-      assert.ok(!plan.selectedModuleIds.includes('orchestration'), 'Should not select unsupported orchestration module for joycode');
-      assert.ok(plan.skippedModuleIds.includes('orchestration'), 'Should report unsupported orchestration module as skipped');
-      assert.strictEqual(plan.targetAdapterId, 'joycode-project');
-      assert.strictEqual(plan.targetRoot, path.join(projectRoot, '.joycode'));
-      assert.strictEqual(plan.installStatePath, path.join(projectRoot, '.joycode', 'ecc-install-state.json'));
+    test('resolves a real profile with target-specific skips', () => {
+      const homeDir = '/Users/example';
+      const plan = resolveInstallPlan({ profileId: 'developer', target: 'codex', homeDir });
+      assert.ok(plan.selectedModuleIds.includes('agents-core'), 'Should keep agents-core');
+      assert.ok(plan.selectedModuleIds.includes('database'), 'Should keep database');
+      assert.ok(!plan.selectedModuleIds.includes('rules-core'), 'Should not select unsupported rules-core module for codex');
+      assert.ok(plan.skippedModuleIds.includes('rules-core'), 'Should report unsupported rules-core module as skipped');
+      assert.ok(plan.skippedModuleIds.includes('commands-core'), 'Should report unsupported commands-core module as skipped');
+      assert.ok(plan.skippedModuleIds.includes('hooks-runtime'), 'Should report unsupported hooks-runtime module as skipped');
+      assert.strictEqual(plan.targetAdapterId, 'codex-home');
+      assert.strictEqual(plan.targetRoot, path.join(homeDir, '.codex'));
+      assert.strictEqual(plan.installStatePath, path.join(homeDir, '.codex', 'ecc-install-state.json'));
       assert.ok(plan.operations.length > 0, 'Should include scaffold operations');
-      assert.ok(
-        plan.operations.some(
-          operation =>
-            operation.sourceRelativePath === 'rules/common/agents.md' &&
-            operation.destinationPath === path.join(projectRoot, '.joycode', 'rules', 'common-agents.md') &&
-            operation.strategy === 'flatten-copy'
-        ),
-        'Should flatten shared rules into the JoyCode rules directory'
-      );
     })
   )
     passed++;
@@ -290,14 +283,13 @@ function runTests() {
   if (
     test('resolves project profiles while skipping only unsupported modules', () => {
       const projectRoot = '/workspace/app';
-      const plan = resolveInstallPlan({ profileId: 'core', target: 'joycode', projectRoot });
+      const plan = resolveInstallPlan({ profileId: 'core', target: 'claude-project', projectRoot });
 
-      assert.deepStrictEqual(plan.selectedModuleIds, ['rules-core', 'agents-core', 'commands-core', 'platform-configs', 'skill-unified-memory', 'workflow-quality']);
-      assert.ok(plan.skippedModuleIds.includes('hooks-runtime'));
-      assert.ok(!plan.skippedModuleIds.includes('platform-configs'));
-      assert.ok(!plan.skippedModuleIds.includes('workflow-quality'));
-      assert.strictEqual(plan.targetAdapterId, 'joycode-project');
-      assert.strictEqual(plan.targetRoot, path.join(projectRoot, '.joycode'));
+      assert.ok(plan.selectedModuleIds.includes('rules-core'));
+      assert.ok(plan.selectedModuleIds.includes('hooks-runtime'));
+      assert.deepStrictEqual(plan.skippedModuleIds, [], 'claude-project supports every core module');
+      assert.strictEqual(plan.targetAdapterId, 'claude-project');
+      assert.strictEqual(plan.targetRoot, path.join(projectRoot, '.claude'));
     })
   )
     passed++;
@@ -343,8 +335,8 @@ function runTests() {
   else failed++;
 
   if (
-    test('resolves machine-learning component on the JoyCode target', () => {
-      for (const target of ['joycode']) {
+    test('resolves machine-learning component on the claude-project target', () => {
+      for (const target of ['claude-project']) {
         const plan = resolveInstallPlan({
           includeComponentIds: ['capability:machine-learning'],
           target,
@@ -432,7 +424,7 @@ function runTests() {
   if (
     test('resolves rust legacy compatibility into framework-language module', () => {
       const selection = resolveLegacyCompatibilitySelection({
-        target: 'joycode',
+        target: 'claude-project',
         legacyLanguages: ['rust']
       });
 
@@ -446,7 +438,7 @@ function runTests() {
   if (
     test('resolves cpp legacy compatibility into framework-language module', () => {
       const selection = resolveLegacyCompatibilitySelection({
-        target: 'joycode',
+        target: 'claude-project',
         legacyLanguages: ['cpp']
       });
 
@@ -460,7 +452,7 @@ function runTests() {
   if (
     test('resolves c legacy compatibility into framework-language module', () => {
       const selection = resolveLegacyCompatibilitySelection({
-        target: 'joycode',
+        target: 'claude-project',
         legacyLanguages: ['c']
       });
 
@@ -474,7 +466,7 @@ function runTests() {
   if (
     test('resolves csharp legacy compatibility into framework-language module', () => {
       const selection = resolveLegacyCompatibilitySelection({
-        target: 'joycode',
+        target: 'claude-project',
         legacyLanguages: ['csharp']
       });
 
@@ -488,7 +480,7 @@ function runTests() {
   if (
     test('resolves fsharp legacy compatibility into framework-language module', () => {
       const selection = resolveLegacyCompatibilitySelection({
-        target: 'joycode',
+        target: 'claude-project',
         legacyLanguages: ['fsharp']
       });
 
@@ -502,7 +494,7 @@ function runTests() {
   if (
     test('resolves ruby and rails legacy compatibility into framework-language and security modules', () => {
       const selection = resolveLegacyCompatibilitySelection({
-        target: 'joycode',
+        target: 'claude-project',
         legacyLanguages: ['ruby', 'rails']
       });
 
@@ -522,7 +514,7 @@ function runTests() {
       assert.throws(
         () =>
           resolveLegacyCompatibilitySelection({
-            target: 'joycode',
+            target: 'claude-project',
             legacyLanguages: ['brainfuck']
           }),
         /Unknown legacy language: brainfuck/
@@ -657,7 +649,7 @@ function runTests() {
 
   if (
     test('validates projectRoot and homeDir option types before adapter planning', () => {
-      assert.throws(() => resolveInstallPlan({ profileId: 'core', target: 'joycode', projectRoot: 42 }), /projectRoot must be a non-empty string when provided/);
+      assert.throws(() => resolveInstallPlan({ profileId: 'core', target: 'claude-project', projectRoot: 42 }), /projectRoot must be a non-empty string when provided/);
       assert.throws(() => resolveInstallPlan({ profileId: 'core', target: 'claude', homeDir: {} }), /homeDir must be a non-empty string when provided/);
     })
   )
@@ -687,7 +679,7 @@ function runTests() {
               kind: 'skills',
               description: 'Child',
               paths: ['child'],
-              targets: ['joycode'],
+              targets: ['codex'],
               dependencies: [],
               defaultInstall: false,
               cost: 'light',
@@ -838,7 +830,7 @@ function runTests() {
               id: 'unsupported-paths',
               kind: 'skills',
               description: 'Unsupported',
-              paths: ['.joycode', 'skills/example'],
+              paths: ['.claude-plugin', 'skills/example'],
               targets: ['codex'],
               dependencies: [],
               defaultInstall: false,
@@ -863,7 +855,7 @@ function runTests() {
         assert.deepStrictEqual(plan.selectedModuleIds, ['unsupported-paths']);
         assert.deepStrictEqual(plan.skippedModuleIds, []);
         assert.ok(
-          plan.operations.every(operation => operation.sourceRelativePath !== '.joycode'),
+          plan.operations.every(operation => operation.sourceRelativePath !== '.claude-plugin'),
           'Unsupported platform paths should be filtered from planned operations'
         );
         assert.ok(

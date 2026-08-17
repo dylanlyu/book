@@ -67,12 +67,12 @@ function stateOperationFrom(operation) {
 }
 
 function managedPlan(root, operations, owned = []) {
-  const installStatePath = path.join(root, '.joycode', 'ecc-install-state.json');
+  const installStatePath = path.join(root, '.managed-example', 'ecc-install-state.json');
   const plan = {
-    adapter: { id: 'joycode-project', target: 'joycode', kind: 'project' },
+    adapter: { id: 'managed-example-project', target: 'managed-example', kind: 'project' },
     installStatePath,
     operations,
-    target: 'joycode',
+    target: 'managed-example',
     targetRoot: root,
   };
   plan.statePreview = createInstallState({
@@ -388,7 +388,7 @@ function writeManagedState(plan, overrides = {}) {
   await test('rejects an unwritable managed destination during preflight', () => {
     const root = tempDir('ecc-guided-unwritable-');
     try {
-      const destination = path.join(root, '.joycode', 'rules', 'security.md');
+      const destination = path.join(root, '.managed-example', 'rules', 'security.md');
       const accessChecks = [];
       const accessError = new Error('permission denied');
       accessError.code = 'EACCES';
@@ -428,12 +428,12 @@ function writeManagedState(plan, overrides = {}) {
         () => preflightManagedPlan(managedPlan(projectRoot, [
           {
             kind: 'copy-file',
-            destinationPath: path.join(projectRoot, '.joycode', 'rules', 'security.md'),
+            destinationPath: path.join(projectRoot, '.managed-example', 'rules', 'security.md'),
           },
         ])),
         /Managed install destination is not writable by the current user/i
       );
-      assert.strictEqual(fs.existsSync(path.join(projectRoot, '.joycode')), false);
+      assert.strictEqual(fs.existsSync(path.join(projectRoot, '.managed-example')), false);
     } finally {
       fs.chmodSync(projectRoot, 0o755);
       fs.rmSync(root, { recursive: true, force: true });
@@ -464,14 +464,14 @@ function writeManagedState(plan, overrides = {}) {
     const root = tempDir('ecc-guided-late-copy-collision-');
     try {
       const source = path.join(root, 'source.md');
-      const destination = path.join(root, '.joycode', 'rules', 'security.md');
+      const destination = path.join(root, '.managed-example', 'rules', 'security.md');
       writeFile(source, 'ecc\n');
       const plan = managedPlan(root, [stateOperation(destination, { sourcePath: source })]);
       const preview = preflightManagedPlan(plan);
 
       const result = await applyMultiHarnessPlan({
-        harnesses: [{ id: 'joycode', preview }],
-        request: { harnesses: ['joycode'] },
+        harnesses: [{ id: 'managed-example', preview }],
+        request: { harnesses: ['managed-example'] },
       }, {
         preflightManaged(candidatePlan) {
           const latestPreview = preflightManagedPlan(candidatePlan);
@@ -482,7 +482,7 @@ function writeManagedState(plan, overrides = {}) {
 
       assert.strictEqual(result.status, 'failed');
       assert.match(result.failure.message, /unowned existing file/i);
-      assert.deepStrictEqual(result.retryHarnesses, ['joycode']);
+      assert.deepStrictEqual(result.retryHarnesses, ['managed-example']);
       assert.strictEqual(fs.readFileSync(destination, 'utf8'), 'user\n');
     } finally {
       fs.rmSync(root, { recursive: true, force: true });
@@ -493,14 +493,14 @@ function writeManagedState(plan, overrides = {}) {
     const root = tempDir('ecc-guided-late-identical-copy-');
     try {
       const source = path.join(root, 'source.md');
-      const destination = path.join(root, '.joycode', 'rules', 'security.md');
+      const destination = path.join(root, '.managed-example', 'rules', 'security.md');
       writeFile(source, 'ecc\n');
       const plan = managedPlan(root, [stateOperation(destination, { sourcePath: source })]);
       const preview = preflightManagedPlan(plan);
 
       const result = await applyMultiHarnessPlan({
-        harnesses: [{ id: 'joycode', preview }],
-        request: { harnesses: ['joycode'] },
+        harnesses: [{ id: 'managed-example', preview }],
+        request: { harnesses: ['managed-example'] },
       }, {
         preflightManaged(candidatePlan) {
           const latestPreview = preflightManagedPlan(candidatePlan);
@@ -511,7 +511,7 @@ function writeManagedState(plan, overrides = {}) {
 
       assert.strictEqual(result.status, 'failed');
       assert.match(result.failure.message, /destination changed after managed preflight/i);
-      assert.deepStrictEqual(result.retryHarnesses, ['joycode']);
+      assert.deepStrictEqual(result.retryHarnesses, ['managed-example']);
       assert.strictEqual(fs.readFileSync(destination, 'utf8'), 'ecc\n');
     } finally {
       fs.rmSync(root, { recursive: true, force: true });
@@ -521,7 +521,7 @@ function writeManagedState(plan, overrides = {}) {
   await test('refuses conflicting JSON created after preview but before apply', async () => {
     const root = tempDir('ecc-guided-late-json-collision-');
     try {
-      const destination = path.join(root, '.joycode', 'mcp.json');
+      const destination = path.join(root, '.managed-example', 'mcp.json');
       const operation = stateOperation(destination, {
         kind: 'merge-json',
         mergePayload: { mcpServers: { github: { command: 'ecc-server' } } },
@@ -532,8 +532,8 @@ function writeManagedState(plan, overrides = {}) {
       const preview = preflightManagedPlan(plan);
 
       const result = await applyMultiHarnessPlan({
-        harnesses: [{ id: 'joycode', preview }],
-        request: { harnesses: ['joycode'] },
+        harnesses: [{ id: 'managed-example', preview }],
+        request: { harnesses: ['managed-example'] },
       }, {
         preflightManaged(candidatePlan) {
           const latestPreview = preflightManagedPlan(candidatePlan);
@@ -546,7 +546,7 @@ function writeManagedState(plan, overrides = {}) {
 
       assert.strictEqual(result.status, 'failed');
       assert.match(result.failure.message, /unowned JSON.*mcpServers\.github\.command/i);
-      assert.deepStrictEqual(result.retryHarnesses, ['joycode']);
+      assert.deepStrictEqual(result.retryHarnesses, ['managed-example']);
       assert.deepStrictEqual(JSON.parse(fs.readFileSync(destination, 'utf8')), {
         mcpServers: { github: { command: 'user-server' } },
       });
@@ -559,15 +559,15 @@ function writeManagedState(plan, overrides = {}) {
     const root = tempDir('ecc-guided-late-state-collision-');
     try {
       const source = path.join(root, 'source.md');
-      const destination = path.join(root, '.joycode', 'rules', 'security.md');
+      const destination = path.join(root, '.managed-example', 'rules', 'security.md');
       writeFile(source, 'ecc\n');
       const plan = managedPlan(root, [stateOperation(destination, { sourcePath: source })]);
       const preview = preflightManagedPlan(plan);
       const unexpectedState = '{"user":"owned"}\n';
 
       const result = await applyMultiHarnessPlan({
-        harnesses: [{ id: 'joycode', preview }],
-        request: { harnesses: ['joycode'] },
+        harnesses: [{ id: 'managed-example', preview }],
+        request: { harnesses: ['managed-example'] },
       }, {
         preflightManaged(candidatePlan) {
           const latestPreview = preflightManagedPlan(candidatePlan);
@@ -578,7 +578,7 @@ function writeManagedState(plan, overrides = {}) {
 
       assert.strictEqual(result.status, 'failed');
       assert.match(result.failure.message, /unowned or changed install-state/i);
-      assert.deepStrictEqual(result.retryHarnesses, ['joycode']);
+      assert.deepStrictEqual(result.retryHarnesses, ['managed-example']);
       assert.strictEqual(fs.existsSync(destination), false);
       assert.strictEqual(fs.readFileSync(plan.installStatePath, 'utf8'), unexpectedState);
     } finally {
@@ -591,21 +591,21 @@ function writeManagedState(plan, overrides = {}) {
       harnesses: [
         { id: 'claude', preview: {} },
         { id: 'codex', preview: {} },
-        { id: 'joycode', preview: {} },
+        { id: 'managed-example', preview: {} },
       ],
-      request: { harnesses: ['claude', 'codex', 'joycode'] },
+      request: { harnesses: ['claude', 'codex', 'managed-example'] },
     };
     const events = [];
     const result = await applyMultiHarnessPlan(plan, {
       applyClaude: async () => { events.push('claude'); return { action: 'installed' }; },
       applyCodex: async () => { events.push('codex'); throw new Error('verification failed'); },
-      applyManaged: async () => { events.push('joycode'); return { applied: true }; },
+      applyManaged: async () => { events.push('managed-example'); return { applied: true }; },
     });
     assert.deepStrictEqual(events, ['claude', 'codex']);
     assert.strictEqual(result.status, 'partial');
     assert.deepStrictEqual(result.completed.map(item => item.id), ['claude']);
     assert.strictEqual(result.failure.id, 'codex');
-    assert.deepStrictEqual(result.retryHarnesses, ['codex', 'joycode']);
+    assert.deepStrictEqual(result.retryHarnesses, ['codex', 'managed-example']);
   });
 
   await test('a late managed permission failure retries only that harness', async () => {
@@ -613,26 +613,26 @@ function writeManagedState(plan, overrides = {}) {
       harnesses: [
         { id: 'claude', preview: {} },
         { id: 'codex', preview: {} },
-        { id: 'joycode', preview: {} },
+        { id: 'managed-example', preview: {} },
       ],
-      request: { harnesses: ['claude', 'codex', 'joycode'] },
+      request: { harnesses: ['claude', 'codex', 'managed-example'] },
     };
     const events = [];
     const result = await applyMultiHarnessPlan(plan, {
       applyClaude: async () => { events.push('claude'); return { action: 'installed' }; },
       applyCodex: async () => { events.push('codex'); return { action: 'installed' }; },
       applyManaged: async () => {
-        events.push('joycode');
+        events.push('managed-example');
         const error = new Error('permission denied');
         error.code = 'EACCES';
         throw error;
       },
     });
-    assert.deepStrictEqual(events, ['claude', 'codex', 'joycode']);
+    assert.deepStrictEqual(events, ['claude', 'codex', 'managed-example']);
     assert.strictEqual(result.status, 'partial');
     assert.deepStrictEqual(result.completed.map(item => item.id), ['claude', 'codex']);
-    assert.strictEqual(result.failure.id, 'joycode');
-    assert.deepStrictEqual(result.retryHarnesses, ['joycode']);
+    assert.strictEqual(result.failure.id, 'managed-example');
+    assert.deepStrictEqual(result.retryHarnesses, ['managed-example']);
   });
 
   console.log(`\nResults: Passed: ${passed}, Failed: ${failed}`);

@@ -236,8 +236,8 @@ function main() {
       assert.ok(localModelPath.includes('assets/images/sponsors/ito-transparent.png'));
       assert.ok(localModelPath.includes('assets/images/sponsors/moonshot.png'));
       assert.ok(localModelPath.includes('assets/images/community/ecc-tools-mark.svg'));
-      assert.match(readme, /install\.sh --target joycode --profile minimal/);
-      assert.match(readme, /npx ecc-universal doctor --target joycode/);
+      assert.match(readme, /install\.sh --target claude-project --profile minimal/);
+      assert.match(readme, /npx ecc-universal doctor --target claude-project/);
       assertHonestComputeCopy(readme);
     }],
     ['sponsor roster keeps Itô and Moonshot distinct from node tooling', () => {

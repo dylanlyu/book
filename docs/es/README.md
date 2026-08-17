@@ -431,7 +431,7 @@ python3 ./ecc_dashboard.py
 
 ## Soporte Multiplataforma
 
-Este plugin ahora es totalmente compatible con **Windows, macOS y Linux**, junto con una integración estrecha en los principales IDEs (Antigravity, JoyCode) y harnesses de CLI. Todos los hooks y scripts han sido reescritos en Node.js para máxima compatibilidad.
+Este plugin ahora es totalmente compatible con **Windows, macOS y Linux**, junto con una integración estrecha en los principales IDEs (Antigravity) y harnesses de CLI. Todos los hooks y scripts han sido reescritos en Node.js para máxima compatibilidad.
 
 ### Detección del Gestor de Paquetes
 
@@ -1006,7 +1006,6 @@ Cada componente es completamente independiente.
 Sí. ECC es multiplataforma:
 - **Codex**: Soporte de primera clase para la app macOS y CLI, con guardias de deriva del adaptador y fallback de SessionStart. Consulta PR [#257](https://github.com/affaan-m/ECC/pull/257).
 - **GitHub Copilot (VS Code)**: Capa de instrucciones y prompts mediante `.github/copilot-instructions.md`, `.vscode/settings.json` y `.github/prompts/`. Consulta [Soporte para GitHub Copilot](#soporte-para-github-copilot).
-- **JoyCode**: Adaptador de instalación selectiva local al proyecto para comandos, agentes, skills y reglas aplanadas. Consulta la [Guía del Adaptador JoyCode](../JOYCODE-GUIDE.md).
 - **Harnesses no nativos**: Ruta de respaldo manual para Grok e interfaces similares. Consulta la [Guía de Adaptación Manual](../MANUAL-ADAPTATION-GUIDE.md).
 - **Claude Code**: Nativo — este es el objetivo principal.
 </details>

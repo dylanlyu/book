@@ -4,7 +4,7 @@ const path = require('path');
 const { getInstallTargetAdapter, planInstallTargetScaffold } = require('./install-targets/registry');
 
 const DEFAULT_REPO_ROOT = path.join(__dirname, '../..');
-const SUPPORTED_INSTALL_TARGETS = ['claude', 'claude-project', 'codex', 'joycode'];
+const SUPPORTED_INSTALL_TARGETS = ['claude', 'claude-project', 'codex'];
 const COMPONENT_FAMILY_PREFIXES = {
   baseline: 'baseline:',
   language: 'lang:',
@@ -37,22 +37,8 @@ function listSupportedLocales() {
   return [...SUPPORTED_LOCALES];
 }
 const LEGACY_COMPAT_BASE_MODULE_IDS_BY_TARGET = Object.freeze({
-  claude: [
-    'rules-core',
-    'agents-core',
-    'commands-core',
-    'hooks-runtime',
-    'platform-configs',
-    'workflow-quality',
-  ],
-  'claude-project': [
-    'rules-core',
-    'agents-core',
-    'commands-core',
-    'hooks-runtime',
-    'platform-configs',
-    'workflow-quality',
-  ],
+  claude: ['rules-core', 'agents-core', 'commands-core', 'hooks-runtime', 'platform-configs', 'workflow-quality'],
+  'claude-project': ['rules-core', 'agents-core', 'commands-core', 'hooks-runtime', 'platform-configs', 'workflow-quality']
 });
 const LEGACY_LANGUAGE_ALIAS_TO_CANONICAL = Object.freeze({
   c: 'c',
@@ -400,21 +386,16 @@ function resolveLegacyCompatibilitySelection(options = {}) {
     throw new Error(`Unknown legacy languages: ${unknownLegacyLanguages.join(', ')}. Expected one of ${listLegacyCompatibilityLanguages().join(', ')}`);
   }
 
-  const canonicalLegacyLanguages = normalizedLegacyLanguages
-    .map(language => LEGACY_LANGUAGE_ALIAS_TO_CANONICAL[language]);
-  const baseModuleIds = LEGACY_COMPAT_BASE_MODULE_IDS_BY_TARGET[target || 'claude']
-    || LEGACY_COMPAT_BASE_MODULE_IDS_BY_TARGET.claude;
-  const moduleIds = dedupeStrings([
-    ...baseModuleIds,
-    ...canonicalLegacyLanguages.flatMap(language => LEGACY_LANGUAGE_EXTRA_MODULE_IDS[language] || []),
-  ]);
+  const canonicalLegacyLanguages = normalizedLegacyLanguages.map(language => LEGACY_LANGUAGE_ALIAS_TO_CANONICAL[language]);
+  const baseModuleIds = LEGACY_COMPAT_BASE_MODULE_IDS_BY_TARGET[target || 'claude'] || LEGACY_COMPAT_BASE_MODULE_IDS_BY_TARGET.claude;
+  const moduleIds = dedupeStrings([...baseModuleIds, ...canonicalLegacyLanguages.flatMap(language => LEGACY_LANGUAGE_EXTRA_MODULE_IDS[language] || [])]);
 
   assertKnownModuleIds(moduleIds, manifests);
 
   return {
     legacyLanguages: normalizedLegacyLanguages,
     canonicalLegacyLanguages,
-    moduleIds,
+    moduleIds
   };
 }
 

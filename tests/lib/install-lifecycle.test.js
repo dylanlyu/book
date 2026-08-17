@@ -42,11 +42,11 @@ function writeState(filePath, options) {
 }
 
 function createCursorStateOptions(projectRoot, overrides = {}) {
-  const targetRoot = overrides.targetRoot || path.join(projectRoot, '.joycode');
-  const installStatePath = overrides.installStatePath || path.join(targetRoot, 'ecc-install-state.json');
+  const targetRoot = overrides.targetRoot || path.join(projectRoot, '.claude');
+  const installStatePath = overrides.installStatePath || path.join(targetRoot, 'ecc', 'install-state.json');
 
   return {
-    adapter: { id: 'joycode-project', target: 'joycode', kind: 'project' },
+    adapter: { id: 'claude-project', target: 'claude-project', kind: 'project' },
     targetRoot,
     installStatePath,
     request: {
@@ -59,7 +59,7 @@ function createCursorStateOptions(projectRoot, overrides = {}) {
       ...(overrides.request || {})
     },
     resolution: {
-      selectedModules: ['legacy-joycode-install'],
+      selectedModules: ['legacy-claude-project-install'],
       skippedModules: [],
       ...(overrides.resolution || {})
     },
@@ -146,9 +146,9 @@ function runTests() {
       const defaultTargets = normalizeTargets();
 
       assert.ok(defaultTargets.includes('claude'));
-      assert.ok(defaultTargets.includes('joycode'));
+      assert.ok(defaultTargets.includes('claude-project'));
       assert.ok(defaultTargets.includes('codex'));
-      assert.deepStrictEqual(normalizeTargets(['joycode-project', 'joycode', 'claude-home', 'claude']), ['joycode', 'claude']);
+      assert.deepStrictEqual(normalizeTargets(['claude-project', 'claude-project', 'claude-home', 'claude']), ['claude-project', 'claude']);
     })
   )
     passed++;
@@ -161,7 +161,7 @@ function runTests() {
 
       try {
         const claudeStatePath = path.join(homeDir, '.claude', 'ecc', 'install-state.json');
-        const cursorStatePath = path.join(projectRoot, '.joycode', 'ecc-install-state.json');
+        const cursorStatePath = path.join(projectRoot, '.claude', 'ecc', 'install-state.json');
 
         writeState(claudeStatePath, {
           adapter: { id: 'claude-home', target: 'claude', kind: 'home' },
@@ -186,8 +186,8 @@ function runTests() {
         });
 
         writeState(cursorStatePath, {
-          adapter: { id: 'joycode-project', target: 'joycode', kind: 'project' },
-          targetRoot: path.join(projectRoot, '.joycode'),
+          adapter: { id: 'claude-project', target: 'claude-project', kind: 'project' },
+          targetRoot: path.join(projectRoot, '.claude'),
           installStatePath: cursorStatePath,
           request: {
             profile: 'core',
@@ -210,14 +210,14 @@ function runTests() {
         const records = discoverInstalledStates({
           homeDir,
           projectRoot,
-          targets: ['claude', 'joycode']
+          targets: ['claude', 'claude-project']
         });
 
         assert.strictEqual(records.length, 2);
         assert.strictEqual(records[0].exists, true);
         assert.strictEqual(records[1].exists, true);
         assert.strictEqual(records[0].state.target.id, 'claude-home');
-        assert.strictEqual(records[1].state.target.id, 'joycode-project');
+        assert.strictEqual(records[1].state.target.id, 'claude-project');
       } finally {
         cleanup(homeDir);
         cleanup(projectRoot);
@@ -236,7 +236,7 @@ function runTests() {
         let records = discoverInstalledStates({
           homeDir,
           projectRoot,
-          targets: ['joycode']
+          targets: ['claude-project']
         });
 
         assert.strictEqual(records.length, 1);
@@ -244,15 +244,15 @@ function runTests() {
         assert.strictEqual(records[0].state, null);
         assert.strictEqual(records[0].error, null);
 
-        const targetRoot = path.join(projectRoot, '.joycode');
-        const statePath = path.join(targetRoot, 'ecc-install-state.json');
-        fs.mkdirSync(targetRoot, { recursive: true });
+        const targetRoot = path.join(projectRoot, '.claude');
+        const statePath = path.join(targetRoot, 'ecc', 'install-state.json');
+        fs.mkdirSync(path.dirname(statePath), { recursive: true });
         fs.writeFileSync(statePath, '{not-json', 'utf8');
 
         records = discoverInstalledStates({
           homeDir,
           projectRoot,
-          targets: ['joycode']
+          targets: ['claude-project']
         });
 
         assert.strictEqual(records[0].exists, true);
@@ -273,12 +273,12 @@ function runTests() {
       const projectRoot = createTempDir('install-lifecycle-project-');
 
       try {
-        const targetRoot = path.join(projectRoot, '.joycode');
-        const statePath = path.join(targetRoot, 'ecc-install-state.json');
+        const targetRoot = path.join(projectRoot, '.claude');
+        const statePath = path.join(targetRoot, 'ecc', 'install-state.json');
         fs.mkdirSync(targetRoot, { recursive: true });
 
         writeState(statePath, {
-          adapter: { id: 'joycode-project', target: 'joycode', kind: 'project' },
+          adapter: { id: 'claude-project', target: 'claude-project', kind: 'project' },
           targetRoot,
           installStatePath: statePath,
           request: {
@@ -295,7 +295,7 @@ function runTests() {
             {
               kind: 'copy-file',
               moduleId: 'platform-configs',
-              sourceRelativePath: '.joycode/hooks.json',
+              sourceRelativePath: '.claude/hooks.json',
               destinationPath: path.join(targetRoot, 'hooks.json'),
               strategy: 'sync-root-children',
               ownership: 'managed',
@@ -313,7 +313,7 @@ function runTests() {
           repoRoot: REPO_ROOT,
           homeDir,
           projectRoot,
-          targets: ['joycode']
+          targets: ['claude-project']
         });
 
         assert.strictEqual(report.results.length, 1);
@@ -334,9 +334,9 @@ function runTests() {
       const projectRoot = createTempDir('install-lifecycle-project-');
 
       try {
-        const actualTargetRoot = path.join(projectRoot, '.joycode');
-        const actualStatePath = path.join(actualTargetRoot, 'ecc-install-state.json');
-        const recordedTargetRoot = path.join(projectRoot, '.old-joycode');
+        const actualTargetRoot = path.join(projectRoot, '.claude');
+        const actualStatePath = path.join(actualTargetRoot, 'ecc', 'install-state.json');
+        const recordedTargetRoot = path.join(projectRoot, '.old-claude-project');
         const recordedStatePath = path.join(recordedTargetRoot, 'state.json');
         const copyDestination = path.join(actualTargetRoot, 'rules', 'missing-source.md');
         const customDestination = path.join(actualTargetRoot, 'custom.txt');
@@ -377,7 +377,7 @@ function runTests() {
           repoRoot: REPO_ROOT,
           homeDir,
           projectRoot,
-          targets: ['joycode']
+          targets: ['claude-project']
         });
         const codes = report.results[0].issues.map(issue => issue.code);
 
@@ -408,7 +408,7 @@ function runTests() {
       const projectRoot = createTempDir('install-lifecycle-project-');
 
       try {
-        const targetRoot = path.join(projectRoot, '.joycode');
+        const targetRoot = path.join(projectRoot, '.claude');
         const templatePath = path.join(targetRoot, 'generated.txt');
         const jsonPath = path.join(targetRoot, 'settings.json');
         fs.mkdirSync(targetRoot, { recursive: true });
@@ -447,7 +447,7 @@ function runTests() {
           repoRoot: REPO_ROOT,
           homeDir,
           projectRoot,
-          targets: ['joycode']
+          targets: ['claude-project']
         });
 
         assert.strictEqual(report.results[0].status, 'ok');
@@ -467,7 +467,7 @@ function runTests() {
       const projectRoot = createTempDir('install-lifecycle-project-');
 
       try {
-        const targetRoot = path.join(projectRoot, '.joycode');
+        const targetRoot = path.join(projectRoot, '.claude');
         const templatePath = path.join(targetRoot, 'template.txt');
         const missingPayloadJsonPath = path.join(targetRoot, 'missing-payload.json');
         const invalidJsonPath = path.join(targetRoot, 'invalid.json');
@@ -492,7 +492,7 @@ function runTests() {
           repoRoot: REPO_ROOT,
           homeDir,
           projectRoot,
-          targets: ['joycode']
+          targets: ['claude-project']
         });
         const codes = report.results[0].issues.map(issue => issue.code);
 
@@ -515,7 +515,7 @@ function runTests() {
       const projectRoot = createTempDir('install-lifecycle-project-');
 
       try {
-        const statePath = path.join(projectRoot, '.joycode', 'ecc-install-state.json');
+        const statePath = path.join(projectRoot, '.claude', 'ecc', 'install-state.json');
         fs.mkdirSync(path.dirname(statePath), { recursive: true });
         fs.writeFileSync(statePath, '{"schemaVersion":"wrong"}\n');
 
@@ -523,7 +523,7 @@ function runTests() {
           repoRoot: REPO_ROOT,
           homeDir,
           projectRoot,
-          targets: ['joycode']
+          targets: ['claude-project']
         });
 
         assert.strictEqual(report.results[0].status, 'error');
@@ -607,7 +607,7 @@ function runTests() {
       const projectRoot = createTempDir('install-lifecycle-project-');
 
       try {
-        const targetRoot = path.join(projectRoot, '.joycode');
+        const targetRoot = path.join(projectRoot, '.claude');
         const destinationPath = path.join(targetRoot, 'rules', 'coding-style.md');
         writeCursorState(projectRoot, {
           operations: [
@@ -622,7 +622,7 @@ function runTests() {
           repoRoot: REPO_ROOT,
           homeDir,
           projectRoot,
-          targets: ['joycode'],
+          targets: ['claude-project'],
           dryRun: true
         });
 
@@ -806,7 +806,7 @@ function runTests() {
       const projectRoot = createTempDir('install-lifecycle-project-');
 
       try {
-        const targetRoot = path.join(projectRoot, '.joycode');
+        const targetRoot = path.join(projectRoot, '.claude');
         const destinationPath = path.join(targetRoot, 'rules', 'coding-style.md');
         const sourcePath = path.join(REPO_ROOT, 'rules', 'common', 'coding-style.md');
         writeCursorState(projectRoot, {
@@ -822,7 +822,7 @@ function runTests() {
           repoRoot: REPO_ROOT,
           homeDir,
           projectRoot,
-          targets: ['joycode']
+          targets: ['claude-project']
         });
 
         assert.strictEqual(result.results[0].status, 'repaired');
@@ -844,7 +844,7 @@ function runTests() {
       const originalStatSync = fs.statSync;
 
       try {
-        const targetRoot = path.join(projectRoot, '.joycode');
+        const targetRoot = path.join(projectRoot, '.claude');
         const destinationPath = path.join(targetRoot, 'rules', 'coding-style.md');
         writeCursorState(projectRoot, {
           operations: [
@@ -866,7 +866,7 @@ function runTests() {
           repoRoot: REPO_ROOT,
           homeDir,
           projectRoot,
-          targets: ['joycode']
+          targets: ['claude-project']
         });
 
         assert.strictEqual(result.results[0].status, 'repaired');
@@ -890,7 +890,7 @@ function runTests() {
       const okProjectRoot = createTempDir('install-lifecycle-ok-');
 
       try {
-        const invalidStatePath = path.join(invalidProjectRoot, '.joycode', 'ecc-install-state.json');
+        const invalidStatePath = path.join(invalidProjectRoot, '.claude', 'ecc', 'install-state.json');
         fs.mkdirSync(path.dirname(invalidStatePath), { recursive: true });
         fs.writeFileSync(invalidStatePath, '{"schemaVersion":"wrong"}\n');
 
@@ -898,12 +898,12 @@ function runTests() {
           repoRoot: REPO_ROOT,
           homeDir,
           projectRoot: invalidProjectRoot,
-          targets: ['joycode']
+          targets: ['claude-project']
         });
         assert.strictEqual(result.results[0].status, 'error');
         assert.ok(result.results[0].error.includes('Invalid install-state'));
 
-        const missingDestination = path.join(missingSourceProjectRoot, '.joycode', 'rules', 'missing.md');
+        const missingDestination = path.join(missingSourceProjectRoot, '.claude', 'rules', 'missing.md');
         fs.mkdirSync(path.dirname(missingDestination), { recursive: true });
         fs.writeFileSync(missingDestination, 'managed\n');
         writeCursorState(missingSourceProjectRoot, {
@@ -918,12 +918,12 @@ function runTests() {
           repoRoot: REPO_ROOT,
           homeDir,
           projectRoot: missingSourceProjectRoot,
-          targets: ['joycode']
+          targets: ['claude-project']
         });
         assert.strictEqual(result.results[0].status, 'error');
         assert.ok(result.results[0].error.includes('Missing source file(s)'));
 
-        const unsupportedDestination = path.join(unsupportedProjectRoot, '.joycode', 'custom.txt');
+        const unsupportedDestination = path.join(unsupportedProjectRoot, '.claude', 'custom.txt');
         writeCursorState(unsupportedProjectRoot, {
           operations: [managedOperation('custom-kind', unsupportedDestination)]
         });
@@ -931,7 +931,7 @@ function runTests() {
           repoRoot: REPO_ROOT,
           homeDir,
           projectRoot: unsupportedProjectRoot,
-          targets: ['joycode']
+          targets: ['claude-project']
         });
         assert.strictEqual(result.results[0].status, 'error');
         assert.ok(result.results[0].error.includes('Unsupported repair operation kind'));
@@ -941,7 +941,7 @@ function runTests() {
           repoRoot: REPO_ROOT,
           homeDir,
           projectRoot: okProjectRoot,
-          targets: ['joycode']
+          targets: ['claude-project']
         });
         assert.strictEqual(result.results[0].status, 'ok');
         assert.strictEqual(result.results[0].stateRefreshed, true);
@@ -970,7 +970,7 @@ function runTests() {
           repoRoot: REPO_ROOT,
           homeDir,
           projectRoot,
-          targets: ['joycode'],
+          targets: ['claude-project'],
           dryRun: true
         });
 
@@ -1020,7 +1020,7 @@ function runTests() {
       const projectRoot = createTempDir('install-lifecycle-project-');
 
       try {
-        const destinationPath = path.join(projectRoot, '.joycode', 'rules', 'missing.md');
+        const destinationPath = path.join(projectRoot, '.claude', 'rules', 'missing.md');
         writeCursorState(projectRoot, {
           operations: [
             managedOperation('copy-file', destinationPath, {
@@ -1034,7 +1034,7 @@ function runTests() {
           repoRoot: REPO_ROOT,
           homeDir,
           projectRoot,
-          targets: ['joycode']
+          targets: ['claude-project']
         });
 
         assert.strictEqual(result.results[0].status, 'error');
@@ -1061,7 +1061,7 @@ function runTests() {
         for (const sourceRelativePath of unsafeSources) {
           const projectRoot = createTempDir('install-lifecycle-project-');
           try {
-            const destinationPath = path.join(projectRoot, '.joycode', 'copied-secret.txt');
+            const destinationPath = path.join(projectRoot, '.claude', 'copied-secret.txt');
             writeCursorState(projectRoot, {
               operations: [
                 managedOperation('copy-file', destinationPath, {
@@ -1075,13 +1075,13 @@ function runTests() {
               repoRoot: REPO_ROOT,
               homeDir,
               projectRoot,
-              targets: ['joycode']
+              targets: ['claude-project']
             });
             const result = repairInstalledStates({
               repoRoot: REPO_ROOT,
               homeDir,
               projectRoot,
-              targets: ['joycode']
+              targets: ['claude-project']
             });
 
             assert.strictEqual(doctor.results[0].status, 'error');
@@ -1164,13 +1164,13 @@ function runTests() {
               repoRoot: REPO_ROOT,
               homeDir,
               projectRoot,
-              targets: ['joycode']
+              targets: ['claude-project']
             });
             const repair = repairInstalledStates({
               repoRoot: REPO_ROOT,
               homeDir,
               projectRoot,
-              targets: ['joycode']
+              targets: ['claude-project']
             });
 
             assert.strictEqual(doctor.results[0].status, 'error');
@@ -1198,15 +1198,15 @@ function runTests() {
       const projectRoot = createTempDir('install-lifecycle-project-');
 
       try {
-        const targetRoot = path.join(projectRoot, '.joycode');
-        const statePath = path.join(targetRoot, 'ecc-install-state.json');
+        const targetRoot = path.join(projectRoot, '.claude');
+        const statePath = path.join(targetRoot, 'ecc', 'install-state.json');
         const sourcePath = path.join(REPO_ROOT, '.codex', 'AGENTS.md');
         const destinationPath = path.join(targetRoot, 'settings.json');
         fs.mkdirSync(path.dirname(destinationPath), { recursive: true });
         fs.writeFileSync(destinationPath, '{"drifted":true}\n');
 
         writeState(statePath, {
-          adapter: { id: 'joycode-project', target: 'joycode', kind: 'project' },
+          adapter: { id: 'claude-project', target: 'claude-project', kind: 'project' },
           targetRoot,
           installStatePath: statePath,
           request: {
@@ -1242,7 +1242,7 @@ function runTests() {
           repoRoot: REPO_ROOT,
           homeDir,
           projectRoot,
-          targets: ['joycode']
+          targets: ['claude-project']
         });
 
         assert.strictEqual(report.results.length, 1);
@@ -1263,12 +1263,12 @@ function runTests() {
       const projectRoot = createTempDir('install-lifecycle-project-');
 
       try {
-        const targetRoot = path.join(projectRoot, '.joycode');
-        const statePath = path.join(targetRoot, 'ecc-install-state.json');
+        const targetRoot = path.join(projectRoot, '.claude');
+        const statePath = path.join(targetRoot, 'ecc', 'install-state.json');
         fs.mkdirSync(targetRoot, { recursive: true });
 
         writeState(statePath, {
-          adapter: { id: 'joycode-project', target: 'joycode', kind: 'project' },
+          adapter: { id: 'claude-project', target: 'claude-project', kind: 'project' },
           targetRoot,
           installStatePath: statePath,
           request: {
@@ -1293,7 +1293,7 @@ function runTests() {
           repoRoot: REPO_ROOT,
           homeDir,
           projectRoot,
-          targets: ['joycode']
+          targets: ['claude-project']
         });
 
         assert.strictEqual(report.results.length, 1);
@@ -1377,8 +1377,8 @@ function runTests() {
       const projectRoot = createTempDir('install-lifecycle-project-');
 
       try {
-        const targetRoot = path.join(projectRoot, '.joycode');
-        const statePath = path.join(targetRoot, 'ecc-install-state.json');
+        const targetRoot = path.join(projectRoot, '.claude');
+        const statePath = path.join(targetRoot, 'ecc', 'install-state.json');
         const destinationPath = path.join(targetRoot, 'hooks.json');
         fs.mkdirSync(path.dirname(destinationPath), { recursive: true });
         fs.writeFileSync(
@@ -1396,7 +1396,7 @@ function runTests() {
         );
 
         writeState(statePath, {
-          adapter: { id: 'joycode-project', target: 'joycode', kind: 'project' },
+          adapter: { id: 'claude-project', target: 'claude-project', kind: 'project' },
           targetRoot,
           installStatePath: statePath,
           request: {
@@ -1406,14 +1406,14 @@ function runTests() {
             legacyMode: true
           },
           resolution: {
-            selectedModules: ['legacy-joycode-install'],
+            selectedModules: ['legacy-claude-project-install'],
             skippedModules: []
           },
           operations: [
             {
               kind: 'merge-json',
               moduleId: 'platform-configs',
-              sourceRelativePath: '.joycode/hooks.json',
+              sourceRelativePath: '.claude/hooks.json',
               destinationPath,
               strategy: 'merge-json',
               ownership: 'managed',
@@ -1437,7 +1437,7 @@ function runTests() {
           repoRoot: REPO_ROOT,
           homeDir,
           projectRoot,
-          targets: ['joycode']
+          targets: ['claude-project']
         });
 
         assert.strictEqual(result.results[0].status, 'repaired');
@@ -1463,14 +1463,14 @@ function runTests() {
       const projectRoot = createTempDir('install-lifecycle-project-');
 
       try {
-        const targetRoot = path.join(projectRoot, '.joycode');
-        const statePath = path.join(targetRoot, 'ecc-install-state.json');
+        const targetRoot = path.join(projectRoot, '.claude');
+        const statePath = path.join(targetRoot, 'ecc', 'install-state.json');
         const destinationPath = path.join(targetRoot, 'legacy-note.txt');
         fs.mkdirSync(path.dirname(destinationPath), { recursive: true });
         fs.writeFileSync(destinationPath, 'stale');
 
         writeState(statePath, {
-          adapter: { id: 'joycode-project', target: 'joycode', kind: 'project' },
+          adapter: { id: 'claude-project', target: 'claude-project', kind: 'project' },
           targetRoot,
           installStatePath: statePath,
           request: {
@@ -1480,14 +1480,14 @@ function runTests() {
             legacyMode: true
           },
           resolution: {
-            selectedModules: ['legacy-joycode-install'],
+            selectedModules: ['legacy-claude-project-install'],
             skippedModules: []
           },
           operations: [
             {
               kind: 'remove',
               moduleId: 'platform-configs',
-              sourceRelativePath: '.joycode/legacy-note.txt',
+              sourceRelativePath: '.claude/legacy-note.txt',
               destinationPath,
               strategy: 'remove',
               ownership: 'managed',
@@ -1505,7 +1505,7 @@ function runTests() {
           repoRoot: REPO_ROOT,
           homeDir,
           projectRoot,
-          targets: ['joycode']
+          targets: ['claude-project']
         });
 
         assert.strictEqual(result.results[0].status, 'repaired');
@@ -1524,7 +1524,7 @@ function runTests() {
       const homeDir = createTempDir('install-lifecycle-home-');
       const projectRoot = createTempDir('install-lifecycle-project-');
       const outsideRoot = createTempDir('install-lifecycle-outside-');
-      const targetRoot = path.join(projectRoot, '.joycode');
+      const targetRoot = path.join(projectRoot, '.claude');
       const destinationParent = path.join(targetRoot, 'late-parent');
       const destinationPath = path.join(destinationParent, 'managed.md');
       const outsideDestinationPath = path.join(outsideRoot, 'managed.md');
@@ -1553,7 +1553,7 @@ function runTests() {
           repoRoot: REPO_ROOT,
           homeDir,
           projectRoot,
-          targets: ['joycode']
+          targets: ['claude-project']
         });
       } finally {
         fs.mkdirSync = originalMkdirSync;
@@ -1580,7 +1580,7 @@ function runTests() {
       const projectRoot = createTempDir('install-lifecycle-project-');
 
       try {
-        const targetRoot = path.join(projectRoot, '.joycode');
+        const targetRoot = path.join(projectRoot, '.claude');
         const victimPath = path.join(targetRoot, 'victim.md');
         const destinationPath = path.join(targetRoot, 'managed.md');
         fs.mkdirSync(targetRoot, { recursive: true });
@@ -1604,7 +1604,7 @@ function runTests() {
           repoRoot: REPO_ROOT,
           homeDir,
           projectRoot,
-          targets: ['joycode']
+          targets: ['claude-project']
         });
 
         assert.strictEqual(result.results[0].status, 'error');
@@ -1630,7 +1630,7 @@ function runTests() {
       const homeDir = createTempDir('install-lifecycle-home-');
       const projectRoot = createTempDir('install-lifecycle-project-');
       const outsideRoot = createTempDir('install-lifecycle-outside-');
-      const targetRoot = path.join(projectRoot, '.joycode');
+      const targetRoot = path.join(projectRoot, '.claude');
       const destinationPath = path.join(targetRoot, 'managed.md');
       const outsideDestinationPath = path.join(outsideRoot, 'managed.md');
       const originalOpenSync = fs.openSync;
@@ -1657,7 +1657,7 @@ function runTests() {
           repoRoot: REPO_ROOT,
           homeDir,
           projectRoot,
-          targets: ['joycode']
+          targets: ['claude-project']
         });
       } finally {
         fs.openSync = originalOpenSync;
@@ -1682,7 +1682,7 @@ function runTests() {
       const homeDir = createTempDir('install-lifecycle-home-');
       const projectRoot = createTempDir('install-lifecycle-project-');
       const outsideRoot = createTempDir('install-lifecycle-outside-');
-      const targetRoot = path.join(projectRoot, '.joycode');
+      const targetRoot = path.join(projectRoot, '.claude');
       const destinationParent = path.join(targetRoot, 'late-parent');
       const backupParent = path.join(targetRoot, 'late-parent-backup');
       const destinationPath = path.join(destinationParent, 'managed.md');
@@ -1729,7 +1729,7 @@ function runTests() {
           repoRoot: REPO_ROOT,
           homeDir,
           projectRoot,
-          targets: ['joycode']
+          targets: ['claude-project']
         });
       } finally {
         fs.openSync = originalOpenSync;
@@ -1757,8 +1757,8 @@ function runTests() {
       const outsideRoot = createTempDir('install-lifecycle-outside-');
 
       try {
-        const targetRoot = path.join(projectRoot, '.joycode');
-        const adapterStatePath = path.join(targetRoot, 'ecc-install-state.json');
+        const targetRoot = path.join(projectRoot, '.claude');
+        const adapterStatePath = path.join(targetRoot, 'ecc', 'install-state.json');
         const recordedStatePath = path.join(outsideRoot, 'recorded-state.json');
         const stateOptions = createCursorStateOptions(projectRoot, {
           installStatePath: recordedStatePath
@@ -1770,7 +1770,7 @@ function runTests() {
           repoRoot: REPO_ROOT,
           homeDir,
           projectRoot,
-          targets: ['joycode']
+          targets: ['claude-project']
         });
 
         assert.strictEqual(result.results[0].status, 'ok');
@@ -1795,8 +1795,8 @@ function runTests() {
       const projectRoot = createTempDir('install-lifecycle-project-');
 
       try {
-        const targetRoot = path.join(projectRoot, '.joycode');
-        const statePath = path.join(targetRoot, 'ecc-install-state.json');
+        const targetRoot = path.join(projectRoot, '.claude');
+        const statePath = path.join(targetRoot, 'ecc', 'install-state.json');
         const destinationPath = path.join(targetRoot, 'hooks.json');
         fs.mkdirSync(path.dirname(destinationPath), { recursive: true });
         fs.writeFileSync(
@@ -1812,7 +1812,7 @@ function runTests() {
         );
 
         writeState(statePath, {
-          adapter: { id: 'joycode-project', target: 'joycode', kind: 'project' },
+          adapter: { id: 'claude-project', target: 'claude-project', kind: 'project' },
           targetRoot,
           installStatePath: statePath,
           request: {
@@ -1822,14 +1822,14 @@ function runTests() {
             legacyMode: true
           },
           resolution: {
-            selectedModules: ['legacy-joycode-install'],
+            selectedModules: ['legacy-claude-project-install'],
             skippedModules: []
           },
           operations: [
             {
               kind: 'merge-json',
               moduleId: 'platform-configs',
-              sourceRelativePath: '.joycode/hooks.json',
+              sourceRelativePath: '.claude/hooks.json',
               destinationPath,
               strategy: 'merge-json',
               ownership: 'managed',
@@ -1856,7 +1856,7 @@ function runTests() {
         const result = uninstallInstalledStates({
           homeDir,
           projectRoot,
-          targets: ['joycode']
+          targets: ['claude-project']
         });
 
         assert.strictEqual(result.results[0].status, 'uninstalled');
@@ -1946,13 +1946,13 @@ function runTests() {
       const projectRoot = createTempDir('install-lifecycle-project-');
 
       try {
-        const targetRoot = path.join(projectRoot, '.joycode');
-        const statePath = path.join(targetRoot, 'ecc-install-state.json');
+        const targetRoot = path.join(projectRoot, '.claude');
+        const statePath = path.join(targetRoot, 'ecc', 'install-state.json');
         const destinationPath = path.join(targetRoot, 'legacy-note.txt');
         fs.mkdirSync(targetRoot, { recursive: true });
 
         writeState(statePath, {
-          adapter: { id: 'joycode-project', target: 'joycode', kind: 'project' },
+          adapter: { id: 'claude-project', target: 'claude-project', kind: 'project' },
           targetRoot,
           installStatePath: statePath,
           request: {
@@ -1962,14 +1962,14 @@ function runTests() {
             legacyMode: true
           },
           resolution: {
-            selectedModules: ['legacy-joycode-install'],
+            selectedModules: ['legacy-claude-project-install'],
             skippedModules: []
           },
           operations: [
             {
               kind: 'remove',
               moduleId: 'platform-configs',
-              sourceRelativePath: '.joycode/legacy-note.txt',
+              sourceRelativePath: '.claude/legacy-note.txt',
               destinationPath,
               strategy: 'remove',
               ownership: 'managed',
@@ -1987,7 +1987,7 @@ function runTests() {
         const result = uninstallInstalledStates({
           homeDir,
           projectRoot,
-          targets: ['joycode']
+          targets: ['claude-project']
         });
 
         assert.strictEqual(result.results[0].status, 'uninstalled');
@@ -2008,7 +2008,7 @@ function runTests() {
       const projectRoot = createTempDir('install-lifecycle-project-');
 
       try {
-        const targetRoot = path.join(projectRoot, '.joycode');
+        const targetRoot = path.join(projectRoot, '.claude');
         const destinationPath = path.join(targetRoot, 'rules', 'coding-style.md');
         fs.mkdirSync(path.dirname(destinationPath), { recursive: true });
         fs.writeFileSync(destinationPath, 'managed\n');
@@ -2019,7 +2019,7 @@ function runTests() {
         const result = uninstallInstalledStates({
           homeDir,
           projectRoot,
-          targets: ['joycode'],
+          targets: ['claude-project'],
           dryRun: true
         });
 
@@ -2043,14 +2043,14 @@ function runTests() {
       const projectRoot = createTempDir('install-lifecycle-project-');
 
       try {
-        const statePath = path.join(projectRoot, '.joycode', 'ecc-install-state.json');
+        const statePath = path.join(projectRoot, '.claude', 'ecc', 'install-state.json');
         fs.mkdirSync(path.dirname(statePath), { recursive: true });
         fs.writeFileSync(statePath, '{not-json', 'utf8');
 
         const result = uninstallInstalledStates({
           homeDir,
           projectRoot,
-          targets: ['joycode']
+          targets: ['claude-project']
         });
 
         assert.strictEqual(result.results[0].status, 'error');
@@ -2072,8 +2072,8 @@ function runTests() {
       const outsideRoot = createTempDir('install-lifecycle-outside-');
 
       try {
-        const targetRoot = path.join(projectRoot, '.joycode');
-        const adapterStatePath = path.join(targetRoot, 'ecc-install-state.json');
+        const targetRoot = path.join(projectRoot, '.claude');
+        const adapterStatePath = path.join(targetRoot, 'ecc', 'install-state.json');
         const recordedStatePath = path.join(outsideRoot, 'recorded-state.json');
         const stateOptions = createCursorStateOptions(projectRoot, {
           installStatePath: recordedStatePath
@@ -2084,7 +2084,7 @@ function runTests() {
         const result = uninstallInstalledStates({
           homeDir,
           projectRoot,
-          targets: ['joycode']
+          targets: ['claude-project']
         });
 
         assert.strictEqual(result.results[0].status, 'uninstalled');
@@ -2106,7 +2106,7 @@ function runTests() {
       const projectRoot = createTempDir('install-lifecycle-project-');
 
       try {
-        const targetRoot = path.join(projectRoot, '.joycode');
+        const targetRoot = path.join(projectRoot, '.claude');
         const destinationPath = path.join(targetRoot, 'rules', 'nested', 'managed.md');
         fs.mkdirSync(path.dirname(destinationPath), { recursive: true });
         fs.writeFileSync(destinationPath, 'managed\n');
@@ -2117,7 +2117,7 @@ function runTests() {
         const result = uninstallInstalledStates({
           homeDir,
           projectRoot,
-          targets: ['joycode']
+          targets: ['claude-project']
         });
 
         assert.strictEqual(result.results[0].status, 'uninstalled');
@@ -2141,8 +2141,8 @@ function runTests() {
       const projectRoot = path.join(cleanupBoundaryRoot, 'project');
 
       try {
-        const targetRoot = path.join(projectRoot, '.joycode');
-        const adapterStatePath = path.join(targetRoot, 'ecc-install-state.json');
+        const targetRoot = path.join(projectRoot, '.claude');
+        const adapterStatePath = path.join(targetRoot, 'ecc', 'install-state.json');
         const destinationPath = path.join(targetRoot, 'rules', 'nested', 'managed.md');
         fs.mkdirSync(path.dirname(destinationPath), { recursive: true });
         fs.writeFileSync(destinationPath, 'managed\n');
@@ -2156,7 +2156,7 @@ function runTests() {
         const result = uninstallInstalledStates({
           homeDir,
           projectRoot,
-          targets: ['joycode']
+          targets: ['claude-project']
         });
 
         assert.strictEqual(result.results[0].status, 'uninstalled');
@@ -2179,7 +2179,7 @@ function runTests() {
       const fullProjectRoot = createTempDir('install-lifecycle-full-');
 
       try {
-        let targetRoot = path.join(partialProjectRoot, '.joycode');
+        let targetRoot = path.join(partialProjectRoot, '.claude');
         let destinationPath = path.join(targetRoot, 'settings.json');
         fs.mkdirSync(targetRoot, { recursive: true });
         fs.writeFileSync(
@@ -2213,7 +2213,7 @@ function runTests() {
         let result = uninstallInstalledStates({
           homeDir,
           projectRoot: partialProjectRoot,
-          targets: ['joycode']
+          targets: ['claude-project']
         });
         assert.strictEqual(result.results[0].status, 'uninstalled');
         assert.deepStrictEqual(JSON.parse(fs.readFileSync(destinationPath, 'utf8')), {
@@ -2223,7 +2223,7 @@ function runTests() {
           }
         });
 
-        targetRoot = path.join(fullProjectRoot, '.joycode');
+        targetRoot = path.join(fullProjectRoot, '.claude');
         destinationPath = path.join(targetRoot, 'settings.json');
         fs.mkdirSync(targetRoot, { recursive: true });
         fs.writeFileSync(destinationPath, JSON.stringify({ managed: true }, null, 2));
@@ -2238,7 +2238,7 @@ function runTests() {
         result = uninstallInstalledStates({
           homeDir,
           projectRoot: fullProjectRoot,
-          targets: ['joycode']
+          targets: ['claude-project']
         });
         assert.strictEqual(result.results[0].status, 'uninstalled');
         assert.ok(!fs.existsSync(destinationPath));
@@ -2312,7 +2312,7 @@ function runTests() {
         ];
 
         for (const testCase of cases) {
-          const targetRoot = path.join(testCase.projectRoot, '.joycode');
+          const targetRoot = path.join(testCase.projectRoot, '.claude');
           const destinationPath = path.join(targetRoot, 'settings.json');
           fs.mkdirSync(targetRoot, { recursive: true });
           if (!testCase.absent) {
@@ -2330,7 +2330,7 @@ function runTests() {
           const result = uninstallInstalledStates({
             homeDir,
             projectRoot: testCase.projectRoot,
-            targets: ['joycode']
+            targets: ['claude-project']
           });
 
           assert.strictEqual(result.results[0].status, 'uninstalled');
@@ -2357,7 +2357,7 @@ function runTests() {
       const projectRoot = createTempDir('install-lifecycle-project-');
 
       try {
-        const targetRoot = path.join(projectRoot, '.joycode');
+        const targetRoot = path.join(projectRoot, '.claude');
         const templatePath = path.join(targetRoot, 'generated', 'plugin.json');
         const removedPath = path.join(targetRoot, 'already-removed.txt');
         fs.mkdirSync(path.dirname(templatePath), { recursive: true });
@@ -2375,7 +2375,7 @@ function runTests() {
         const result = uninstallInstalledStates({
           homeDir,
           projectRoot,
-          targets: ['joycode']
+          targets: ['claude-project']
         });
 
         assert.strictEqual(result.results[0].status, 'uninstalled');
@@ -2397,7 +2397,7 @@ function runTests() {
       const projectRoot = createTempDir('install-lifecycle-project-');
 
       try {
-        const targetRoot = path.join(projectRoot, '.joycode');
+        const targetRoot = path.join(projectRoot, '.claude');
         const victimPath = path.join(targetRoot, 'victim.md');
         const destinationPath = path.join(targetRoot, 'managed.md');
         fs.mkdirSync(targetRoot, { recursive: true });
@@ -2415,7 +2415,7 @@ function runTests() {
         const result = uninstallInstalledStates({
           homeDir,
           projectRoot,
-          targets: ['joycode']
+          targets: ['claude-project']
         });
 
         // Managed symlinks are retained: their provenance cannot be revalidated,
@@ -2438,7 +2438,7 @@ function runTests() {
       const homeDir = createTempDir('install-lifecycle-home-');
       const projectRoot = createTempDir('install-lifecycle-project-');
       const outsideRoot = createTempDir('install-lifecycle-outside-');
-      const targetRoot = path.join(projectRoot, '.joycode');
+      const targetRoot = path.join(projectRoot, '.claude');
       const destinationParent = path.join(targetRoot, 'late-parent');
       const backupParent = path.join(targetRoot, 'late-parent-backup');
       const destinationPath = path.join(destinationParent, 'managed.md');
@@ -2471,7 +2471,7 @@ function runTests() {
         result = uninstallInstalledStates({
           homeDir,
           projectRoot,
-          targets: ['joycode']
+          targets: ['claude-project']
         });
       } finally {
         fs.existsSync = originalExistsSync;
@@ -2498,7 +2498,7 @@ function runTests() {
       const projectRoot = createTempDir('install-lifecycle-project-');
 
       try {
-        const targetRoot = path.join(projectRoot, '.joycode');
+        const targetRoot = path.join(projectRoot, '.claude');
         const templatePath = path.join(targetRoot, 'plugin.json');
         const removedPath = path.join(targetRoot, 'legacy.json');
         fs.mkdirSync(targetRoot, { recursive: true });
@@ -2519,7 +2519,7 @@ function runTests() {
         const result = uninstallInstalledStates({
           homeDir,
           projectRoot,
-          targets: ['joycode']
+          targets: ['claude-project']
         });
 
         assert.strictEqual(result.results[0].status, 'uninstalled');
@@ -2545,7 +2545,7 @@ function runTests() {
       const missingPayloadProjectRoot = createTempDir('install-lifecycle-missing-payload-');
 
       try {
-        let targetRoot = path.join(unsupportedProjectRoot, '.joycode');
+        let targetRoot = path.join(unsupportedProjectRoot, '.claude');
         let destinationPath = path.join(targetRoot, 'custom.txt');
         fs.mkdirSync(targetRoot, { recursive: true });
         fs.writeFileSync(destinationPath, 'custom\n');
@@ -2556,12 +2556,12 @@ function runTests() {
         let result = uninstallInstalledStates({
           homeDir,
           projectRoot: unsupportedProjectRoot,
-          targets: ['joycode']
+          targets: ['claude-project']
         });
         assert.strictEqual(result.results[0].status, 'error');
         assert.ok(result.results[0].error.includes('Unsupported uninstall operation kind'));
 
-        targetRoot = path.join(missingPayloadProjectRoot, '.joycode');
+        targetRoot = path.join(missingPayloadProjectRoot, '.claude');
         destinationPath = path.join(targetRoot, 'settings.json');
         fs.mkdirSync(targetRoot, { recursive: true });
         fs.writeFileSync(destinationPath, '{"managed":true}\n');
@@ -2572,7 +2572,7 @@ function runTests() {
         result = uninstallInstalledStates({
           homeDir,
           projectRoot: missingPayloadProjectRoot,
-          targets: ['joycode']
+          targets: ['claude-project']
         });
         assert.strictEqual(result.results[0].status, 'error');
         assert.ok(result.results[0].error.includes('Missing merge payload for uninstall'));

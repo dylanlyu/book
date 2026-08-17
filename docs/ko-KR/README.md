@@ -154,7 +154,7 @@ cd everything-claude-code
 
 ## 크로스 플랫폼 지원
 
-이 플러그인은 **Windows, macOS, Linux**를 완벽하게 지원하며, 주요 IDE(Antigravity, JoyCode) 및 CLI 하네스와 긴밀하게 통합됩니다. 모든 훅과 스크립트는 최대 호환성을 위해 Node.js로 작성되었습니다.
+이 플러그인은 **Windows, macOS, Linux**를 완벽하게 지원하며, 주요 IDE(Antigravity) 및 CLI 하네스와 긴밀하게 통합됩니다. 모든 훅과 스크립트는 최대 호환성을 위해 Node.js로 작성되었습니다.
 
 ### 패키지 매니저 감지
 

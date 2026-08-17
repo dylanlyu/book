@@ -10,8 +10,7 @@
       ],
       "targets": [
         "claude",
-        "claude-project",
-        "joycode"
+        "claude-project"
       ],
       "dependencies": [],
       "defaultInstall": true,
@@ -30,8 +29,7 @@
       "targets": [
         "claude",
         "claude-project",
-        "codex",
-        "joycode"
+        "codex"
       ],
       "dependencies": [],
       "defaultInstall": true,
@@ -49,8 +47,7 @@
       ],
       "targets": [
         "claude",
-        "claude-project",
-        "joycode"
+        "claude-project"
       ],
       "dependencies": [],
       "defaultInstall": true,
@@ -89,8 +86,7 @@
       "targets": [
         "claude",
         "claude-project",
-        "codex",
-        "joycode"
+        "codex"
       ],
       "dependencies": [],
       "defaultInstall": true,
@@ -175,8 +171,7 @@
       "targets": [
         "claude",
         "claude-project",
-        "codex",
-        "joycode"
+        "codex"
       ],
       "dependencies": [
         "rules-core",
@@ -204,8 +199,7 @@
       "targets": [
         "claude",
         "claude-project",
-        "codex",
-        "joycode"
+        "codex"
       ],
       "dependencies": [
         "platform-configs"
@@ -224,8 +218,7 @@
       "targets": [
         "claude",
         "claude-project",
-        "codex",
-        "joycode"
+        "codex"
       ],
       "dependencies": [
         "platform-configs"
@@ -289,8 +282,7 @@
       "targets": [
         "claude",
         "claude-project",
-        "codex",
-        "joycode"
+        "codex"
       ],
       "dependencies": [
         "skill-unified-memory"
@@ -316,8 +308,7 @@
       "targets": [
         "claude",
         "claude-project",
-        "codex",
-        "joycode"
+        "codex"
       ],
       "dependencies": [
         "workflow-quality",
@@ -356,8 +347,7 @@
       "targets": [
         "claude",
         "claude-project",
-        "codex",
-        "joycode"
+        "codex"
       ],
       "dependencies": [
         "workflow-quality"
@@ -384,8 +374,7 @@
       "targets": [
         "claude",
         "claude-project",
-        "codex",
-        "joycode"
+        "codex"
       ],
       "dependencies": [
         "platform-configs"
@@ -417,8 +406,7 @@
       "targets": [
         "claude",
         "claude-project",
-        "codex",
-        "joycode"
+        "codex"
       ],
       "dependencies": [
         "platform-configs"
@@ -455,8 +443,7 @@
       "targets": [
         "claude",
         "claude-project",
-        "codex",
-        "joycode"
+        "codex"
       ],
       "dependencies": [
         "platform-configs"
@@ -477,8 +464,7 @@
       "targets": [
         "claude",
         "claude-project",
-        "codex",
-        "joycode"
+        "codex"
       ],
       "dependencies": [
         "research-apis",
@@ -501,8 +487,7 @@
       "targets": [
         "claude",
         "claude-project",
-        "codex",
-        "joycode"
+        "codex"
       ],
       "dependencies": [
         "platform-configs"
@@ -521,8 +506,7 @@
       "targets": [
         "claude",
         "claude-project",
-        "codex",
-        "joycode"
+        "codex"
       ],
       "dependencies": [
         "platform-configs"
@@ -543,8 +527,7 @@
       "targets": [
         "claude",
         "claude-project",
-        "codex",
-        "joycode"
+        "codex"
       ],
       "dependencies": [
         "business-content"
@@ -570,8 +553,7 @@
       "targets": [
         "claude",
         "claude-project",
-        "codex",
-        "joycode"
+        "codex"
       ],
       "dependencies": [
         "platform-configs"
@@ -621,8 +603,7 @@
       "targets": [
         "claude",
         "claude-project",
-        "codex",
-        "joycode"
+        "codex"
       ],
       "dependencies": [
         "platform-configs"
@@ -674,8 +655,7 @@
       "targets": [
         "claude",
         "claude-project",
-        "codex",
-        "joycode"
+        "codex"
       ],
       "dependencies": [
         "platform-configs"
@@ -710,8 +690,7 @@
       "targets": [
         "claude",
         "claude-project",
-        "codex",
-        "joycode"
+        "codex"
       ],
       "dependencies": [
         "platform-configs"
@@ -733,8 +712,7 @@
       "targets": [
         "claude",
         "claude-project",
-        "codex",
-        "joycode"
+        "codex"
       ],
       "dependencies": [
         "framework-language",
@@ -764,8 +742,7 @@
       "targets": [
         "claude",
         "claude-project",
-        "codex",
-        "joycode"
+        "codex"
       ],
       "dependencies": [
         "platform-configs"
@@ -785,8 +762,7 @@
       "targets": [
         "claude",
         "claude-project",
-        "codex",
-        "joycode"
+        "codex"
       ],
       "dependencies": [
         "platform-configs"

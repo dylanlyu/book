@@ -50,7 +50,7 @@ body:
         - Qwen
         - Hermes
         - OpenClaw
-        - CodeBuddy or JoyCode
+        - CodeBuddy
         - Other
     validations:
       required: true

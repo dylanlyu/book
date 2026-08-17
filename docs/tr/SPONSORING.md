@@ -1,6 +1,6 @@
 # ECC'ye Sponsor Olma
 
-ECC, Claude Code, Codex, Antigravity ve JoyCode genelinde açık kaynaklı bir ajan performans sistemi olarak sürdürülmektedir.
+ECC, Claude Code, Codex ve Antigravity genelinde açık kaynaklı bir ajan performans sistemi olarak sürdürülmektedir.
 
 ## Neden Sponsor Olmalı
 

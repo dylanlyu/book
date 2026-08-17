@@ -1,6 +1,6 @@
 # 赞助 ECC
 
-ECC 作为一个开源智能体性能测试系统，在 Claude Code、Codex、Antigravity 和 JoyCode 中得到维护。
+ECC 作为一个开源智能体性能测试系统，在 Claude Code、Codex 和 Antigravity 中得到维护。
 
 ## 为何赞助
 

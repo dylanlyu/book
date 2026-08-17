@@ -12,7 +12,6 @@ Create a safe, reviewable ECC onboarding plan for the current project. This comm
 /project-init
 /project-init --dry-run
 /project-init --target claude
-/project-init --target joycode
 /project-init --skills continuous-learning-v2,security-review
 /project-init --config ecc-install.json
 ```
@@ -20,7 +19,7 @@ Create a safe, reviewable ECC onboarding plan for the current project. This comm
 ## Safety Rules
 
 1. Default to dry-run. Do not modify `CLAUDE.md`, settings files, rules, skills, or install state until the user approves the concrete plan.
-2. Preserve existing project guidance. If `CLAUDE.md`, `.claude/settings.local.json`, `.codex/`, or `.joycode/` already exists, inspect it and propose a merge/append plan instead of overwriting.
+2. Preserve existing project guidance. If `CLAUDE.md`, `.claude/settings.local.json`, or `.codex/` already exists, inspect it and propose a merge/append plan instead of overwriting.
 3. Use ECC's installer and manifest tooling. Do not hand-copy files or clone arbitrary remotes as an install shortcut.
 4. Keep permissions narrow. Any generated settings should match detected build/test/lint tools and avoid broad shell access.
 5. Report exactly what would change before applying anything.
@@ -39,7 +38,7 @@ When the ECC checkout is available, use `config/project-stack-mappings.json` as 
 
 ## Planning Flow
 
-1. Identify the target harness. Default to `claude` unless the user asks for `claude-project`, `codex`, or `joycode`.
+1. Identify the target harness. Default to `claude` unless the user asks for `claude-project` or `codex`.
 2. Detect stacks from project files and show the evidence for each match.
 3. Resolve the smallest useful ECC plan:
    - project has an `ecc-install.json`: `node scripts/install-plan.js --config ecc-install.json --json`

@@ -1,9 +1,8 @@
 const claudeHome = require('./claude-home');
 const claudeProject = require('./claude-project');
 const codexHome = require('./codex-home');
-const joycodeProject = require('./joycode-project');
 
-const ADAPTERS = Object.freeze([claudeHome, claudeProject, codexHome, joycodeProject]);
+const ADAPTERS = Object.freeze([claudeHome, claudeProject, codexHome]);
 
 function listInstallTargetAdapters() {
   return ADAPTERS.slice();

@@ -50,8 +50,7 @@
               "enum": [
                 "claude",
                 "claude-project",
-                "codex",
-                "joycode"
+                "codex"
               ]
             }
           },
