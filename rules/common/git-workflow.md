@@ -38,10 +38,7 @@
 - **Scope** _(optional)_: module / package / area touched
 - **Subject**: imperative mood, ≤72 chars, no trailing period
 
-**Co-Authored-By trailer**: harness-controlled, not yours to edit. Claude Code appends
-it by default; ECC does not ship an override. If the operator wants it gone, they set
-`"includeCoAuthoredBy": false` in `~/.claude/settings.json` — do not hand-strip the
-trailer from commit messages, and do not hand-add it when it's absent.
+Note: ECC-managed installs set `"includeCoAuthoredBy": false` in `~/.claude/settings.json`, so commits carry no `Co-Authored-By` trailer by default. To keep Claude attribution, set `"includeCoAuthoredBy": true` or configure `attribution`; ECC never overwrites an explicit choice.
 
 ## Pull Request Workflow
 

@@ -99,8 +99,8 @@ function runTests() {
         assert.strictEqual(installResult.code, 0, installResult.stderr);
 
         const normalizedProjectRoot = fs.realpathSync(projectRoot);
-        const managedPath = path.join(normalizedProjectRoot, '.agent', 'workflows', 'plan.md');
-        const statePath = path.join(normalizedProjectRoot, '.agent', 'ecc-install-state.json');
+        const managedPath = path.join(normalizedProjectRoot, '.agents', 'workflows', 'plan.md');
+        const statePath = path.join(normalizedProjectRoot, '.agents', 'ecc-install-state.json');
         const expectedContent = fs.readFileSync(path.join(REPO_ROOT, 'commands', 'plan.md'), 'utf8');
         fs.writeFileSync(managedPath, '// drifted\n');
 
@@ -137,7 +137,7 @@ function runTests() {
       const projectRoot = createTempDir('repair-project-');
 
       try {
-        const targetRoot = path.join(projectRoot, '.agent');
+        const targetRoot = path.join(projectRoot, '.agents');
         fs.mkdirSync(targetRoot, { recursive: true });
         const normalizedTargetRoot = fs.realpathSync(targetRoot);
         const statePath = path.join(normalizedTargetRoot, 'ecc-install-state.json');
@@ -261,7 +261,7 @@ function runTests() {
       const projectRoot = createTempDir('repair-project-');
 
       try {
-        const targetRoot = path.join(projectRoot, '.agent');
+        const targetRoot = path.join(projectRoot, '.agents');
         fs.mkdirSync(targetRoot, { recursive: true });
         const normalizedTargetRoot = fs.realpathSync(targetRoot);
         const statePath = path.join(normalizedTargetRoot, 'ecc-install-state.json');

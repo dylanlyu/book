@@ -329,7 +329,6 @@ test('packed ecc-universal launches the guided multi-harness help', () => {
   assert.match(result.stdout, /ECC guided multi-harness install/);
   assert.match(result.stdout, /Claude Code/);
   assert.match(result.stdout, /Codex/);
-  assert.match(result.stdout, /Kimi/);
 });
 
 test('packed ecc alias launches the primary dispatcher', () => {

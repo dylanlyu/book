@@ -260,12 +260,12 @@ Copy-Item -Recurse rules/typescript "$HOME/.claude/rules/"
 /plugin list ecc@ecc
 ```
 
-**搞定！** 你现在可以使用 67 个智能体、282 项技能和 94 个命令了。
+**搞定！** 你现在可以使用 68 个智能体、283 项技能和 94 个命令了。
 
 | 包含内容 | 数量 | 提供什么 |
 | -------- | ---: | -------- |
-| 智能体 | 67 个 | 规划、审查、构建修复、安全、架构与领域工作 |
-| 技能 | 282 项 | TDD、研究、安全、文档、前端、数据、ML、运维等 |
+| 智能体 | 68 个 | 规划、审查、构建修复、安全、架构与领域工作 |
+| 技能 | 283 项 | TDD、研究、安全、文档、前端、数据、ML、运维等 |
 | 命令 | 94 个 | 在 ECC 转向 skills-first 表面期间的便捷入口 |
 | 钩子与记忆 | 运行时 | 强制执行、会话摘要、持续学习、直觉与上下文控制 |
 | 规则 | 可选 | 按语言或项目选择的常驻标准 |
@@ -943,7 +943,7 @@ cp -r everything-claude-code/rules/common ~/.claude/rules/common
 是的。ECC 是跨平台的：
 
 * **Codex**: 对 macOS 应用和 CLI 的一流支持，带有适配器漂移防护和 SessionStart 回退。参见 PR [#257](https://github.com/affaan-m/everything-claude-code/pull/257)。
-* **Antigravity**: 为工作流、技能和扁平化规则紧密集成的设置，位于 `.agent/`。参见 [Antigravity 指南](../ANTIGRAVITY-GUIDE.md)。
+* **Antigravity**: 为工作流、技能和扁平化规则紧密集成的设置，位于 `.agents/`。参见 [Antigravity 指南](../ANTIGRAVITY-GUIDE.md)。
 * **Claude Code**: 原生支持 — 这是主要目标。
 
 </details>
@@ -1104,9 +1104,9 @@ ECC 是**第一个最大化利用每个主要 AI 编码工具的插件**。以�
 
 | 功能特性 | Claude Code | Codex CLI |
 |---------|-------------|-----------|
-| **智能体** | 67 | 共享 (AGENTS.md) |
+| **智能体** | 68 | 共享 (AGENTS.md) |
 | **命令** | 94 | 基于指令 |
-| **技能** | 282 | 10 (原生格式) |
+| **技能** | 283 | 10 (原生格式) |
 | **钩子事件** | 8 种类型 | SessionStart（1 种类型） |
 | **钩子脚本** | 20+ 个脚本 | 1 个 SessionStart 引导脚本 |
 | **规则** | 34 (通用 + 语言) | 基于指令 |

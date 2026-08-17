@@ -473,7 +473,7 @@ Este é o problema mais comum. **NÃO adicione um campo `"hooks"` ao `.claude-pl
 
 Sim. O ECC é multiplataforma:
 - **Codex**: Suporte de primeira classe para app macOS e CLI
-- **Antigravity**: Configuração integrada em `.agent/`
+- **Antigravity**: Configuração integrada em `.agents/`
 - **Claude Code**: Nativo — este é o alvo principal
 </details>
 

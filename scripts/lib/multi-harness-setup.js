@@ -308,7 +308,7 @@ function preflightManagedPlan(plan, dependencies = {}) {
   };
 }
 
-function applyPreflightedManagedPlan(entry) {
+async function applyPreflightedManagedPlan(entry) {
   const preview = entry.preview && entry.preview.ownershipSnapshot
     ? entry.preview
     : preflightManagedPlan(entry.preview.plan);
@@ -319,7 +319,7 @@ function applyPreflightedManagedPlan(entry) {
     assertInstallStateUnchanged(preview.plan, expectedStateFingerprint)
   );
 
-  return require('./install-executor').applyInstallPlan(preview.plan, {
+  const result = require('./install-executor').applyInstallPlan(preview.plan, {
     beforeOperationWrite({ operation }) {
       assertStateUnchanged();
       const expected = preview.operations[operationIndex];
@@ -340,6 +340,15 @@ function applyPreflightedManagedPlan(entry) {
     },
     beforeInstallStateWrite: assertStateUnchanged,
   });
+  const { projectCanonicalInstallState } = require('./install-state-store-sync');
+  const installStateProjection = await projectCanonicalInstallState(result.statePreview);
+  return {
+    ...result,
+    installStateProjection,
+    warnings: installStateProjection.warning
+      ? [...result.warnings, `Install health projection warning: ${installStateProjection.warning.message}`]
+      : result.warnings,
+  };
 }
 
 function defaultDependencies() {

@@ -27,7 +27,7 @@ Usage: install.sh [--target <${LEGACY_INSTALL_TARGETS.join('|')}>] [--dry-run] [
 Targets:
   claude       (default) - Install ECC into ~/.claude/ with managed rules under rules/ecc and flat skills under skills/
   claude-project - Install ECC into ./.claude/ (per-project) with managed rules under rules/ecc and flat skills under skills/
-  antigravity  - Install rules, workflows, skills, and agents to ./.agent/
+  antigravity  - Install rules, workflows, skills, and agents to ./.agents/
   codex        - Install shared agents/config into ~/.codex/
   joycode      - Install commands, agents, skills, and flattened rules into ./.joycode/
 
@@ -117,7 +117,7 @@ function printHumanPlan(plan, dryRun) {
   console.log('\nCompute: ' + getComputeSponsorCopy());
 }
 
-function main() {
+async function main() {
   try {
     const options = parseInstallArgs(process.argv);
 
@@ -150,7 +150,18 @@ function main() {
       return;
     }
 
-    const result = applyInstallPlan(rawPlan);
+    let result = applyInstallPlan(rawPlan);
+    const { projectCanonicalInstallState } = require('./lib/install-state-store-sync');
+    const installStateProjection = await projectCanonicalInstallState(result.statePreview, {
+      homeDir: process.env.HOME || os.homedir(),
+    });
+    result = {
+      ...result,
+      installStateProjection,
+      warnings: installStateProjection.warning
+        ? [...result.warnings, `Install health projection warning: ${installStateProjection.warning.message}`]
+        : result.warnings,
+    };
     if (options.json) {
       console.log(JSON.stringify({ dryRun: false, result }, null, 2));
     } else {

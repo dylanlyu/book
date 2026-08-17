@@ -3,6 +3,7 @@
  */
 
 const assert = require('assert');
+const crypto = require('crypto');
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
@@ -109,6 +110,18 @@ function withTemporarilyMovedPath(filePath, callback) {
 }
 
 function managedOperation(kind, destinationPath, overrides = {}) {
+  // Uninstall preserves managed files whose recorded digest cannot be verified,
+  // so fixtures record the digest of the file they just wrote.
+  let contentSha256;
+  try {
+    const stat = fs.lstatSync(destinationPath);
+    if (stat.isFile()) {
+      contentSha256 = crypto.createHash('sha256').update(fs.readFileSync(destinationPath)).digest('hex');
+    }
+  } catch (_error) {
+    contentSha256 = undefined;
+  }
+
   return {
     kind,
     moduleId: 'test-module',
@@ -117,6 +130,7 @@ function managedOperation(kind, destinationPath, overrides = {}) {
     strategy: kind,
     ownership: 'managed',
     scaffoldOnly: false,
+    ...(contentSha256 ? { contentSha256 } : {}),
     ...overrides
   };
 }
@@ -1697,7 +1711,8 @@ function runTests() {
         fs.writeFileSync(outsideDestinationPath, 'outside sentinel\n');
         canonicalDestinationPath = fs.realpathSync(destinationPath);
         writeCursorState(projectRoot, {
-          operations: [managedOperation('copy-file', destinationPath, { strategy: 'copy-file' })]
+          // No recorded digest: the destination must look drifted so repair rewrites it.
+          operations: [managedOperation('copy-file', destinationPath, { strategy: 'copy-file', contentSha256: undefined })]
         });
 
         fs.openSync = function openSyncWithLateParentSwap(filePath, flags, mode) {
@@ -2377,7 +2392,7 @@ function runTests() {
   else failed++;
 
   if (
-    test('uninstall removes an in-root final symlink without deleting its victim', () => {
+    test('uninstall preserves an in-root final symlink without deleting its victim', () => {
       const homeDir = createTempDir('install-lifecycle-home-');
       const projectRoot = createTempDir('install-lifecycle-project-');
 
@@ -2403,8 +2418,11 @@ function runTests() {
           targets: ['joycode']
         });
 
-        assert.strictEqual(result.results[0].status, 'uninstalled');
-        assert.ok(!fs.existsSync(destinationPath));
+        // Managed symlinks are retained: their provenance cannot be revalidated,
+        // and removing one could destroy whatever it points at.
+        assert.strictEqual(result.results[0].status, 'partial');
+        assert.ok(result.results[0].retainedPaths.includes(destinationPath));
+        assert.ok(fs.lstatSync(destinationPath).isSymbolicLink());
         assert.strictEqual(fs.readFileSync(victimPath, 'utf8'), 'victim sentinel\n');
       } finally {
         cleanup(homeDir);

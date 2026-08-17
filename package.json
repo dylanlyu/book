@@ -42,6 +42,7 @@
     ".codex/",
     ".codex-plugin/",
     ".github/PULL_REQUEST_TEMPLATE.md",
+    ".pi/",
     ".mcp.json",
     "AGENTS.md",
     "COMMANDS-QUICK-REF.md",
@@ -103,6 +104,7 @@
     "scripts/install-guided.js",
     "scripts/install-plan.js",
     "scripts/ito.js",
+    "scripts/nasiko.js",
     "scripts/lib/",
     "scripts/list-installed.js",
     "scripts/loop-status.js",
@@ -119,6 +121,10 @@
     "scripts/skill-create-output.js",
     "scripts/status.js",
     "scripts/sync-ecc-to-codex.sh",
+    "scripts/codex/legacy-sync-state.js",
+    "scripts/codex/install-global-git-hooks.sh",
+    "scripts/codex/check-codex-global-state.sh",
+    "scripts/codex-git-hooks/",
     "scripts/work-items.js",
     "scripts/uninstall.js",
     "skills/agent-architecture-audit/",
@@ -158,6 +164,7 @@
     "skills/cost-aware-llm-pipeline/",
     "skills/cost-tracking/",
     "skills/council/",
+    "skills/council-multi-model/",
     "skills/cpp-coding-standards/",
     "skills/cpp-testing/",
     "skills/crosspost/",
@@ -172,6 +179,7 @@
     "skills/deep-research/",
     "skills/defi-amm-security/",
     "skills/deployment-patterns/",
+    "skills/dev-team/",
     "skills/django-patterns/",
     "skills/django-security/",
     "skills/django-tdd/",
@@ -208,13 +216,11 @@
     "skills/homelab-network-setup/",
     "skills/hookify-rules/",
     "skills/inventory-demand-planning/",
-    "skills/ito-basket-compare/",
+    "skills/ito-baskets/",
     "skills/ito-compute/",
-    "skills/ito-data-atlas-agent/",
     "skills/ito-inference/",
-    "skills/ito-market-intelligence/",
-    "skills/ito-trade-planner/",
     "skills/ito-training/",
+    "skills/nasiko-control-plane/",
     "skills/investor-materials/",
     "skills/investor-outreach/",
     "skills/iterative-retrieval/",
@@ -371,6 +377,7 @@
     "skills/intent-driven-development/",
     "skills/ios-icon-gen/",
     "skills/kubernetes-patterns/",
+    "skills/living-docs-governance/",
     "skills/loop-design-check/",
     "skills/mailtrap-email-integration/",
     "skills/marketing-campaign/",
@@ -447,11 +454,23 @@
   "dependencies": {
     "@iarna/toml": "2.2.5",
     "ajv": "8.20.0",
+    "js-yaml": "4.3.1",
     "sql.js": "1.14.1"
+  },
+  "pi": {
+    "extensions": [
+      "./.pi/extensions/index.ts"
+    ],
+    "skills": [
+      "./skills"
+    ],
+    "prompts": [
+      "./commands"
+    ]
   },
   "devDependencies": {
     "@eslint/js": "9.39.2",
-    "@types/node": "25.9.2",
+    "@types/node": "26.1.2",
     "c8": "11.0.0",
     "eslint": "10.6.0",
     "globals": "17.4.0",
@@ -464,12 +483,12 @@
   "overrides": {
     "fast-uri": "3.1.5",
     "markdown-it": "14.3.0",
-    "js-yaml": "4.3.0"
+    "js-yaml": "4.3.1"
   },
   "resolutions": {
     "fast-uri": "3.1.5",
     "markdown-it": "14.3.0",
-    "js-yaml": "4.3.0"
+    "js-yaml": "4.3.1"
   },
   "packageManager": "yarn@4.9.2+sha512.1fc009bc09d13cfd0e19efa44cbfc2b9cf6ca61482725eb35bbc5e257e093ebf4130db6dfe15d604ff4b79efd8e1e8e99b25fa7d0a6197c9f9826358d4d65c3c"
 }

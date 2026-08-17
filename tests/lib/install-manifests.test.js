@@ -297,7 +297,7 @@ function runTests() {
       assert.ok(!plan.skippedModuleIds.includes('platform-configs'));
       assert.ok(!plan.skippedModuleIds.includes('workflow-quality'));
       assert.strictEqual(plan.targetAdapterId, 'antigravity-project');
-      assert.strictEqual(plan.targetRoot, path.join(projectRoot, '.agent'));
+      assert.strictEqual(plan.targetRoot, path.join(projectRoot, '.agents'));
     })
   )
     passed++;
@@ -318,8 +318,6 @@ function runTests() {
   )
     passed++;
   else failed++;
-
-
 
   if (
     test('resolves machine-learning component with workflow dependencies', () => {
@@ -526,7 +524,7 @@ function runTests() {
         legacyLanguages: ['typescript']
       });
 
-      assert.deepStrictEqual(selection.moduleIds, ['rules-core', 'agents-core', 'commands-core']);
+      assert.deepStrictEqual(selection.moduleIds, ['rules-core', 'agents-core', 'commands-core', 'skill-unified-memory', 'workflow-quality']);
     })
   )
     passed++;

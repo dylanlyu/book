@@ -94,7 +94,7 @@ function runTests() {
   else failed++;
 
   if (
-    test('plans antigravity remaps for workflows, skills, and flat rules', () => {
+    test('plans native Antigravity 2.0 rules, workflows, skills, and agents', () => {
       const repoRoot = path.join(__dirname, '..', '..');
       const projectRoot = '/workspace/app';
 
@@ -109,7 +109,11 @@ function runTests() {
           },
           {
             id: 'agents-core',
-            paths: ['agents']
+            paths: ['.agents', 'agents', 'AGENTS.md']
+          },
+          {
+            id: 'workflow-quality',
+            paths: ['skills/tdd-workflow']
           },
           {
             id: 'rules-core',
@@ -119,19 +123,28 @@ function runTests() {
       });
 
       assert.ok(
-        plan.operations.some(operation => operation.sourceRelativePath === 'commands' && operation.destinationPath === path.join(projectRoot, '.agent', 'workflows')),
+        plan.operations.some(operation => operation.sourceRelativePath === 'commands' && operation.destinationPath === path.join(projectRoot, '.agents', 'workflows')),
         'Should remap commands into workflows'
       );
       assert.ok(
-        plan.operations.some(operation => operation.sourceRelativePath === 'agents' && operation.destinationPath === path.join(projectRoot, '.agent', 'skills')),
-        'Should remap agents into skills'
+        plan.operations.some(operation => operation.sourceRelativePath === 'agents' && operation.destinationPath === path.join(projectRoot, '.agents', 'agents')),
+        'Should remap agents into native agents'
+      );
+      assert.ok(
+        plan.operations.some(operation => operation.sourceRelativePath === 'skills/tdd-workflow' && operation.destinationPath === path.join(projectRoot, '.agents', 'skills', 'tdd-workflow')),
+        'Should remap canonical skills into native skills'
       );
       assert.ok(
         plan.operations.some(
           operation =>
-            normalizedRelativePath(operation.sourceRelativePath) === 'rules/common/coding-style.md' && operation.destinationPath === path.join(projectRoot, '.agent', 'rules', 'common-coding-style.md')
+            normalizedRelativePath(operation.sourceRelativePath) === 'rules/common/coding-style.md' &&
+            operation.destinationPath === path.join(projectRoot, '.agents', 'rules', 'common-coding-style.md')
         ),
         'Should flatten common rules for antigravity'
+      );
+      assert.ok(
+        plan.operations.every(operation => !['.agents', 'AGENTS.md'].includes(operation.sourceRelativePath)),
+        'Should exclude Codex-only .agents metadata and root AGENTS.md'
       );
     })
   )
@@ -194,10 +207,6 @@ function runTests() {
     passed++;
   else failed++;
 
-
-
-
-
   if (
     test('plans joycode commands, agents, skills, and flattened rules', () => {
       const repoRoot = path.join(__dirname, '..', '..');
@@ -257,8 +266,6 @@ function runTests() {
   )
     passed++;
   else failed++;
-
-
 
   if (
     test('every schema target enum value has a matching adapter (regression guard)', () => {
@@ -405,13 +412,6 @@ function runTests() {
   )
     passed++;
   else failed++;
-
-
-
-
-
-
-
 
   console.log(`\nResults: Passed: ${passed}, Failed: ${failed}`);
   process.exit(failed > 0 ? 1 : 0);

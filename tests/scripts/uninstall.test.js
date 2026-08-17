@@ -3,6 +3,7 @@
  */
 
 const assert = require('assert');
+const crypto = require('crypto');
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
@@ -98,9 +99,9 @@ function runTests() {
       assert.ok(installStdout.includes('Done. Install-state written'));
 
       const normalizedProjectRoot = fs.realpathSync(projectRoot);
-      const managedPath = path.join(normalizedProjectRoot, '.agent', 'hooks.json');
-      const statePath = path.join(normalizedProjectRoot, '.agent', 'ecc-install-state.json');
-      const unrelatedPath = path.join(normalizedProjectRoot, '.agent', 'custom-user-note.txt');
+      const managedPath = path.join(normalizedProjectRoot, '.agents', 'hooks.json');
+      const statePath = path.join(normalizedProjectRoot, '.agents', 'ecc-install-state.json');
+      const unrelatedPath = path.join(normalizedProjectRoot, '.agents', 'custom-user-note.txt');
       fs.writeFileSync(unrelatedPath, 'leave me alone');
 
       const uninstallResult = run(['--target', 'antigravity'], {
@@ -125,7 +126,7 @@ function runTests() {
     const projectRoot = createTempDir('uninstall-project-');
 
     try {
-      const targetRoot = path.join(projectRoot, '.agent');
+      const targetRoot = path.join(projectRoot, '.agents');
       fs.mkdirSync(targetRoot, { recursive: true });
       const normalizedTargetRoot = fs.realpathSync(targetRoot);
       const statePath = path.join(normalizedTargetRoot, 'ecc-install-state.json');
@@ -165,6 +166,7 @@ function runTests() {
             strategy: 'preserve-relative-path',
             ownership: 'managed',
             scaffoldOnly: false,
+            contentSha256: crypto.createHash('sha256').update('managed\n').digest('hex'),
           },
           {
             kind: 'merge-json',
@@ -223,7 +225,7 @@ function runTests() {
     const projectRoot = createTempDir('uninstall-project-');
 
     try {
-      const targetRoot = path.join(projectRoot, '.agent');
+      const targetRoot = path.join(projectRoot, '.agents');
       fs.mkdirSync(targetRoot, { recursive: true });
       const normalizedTargetRoot = fs.realpathSync(targetRoot);
       const statePath = path.join(normalizedTargetRoot, 'ecc-install-state.json');
@@ -275,6 +277,77 @@ function runTests() {
       assert.strictEqual(parsed.dryRun, true);
       assert.ok(parsed.results[0].plannedRemovals.includes(renderedPath));
       assert.ok(fs.existsSync(renderedPath));
+      assert.ok(fs.existsSync(statePath));
+    } finally {
+      cleanup(homeDir);
+      cleanup(projectRoot);
+    }
+  })) passed++; else failed++;
+
+  if (test('reports preserved legacy Antigravity files as an incomplete uninstall', () => {
+    const homeDir = createTempDir('uninstall-home-');
+    const projectRoot = createTempDir('uninstall-project-');
+
+    try {
+      const targetRoot = path.join(projectRoot, '.agent');
+      fs.mkdirSync(path.join(targetRoot, 'rules'), { recursive: true });
+      const normalizedTargetRoot = fs.realpathSync(targetRoot);
+      const statePath = path.join(normalizedTargetRoot, 'ecc-install-state.json');
+      const editedPath = path.join(normalizedTargetRoot, 'rules', 'common-coding-style.md');
+      fs.writeFileSync(editedPath, 'customer edit\n');
+
+      writeState(statePath, {
+        adapter: { id: 'antigravity-project', target: 'antigravity', kind: 'project' },
+        targetRoot: normalizedTargetRoot,
+        installStatePath: statePath,
+        request: {
+          profile: null,
+          modules: [],
+          includeComponents: [],
+          excludeComponents: [],
+          legacyLanguages: ['typescript'],
+          legacyMode: true,
+        },
+        resolution: {
+          selectedModules: ['legacy-antigravity-install'],
+          skippedModules: [],
+        },
+        operations: [{
+          kind: 'copy-file',
+          moduleId: 'rules-core',
+          sourceRelativePath: 'rules/common/coding-style.md',
+          destinationPath: editedPath,
+          strategy: 'flatten-copy',
+          ownership: 'managed',
+          scaffoldOnly: false,
+        }],
+        source: {
+          repoVersion: CURRENT_PACKAGE_VERSION,
+          repoCommit: 'abc123',
+          manifestVersion: CURRENT_MANIFEST_VERSION,
+        },
+      });
+
+      const dryRun = run(['--target', 'antigravity', '--dry-run', '--json'], {
+        cwd: projectRoot,
+        homeDir,
+      });
+      assert.strictEqual(dryRun.code, 1);
+      const parsed = JSON.parse(dryRun.stdout);
+      assert.strictEqual(parsed.results[0].status, 'partial');
+      assert.deepStrictEqual(parsed.results[0].plannedRemovals, []);
+      assert.deepStrictEqual(parsed.results[0].retainedPaths, [editedPath]);
+      assert.strictEqual(parsed.summary.partialCount, 1);
+
+      const applied = run(['--target', 'antigravity'], {
+        cwd: projectRoot,
+        homeDir,
+      });
+      assert.strictEqual(applied.code, 1);
+      assert.ok(applied.stdout.includes('Status: PARTIAL'));
+      assert.ok(applied.stdout.includes('Legacy Antigravity files were preserved'));
+      assert.ok(applied.stdout.includes(editedPath));
+      assert.ok(fs.existsSync(editedPath));
       assert.ok(fs.existsSync(statePath));
     } finally {
       cleanup(homeDir);
