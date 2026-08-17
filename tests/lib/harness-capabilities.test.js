@@ -33,12 +33,12 @@ function runTests() {
   let passed = 0;
   let failed = 0;
 
-  if (test('represents all 5 registered targets exactly once across 4 harnesses', () => {
+  if (test('represents all 4 registered targets exactly once across 3 harnesses', () => {
     const catalogTargetIds = HARNESS_CAPABILITIES.flatMap(harness => harness.targetIds);
     const adapterTargetIds = listInstallTargetAdapters().map(adapter => adapter.target);
 
-    assert.strictEqual(HARNESS_CAPABILITIES.length, 4);
-    assert.strictEqual(new Set(catalogTargetIds).size, 5);
+    assert.strictEqual(HARNESS_CAPABILITIES.length, 3);
+    assert.strictEqual(new Set(catalogTargetIds).size, 4);
     assert.deepStrictEqual([...catalogTargetIds].sort(), [...SUPPORTED_INSTALL_TARGETS].sort());
     assert.deepStrictEqual([...catalogTargetIds].sort(), [...adapterTargetIds].sort());
   })) passed++; else failed++;
@@ -78,7 +78,6 @@ function runTests() {
 
   if (test('keeps every advanced target attached to its registered root and scope', () => {
     const expected = {
-      antigravity: ['project', './.agents'],
       joycode: ['project', './.joycode'],
     };
 
@@ -99,7 +98,7 @@ function runTests() {
   })) passed++; else failed++;
 
   if (test('does not advertise unregistered or removed harnesses', () => {
-    for (const id of ['copilot', 'kiro', 'pi', 'cursor', 'opencode', 'kimi']) {
+    for (const id of ['copilot', 'kiro', 'pi', 'cursor', 'opencode', 'kimi', 'antigravity']) {
       assert.strictEqual(getHarnessCapability(id), null);
       assert.throws(
         () => normalizeHarnessSelection(id),
@@ -141,7 +140,7 @@ function runTests() {
 
     const first = listHarnessCapabilities();
     first.pop();
-    assert.strictEqual(listHarnessCapabilities().length, 4);
+    assert.strictEqual(listHarnessCapabilities().length, 3);
 
     const guided = listGuidedHarnesses();
     guided.reverse();

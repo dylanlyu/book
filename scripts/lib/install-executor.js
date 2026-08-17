@@ -198,37 +198,6 @@ function readJsonObject(filePath, label) {
   return parsed;
 }
 
-function addMatchingRuleOperations(operations, options) {
-  const sourceDir = path.join(options.sourceRoot, options.sourceRelativeDir);
-  if (!fs.existsSync(sourceDir)) {
-    return 0;
-  }
-
-  const files = fs
-    .readdirSync(sourceDir, { withFileTypes: true })
-    .filter(entry => entry.isFile() && options.matcher(entry.name))
-    .map(entry => entry.name)
-    .sort();
-
-  for (const fileName of files) {
-    const sourceRelativePath = path.join(options.sourceRelativeDir, fileName);
-    const sourcePath = path.join(options.sourceRoot, sourceRelativePath);
-    const destinationPath = path.join(options.destinationDir, options.rename ? options.rename(fileName) : fileName);
-
-    operations.push(
-      buildCopyFileOperation({
-        moduleId: options.moduleId,
-        sourcePath,
-        sourceRelativePath,
-        destinationPath,
-        strategy: options.strategy || 'flatten-copy'
-      })
-    );
-  }
-
-  return files.length;
-}
-
 function isDirectoryNonEmpty(dirPath) {
   return fs.existsSync(dirPath) && fs.statSync(dirPath).isDirectory() && fs.readdirSync(dirPath).length > 0;
 }
@@ -302,81 +271,6 @@ function planClaudeProjectLegacyInstall(context) {
   });
 }
 
-function planAntigravityLegacyInstall(context) {
-  const adapter = getInstallTargetAdapter('antigravity');
-  const targetRoot = adapter.resolveRoot({ repoRoot: context.projectRoot });
-  const installStatePath = adapter.getInstallStatePath({ repoRoot: context.projectRoot });
-  const operations = [];
-  const warnings = [];
-
-  if (isDirectoryNonEmpty(path.join(targetRoot, 'rules'))) {
-    warnings.push(`Destination ${path.join(targetRoot, 'rules')}/ already exists and files may be overwritten`);
-  }
-
-  addMatchingRuleOperations(operations, {
-    moduleId: 'legacy-antigravity-install',
-    sourceRoot: context.sourceRoot,
-    sourceRelativeDir: path.join('rules', 'common'),
-    destinationDir: path.join(targetRoot, 'rules'),
-    matcher: fileName => fileName.endsWith('.md'),
-    rename: fileName => `common-${fileName}`
-  });
-
-  for (const language of context.languages) {
-    if (!LANGUAGE_NAME_PATTERN.test(language)) {
-      warnings.push(`Invalid language name '${language}'. Only alphanumeric, dash, and underscore are allowed`);
-      continue;
-    }
-
-    const sourceDir = path.join(context.sourceRoot, 'rules', language);
-    if (!fs.existsSync(sourceDir)) {
-      warnings.push(`rules/${language}/ does not exist, skipping`);
-      continue;
-    }
-
-    addMatchingRuleOperations(operations, {
-      moduleId: 'legacy-antigravity-install',
-      sourceRoot: context.sourceRoot,
-      sourceRelativeDir: path.join('rules', language),
-      destinationDir: path.join(targetRoot, 'rules'),
-      matcher: fileName => fileName.endsWith('.md'),
-      rename: fileName => `${language}-${fileName}`
-    });
-  }
-
-  addRecursiveCopyOperations(operations, {
-    moduleId: 'legacy-antigravity-install',
-    sourceRoot: context.sourceRoot,
-    sourceRelativeDir: 'commands',
-    destinationDir: path.join(targetRoot, 'workflows')
-  });
-  addRecursiveCopyOperations(operations, {
-    moduleId: 'legacy-antigravity-install',
-    sourceRoot: context.sourceRoot,
-    sourceRelativeDir: 'agents',
-    destinationDir: path.join(targetRoot, 'agents'),
-    contentTransform: 'antigravity-agent-frontmatter'
-  });
-  addRecursiveCopyOperations(operations, {
-    moduleId: 'legacy-antigravity-install',
-    sourceRoot: context.sourceRoot,
-    sourceRelativeDir: 'skills',
-    destinationDir: path.join(targetRoot, 'skills')
-  });
-
-  return {
-    mode: 'legacy',
-    adapter,
-    target: 'antigravity',
-    targetRoot,
-    installRoot: targetRoot,
-    installStatePath,
-    operations,
-    warnings,
-    selectedModules: ['legacy-antigravity-install']
-  };
-}
-
 function createLegacyInstallPlan(options = {}) {
   const sourceRoot = options.sourceRoot || getSourceRoot();
   const projectRoot = options.projectRoot || process.cwd();
@@ -393,14 +287,9 @@ function createLegacyInstallPlan(options = {}) {
     claudeRulesDir: options.claudeRulesDir || process.env.CLAUDE_RULES_DIR || null
   };
 
-  let plan;
-  if (target === 'claude') {
-    plan = planClaudeLegacyInstall(context);
-  } else if (target === 'claude-project') {
-    plan = planClaudeProjectLegacyInstall(context);
-  } else {
-    plan = planAntigravityLegacyInstall(context);
-  }
+  const plan = target === 'claude'
+    ? planClaudeLegacyInstall(context)
+    : planClaudeProjectLegacyInstall(context);
 
   const source = {
     repoVersion: getPackageVersion(sourceRoot),
@@ -470,7 +359,6 @@ function createLegacyCompatInstallPlan(options = {}) {
     includeComponentIds,
     excludeComponentIds,
     legacyLanguages: selection.legacyLanguages,
-    ruleLanguages: selection.ruleLanguages,
     legacyMode: true,
     requestProfileId: null,
     requestModuleIds: [],
@@ -536,16 +424,6 @@ function materializeScaffoldOperation(sourceRoot, operation) {
   });
 }
 
-function isSelectedAntigravityLegacyRule(operation, ruleLanguages) {
-  const normalizedSourcePath = String(operation.sourceRelativePath || '').replace(/\\/g, '/');
-  if (!normalizedSourcePath.startsWith('rules/')) {
-    return true;
-  }
-
-  const namespace = normalizedSourcePath.split('/')[1];
-  return namespace === 'common' || ruleLanguages.includes(namespace);
-}
-
 function dedupeCopyFileOperations(operations) {
   // A `copy-file` operation fully overwrites its destination, so when several
   // of them target the same path (e.g. a generic `commands/<name>.md` shadowed
@@ -604,14 +482,7 @@ function createManifestInstallPlan(options = {}) {
   const materializedOperations = plan.operations.flatMap(operation => (
     materializeScaffoldOperation(sourceRoot, operation)
   ));
-  const ruleLanguages = Array.isArray(options.ruleLanguages) ? [...options.ruleLanguages] : [];
-  const operations = dedupeCopyFileOperations(
-    options.legacyMode && target === 'antigravity'
-      ? materializedOperations.filter(operation => (
-        isSelectedAntigravityLegacyRule(operation, ruleLanguages)
-      ))
-      : materializedOperations
-  );
+  const operations = dedupeCopyFileOperations(materializedOperations);
   const source = {
     repoVersion: getPackageVersion(sourceRoot),
     repoCommit: getRepoCommit(sourceRoot),

@@ -184,13 +184,8 @@ function runAutoUpdate(options = {}, dependencies = {}) {
     projectRoot,
     targets: options.targets
   });
-  const records = discoveredRecords.filter(record => record.exists && !record.legacy);
-  const legacyRecords = discoveredRecords.filter(record => record.exists && record.legacy);
-  const warnings = records.length === 0 && legacyRecords.length > 0
-    ? [
-        'Found only a legacy Antigravity .agent install-state. Run the Antigravity installer once to migrate it to .agents before auto-updating.',
-      ]
-    : [];
+  const records = discoveredRecords.filter(record => record.exists);
+  const warnings = [];
 
   const results = [];
   if (records.length === 0) {

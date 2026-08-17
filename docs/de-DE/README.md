@@ -1148,7 +1148,6 @@ Jede Komponente ist vollständig unabhängig.
 Ja. ECC ist Cross-Platform:
 - **Codex**: Erstklassige Unterstützung sowohl für die macOS-App als auch die CLI, mit Adapter-Drift-Guards und SessionStart-Fallback. Siehe PR [#257](https://github.com/affaan-m/ECC/pull/257).
 - **GitHub Copilot (VS Code)**: Instruction- und Prompt-Schicht über `.github/copilot-instructions.md`, `.vscode/settings.json` und `.github/prompts/`. Siehe [GitHub-Copilot-Unterstützung](#github-copilot-unterstützung).
-- **Antigravity**: Eng integriertes Setup für Workflows, Skills und abgeflachte Rules in `.agents/`. Siehe [Antigravity-Leitfaden](../../docs/ANTIGRAVITY-GUIDE.md).
 - **JoyCode**: Projektlokale Adapter für selektive Installation von Commands, Agents, Skills und abgeflachten Rules. Siehe [JoyCode-Adapter-Leitfaden](../../docs/JOYCODE-GUIDE.md).
 - **Nicht-native Harnesses**: Manueller Fallback-Pfad für Grok und ähnliche Oberflächen. Siehe [Leitfaden zur manuellen Anpassung](../../docs/MANUAL-ADAPTATION-GUIDE.md).
 - **Claude Code**: Nativ — dies ist das primäre Ziel.

@@ -943,7 +943,6 @@ cp -r everything-claude-code/rules/common ~/.claude/rules/common
 是的。ECC 是跨平台的：
 
 * **Codex**: 对 macOS 应用和 CLI 的一流支持，带有适配器漂移防护和 SessionStart 回退。参见 PR [#257](https://github.com/affaan-m/everything-claude-code/pull/257)。
-* **Antigravity**: 为工作流、技能和扁平化规则紧密集成的设置，位于 `.agents/`。参见 [Antigravity 指南](../ANTIGRAVITY-GUIDE.md)。
 * **Claude Code**: 原生支持 — 这是主要目标。
 
 </details>

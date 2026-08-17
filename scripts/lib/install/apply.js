@@ -16,9 +16,7 @@ const {
   prepareClaudeSkillMigration,
   removeLegacyClaudeSkillFiles,
 } = require('./claude-skill-migration');
-const { cleanupLegacyAntigravityInstall } = require('./antigravity-legacy-migration');
 const { buildInstallIndex, rewriteRelativeLinks } = require('./link-rewrite');
-const { adaptAntigravityAgent } = require('./antigravity-agent');
 
 function isMarkdownPath(filePath) {
   return /\.(md|mdx|markdown)$/i.test(String(filePath || ''));
@@ -27,9 +25,6 @@ function isMarkdownPath(filePath) {
 function transformInstallContent(operation, content) {
   if (!operation.contentTransform) {
     return content;
-  }
-  if (operation.contentTransform === 'antigravity-agent-frontmatter') {
-    return adaptAntigravityAgent(content, operation.sourceRelativePath);
   }
   throw new Error(`Unknown install content transform: ${operation.contentTransform}`);
 }
@@ -474,21 +469,6 @@ function applyInstallPlan(plan, dependencies = {}) {
     }
     throw error;
   }
-  let antigravityMigrationWarnings = [];
-  try {
-    const antigravityMigration = cleanupLegacyAntigravityInstall(appliedPlan);
-    if (antigravityMigration.detected && !antigravityMigration.complete) {
-      antigravityMigrationWarnings = [
-        'Legacy Antigravity migration is incomplete. ECC preserved modified, unverifiable, or unmanaged content under .agent; review and move anything you want to keep, then rerun the Antigravity install.',
-        ...(Array.isArray(antigravityMigration.warnings) ? antigravityMigration.warnings : []),
-      ];
-    }
-  } catch (error) {
-    antigravityMigrationWarnings = [
-      `Legacy Antigravity cleanup did not finish: ${error.message}. Content under .agent was preserved; remove it manually or rerun the Antigravity install.`,
-    ];
-  }
-
   return {
     ...plan,
     statePreview: finalState,
@@ -498,7 +478,6 @@ function applyInstallPlan(plan, dependencies = {}) {
     warnings: [
       ...(Array.isArray(plan.warnings) ? plan.warnings : []),
       ...migration.warnings,
-      ...antigravityMigrationWarnings,
     ],
     applied: true,
   };

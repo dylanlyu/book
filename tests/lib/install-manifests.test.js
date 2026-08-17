@@ -288,16 +288,16 @@ function runTests() {
   else failed++;
 
   if (
-    test('resolves antigravity profiles while skipping only unsupported modules', () => {
+    test('resolves project profiles while skipping only unsupported modules', () => {
       const projectRoot = '/workspace/app';
-      const plan = resolveInstallPlan({ profileId: 'core', target: 'antigravity', projectRoot });
+      const plan = resolveInstallPlan({ profileId: 'core', target: 'joycode', projectRoot });
 
       assert.deepStrictEqual(plan.selectedModuleIds, ['rules-core', 'agents-core', 'commands-core', 'platform-configs', 'skill-unified-memory', 'workflow-quality']);
       assert.ok(plan.skippedModuleIds.includes('hooks-runtime'));
       assert.ok(!plan.skippedModuleIds.includes('platform-configs'));
       assert.ok(!plan.skippedModuleIds.includes('workflow-quality'));
-      assert.strictEqual(plan.targetAdapterId, 'antigravity-project');
-      assert.strictEqual(plan.targetRoot, path.join(projectRoot, '.agents'));
+      assert.strictEqual(plan.targetAdapterId, 'joycode-project');
+      assert.strictEqual(plan.targetRoot, path.join(projectRoot, '.joycode'));
     })
   )
     passed++;
@@ -512,19 +512,6 @@ function runTests() {
       assert.strictEqual(selection.moduleIds.filter(moduleId => moduleId === 'security').length, 1);
       assert.ok(selection.moduleIds.includes('framework-language'), 'ruby should resolve to framework-language module');
       assert.ok(selection.moduleIds.includes('security'), 'rails alias should add security guidance for Rails apps');
-    })
-  )
-    passed++;
-  else failed++;
-
-  if (
-    test('keeps antigravity legacy compatibility selections target-safe', () => {
-      const selection = resolveLegacyCompatibilitySelection({
-        target: 'antigravity',
-        legacyLanguages: ['typescript']
-      });
-
-      assert.deepStrictEqual(selection.moduleIds, ['rules-core', 'agents-core', 'commands-core', 'skill-unified-memory', 'workflow-quality']);
     })
   )
     passed++;
@@ -841,18 +828,18 @@ function runTests() {
   else failed++;
 
   if (
-    test('keeps antigravity modules selected while filtering unsupported source paths', () => {
+    test('keeps selected modules while filtering unsupported source paths', () => {
       const repoRoot = createTestRepo();
       try {
         writeJson(path.join(repoRoot, 'manifests', 'install-modules.json'), {
           version: 1,
           modules: [
             {
-              id: 'unsupported-antigravity',
+              id: 'unsupported-paths',
               kind: 'skills',
               description: 'Unsupported',
               paths: ['.joycode', 'skills/example'],
-              targets: ['antigravity'],
+              targets: ['codex'],
               dependencies: [],
               defaultInstall: false,
               cost: 'light',
@@ -863,25 +850,25 @@ function runTests() {
         writeJson(path.join(repoRoot, 'manifests', 'install-profiles.json'), {
           version: 1,
           profiles: {
-            core: { description: 'Core', modules: ['unsupported-antigravity'] }
+            core: { description: 'Core', modules: ['unsupported-paths'] }
           }
         });
 
         const plan = resolveInstallPlan({
           repoRoot,
           profileId: 'core',
-          target: 'antigravity',
+          target: 'codex',
           projectRoot: '/workspace/app'
         });
-        assert.deepStrictEqual(plan.selectedModuleIds, ['unsupported-antigravity']);
+        assert.deepStrictEqual(plan.selectedModuleIds, ['unsupported-paths']);
         assert.deepStrictEqual(plan.skippedModuleIds, []);
         assert.ok(
           plan.operations.every(operation => operation.sourceRelativePath !== '.joycode'),
-          'Unsupported antigravity paths should be filtered from planned operations'
+          'Unsupported platform paths should be filtered from planned operations'
         );
         assert.ok(
           plan.operations.some(operation => operation.sourceRelativePath === 'skills/example'),
-          'Supported antigravity skill paths should still be planned'
+          'Supported skill paths should still be planned'
         );
       } finally {
         cleanupTestRepo(repoRoot);

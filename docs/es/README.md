@@ -1006,7 +1006,6 @@ Cada componente es completamente independiente.
 Sí. ECC es multiplataforma:
 - **Codex**: Soporte de primera clase para la app macOS y CLI, con guardias de deriva del adaptador y fallback de SessionStart. Consulta PR [#257](https://github.com/affaan-m/ECC/pull/257).
 - **GitHub Copilot (VS Code)**: Capa de instrucciones y prompts mediante `.github/copilot-instructions.md`, `.vscode/settings.json` y `.github/prompts/`. Consulta [Soporte para GitHub Copilot](#soporte-para-github-copilot).
-- **Antigravity**: Configuración estrechamente integrada para flujos de trabajo, skills y reglas aplanadas en `.agents/`. Consulta la [Guía de Antigravity](../ANTIGRAVITY-GUIDE.md).
 - **JoyCode**: Adaptador de instalación selectiva local al proyecto para comandos, agentes, skills y reglas aplanadas. Consulta la [Guía del Adaptador JoyCode](../JOYCODE-GUIDE.md).
 - **Harnesses no nativos**: Ruta de respaldo manual para Grok e interfaces similares. Consulta la [Guía de Adaptación Manual](../MANUAL-ADAPTATION-GUIDE.md).
 - **Claude Code**: Nativo — este es el objetivo principal.

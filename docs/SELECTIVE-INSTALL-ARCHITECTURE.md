@@ -3,7 +3,7 @@
 > **Status note.** This is a discovery-stage design record and is kept as written.
 > Some harness targets discussed below (Cursor, OpenCode, Gemini, Qwen, Zed, Hermes,
 > OpenClaw, Kimi, CodeBuddy) have since been removed from ECC. The currently supported
-> install targets are `claude`, `claude-project`, `codex`, `antigravity`, and `joycode`.
+> install targets are `claude`, `claude-project`, `codex`, and `joycode`.
 
 ## Purpose
 

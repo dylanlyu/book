@@ -86,7 +86,7 @@ function runTests() {
     const projectRoot = createTempDir('uninstall-project-');
 
     try {
-      const installStdout = execFileSync('node', [INSTALL_SCRIPT, '--target', 'antigravity', 'typescript'], {
+      const installStdout = execFileSync('node', [INSTALL_SCRIPT, '--target', 'joycode', '--profile', 'minimal'], {
         cwd: projectRoot,
         env: {
           ...process.env,
@@ -99,12 +99,12 @@ function runTests() {
       assert.ok(installStdout.includes('Done. Install-state written'));
 
       const normalizedProjectRoot = fs.realpathSync(projectRoot);
-      const managedPath = path.join(normalizedProjectRoot, '.agents', 'hooks.json');
-      const statePath = path.join(normalizedProjectRoot, '.agents', 'ecc-install-state.json');
-      const unrelatedPath = path.join(normalizedProjectRoot, '.agents', 'custom-user-note.txt');
+      const managedPath = path.join(normalizedProjectRoot, '.joycode', 'hooks.json');
+      const statePath = path.join(normalizedProjectRoot, '.joycode', 'ecc-install-state.json');
+      const unrelatedPath = path.join(normalizedProjectRoot, '.joycode', 'custom-user-note.txt');
       fs.writeFileSync(unrelatedPath, 'leave me alone');
 
-      const uninstallResult = run(['--target', 'antigravity'], {
+      const uninstallResult = run(['--target', 'joycode'], {
         cwd: projectRoot,
         homeDir,
       });
@@ -126,7 +126,7 @@ function runTests() {
     const projectRoot = createTempDir('uninstall-project-');
 
     try {
-      const targetRoot = path.join(projectRoot, '.agents');
+      const targetRoot = path.join(projectRoot, '.joycode');
       fs.mkdirSync(targetRoot, { recursive: true });
       const normalizedTargetRoot = fs.realpathSync(targetRoot);
       const statePath = path.join(normalizedTargetRoot, 'ecc-install-state.json');
@@ -142,7 +142,7 @@ function runTests() {
       fs.writeFileSync(unrelatedPath, 'leave me alone');
 
       writeState(statePath, {
-        adapter: { id: 'antigravity-project', target: 'antigravity', kind: 'project' },
+        adapter: { id: 'joycode-project', target: 'joycode', kind: 'project' },
         targetRoot: normalizedTargetRoot,
         installStatePath: statePath,
         request: {
@@ -171,7 +171,7 @@ function runTests() {
           {
             kind: 'merge-json',
             moduleId: 'platform-configs',
-            sourceRelativePath: '.agent/hooks.json',
+            sourceRelativePath: '.joycode/hooks.json',
             destinationPath: mergedPath,
             strategy: 'merge-json',
             ownership: 'managed',
@@ -186,7 +186,7 @@ function runTests() {
           {
             kind: 'remove',
             moduleId: 'platform-configs',
-            sourceRelativePath: '.agent/legacy-note.txt',
+            sourceRelativePath: '.joycode/legacy-note.txt',
             destinationPath: removedPath,
             strategy: 'remove',
             ownership: 'managed',
@@ -201,7 +201,7 @@ function runTests() {
         },
       });
 
-      const uninstallResult = run(['--target', 'antigravity'], {
+      const uninstallResult = run(['--target', 'joycode'], {
         cwd: projectRoot,
         homeDir,
       });
@@ -225,7 +225,7 @@ function runTests() {
     const projectRoot = createTempDir('uninstall-project-');
 
     try {
-      const targetRoot = path.join(projectRoot, '.agents');
+      const targetRoot = path.join(projectRoot, '.joycode');
       fs.mkdirSync(targetRoot, { recursive: true });
       const normalizedTargetRoot = fs.realpathSync(targetRoot);
       const statePath = path.join(normalizedTargetRoot, 'ecc-install-state.json');
@@ -233,7 +233,7 @@ function runTests() {
       fs.writeFileSync(renderedPath, '# generated\n');
 
       writeState(statePath, {
-        adapter: { id: 'antigravity-project', target: 'antigravity', kind: 'project' },
+        adapter: { id: 'joycode-project', target: 'joycode', kind: 'project' },
         targetRoot: normalizedTargetRoot,
         installStatePath: statePath,
         request: {
@@ -252,7 +252,7 @@ function runTests() {
           {
             kind: 'render-template',
             moduleId: 'platform-configs',
-            sourceRelativePath: '.agent/generated.md.template',
+            sourceRelativePath: '.joycode/generated.md.template',
             destinationPath: renderedPath,
             strategy: 'render-template',
             ownership: 'managed',
@@ -267,7 +267,7 @@ function runTests() {
         },
       });
 
-      const uninstallResult = run(['--target', 'antigravity', '--dry-run', '--json'], {
+      const uninstallResult = run(['--target', 'joycode', '--dry-run', '--json'], {
         cwd: projectRoot,
         homeDir,
       });
@@ -284,78 +284,7 @@ function runTests() {
     }
   })) passed++; else failed++;
 
-  if (test('reports preserved legacy Antigravity files as an incomplete uninstall', () => {
-    const homeDir = createTempDir('uninstall-home-');
-    const projectRoot = createTempDir('uninstall-project-');
-
-    try {
-      const targetRoot = path.join(projectRoot, '.agent');
-      fs.mkdirSync(path.join(targetRoot, 'rules'), { recursive: true });
-      const normalizedTargetRoot = fs.realpathSync(targetRoot);
-      const statePath = path.join(normalizedTargetRoot, 'ecc-install-state.json');
-      const editedPath = path.join(normalizedTargetRoot, 'rules', 'common-coding-style.md');
-      fs.writeFileSync(editedPath, 'customer edit\n');
-
-      writeState(statePath, {
-        adapter: { id: 'antigravity-project', target: 'antigravity', kind: 'project' },
-        targetRoot: normalizedTargetRoot,
-        installStatePath: statePath,
-        request: {
-          profile: null,
-          modules: [],
-          includeComponents: [],
-          excludeComponents: [],
-          legacyLanguages: ['typescript'],
-          legacyMode: true,
-        },
-        resolution: {
-          selectedModules: ['legacy-antigravity-install'],
-          skippedModules: [],
-        },
-        operations: [{
-          kind: 'copy-file',
-          moduleId: 'rules-core',
-          sourceRelativePath: 'rules/common/coding-style.md',
-          destinationPath: editedPath,
-          strategy: 'flatten-copy',
-          ownership: 'managed',
-          scaffoldOnly: false,
-        }],
-        source: {
-          repoVersion: CURRENT_PACKAGE_VERSION,
-          repoCommit: 'abc123',
-          manifestVersion: CURRENT_MANIFEST_VERSION,
-        },
-      });
-
-      const dryRun = run(['--target', 'antigravity', '--dry-run', '--json'], {
-        cwd: projectRoot,
-        homeDir,
-      });
-      assert.strictEqual(dryRun.code, 1);
-      const parsed = JSON.parse(dryRun.stdout);
-      assert.strictEqual(parsed.results[0].status, 'partial');
-      assert.deepStrictEqual(parsed.results[0].plannedRemovals, []);
-      assert.deepStrictEqual(parsed.results[0].retainedPaths, [editedPath]);
-      assert.strictEqual(parsed.summary.partialCount, 1);
-
-      const applied = run(['--target', 'antigravity'], {
-        cwd: projectRoot,
-        homeDir,
-      });
-      assert.strictEqual(applied.code, 1);
-      assert.ok(applied.stdout.includes('Status: PARTIAL'));
-      assert.ok(applied.stdout.includes('Legacy Antigravity files were preserved'));
-      assert.ok(applied.stdout.includes(editedPath));
-      assert.ok(fs.existsSync(editedPath));
-      assert.ok(fs.existsSync(statePath));
-    } finally {
-      cleanup(homeDir);
-      cleanup(projectRoot);
-    }
-  })) passed++; else failed++;
-
-  console.log(`\nResults: Passed: ${passed}, Failed: ${failed}`);
+    console.log(`\nResults: Passed: ${passed}, Failed: ${failed}`);
   process.exit(failed > 0 ? 1 : 0);
 }
 

@@ -50,7 +50,6 @@
               "enum": [
                 "claude",
                 "claude-project",
-                "antigravity",
                 "codex",
                 "joycode"
               ]

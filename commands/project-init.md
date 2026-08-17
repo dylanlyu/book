@@ -39,7 +39,7 @@ When the ECC checkout is available, use `config/project-stack-mappings.json` as 
 
 ## Planning Flow
 
-1. Identify the target harness. Default to `claude` unless the user asks for `claude-project`, `antigravity`, `codex`, or `joycode`.
+1. Identify the target harness. Default to `claude` unless the user asks for `claude-project`, `codex`, or `joycode`.
 2. Detect stacks from project files and show the evidence for each match.
 3. Resolve the smallest useful ECC plan:
    - project has an `ecc-install.json`: `node scripts/install-plan.js --config ecc-install.json --json`

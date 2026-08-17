@@ -4,12 +4,13 @@
 凡是清單內的路徑或設定，**一律不併入**，直接捨棄。
 
 > 上一次全面套用：2026-08-17（合併上游 52 個 commit，處理 40 個衝突檔）。
+> 同日移除 Pi harness 與 Antigravity 目標（見第 1、2、3 節）。
 
 ---
 
 ## 1. 移除紀錄（Removal Ledger）
 
-本 fork 的移除分散在 6 個 commit。**合併衝突幾乎都源自這幾個 commit**，
+本 fork 的移除分散在 7 個 commit。**合併衝突幾乎都源自這幾個 commit**，
 因為上游仍在持續開發我們已經拿掉的東西。
 
 | Commit | 移除內容 |
@@ -20,19 +21,24 @@
 | `3208b6f6` | Cursor、Gemini、Hermes、Kimi、Kiro、OpenClaw 目標與相關 scaffolding |
 | `0b202b07` | OpenCode、Qwen、Trae、Zed 整合 |
 | `465cd72f` | ecc2 實驗性 Rust runtime、control pane、agent proximity、observability readiness |
+| _本次_ | Pi harness 與 Antigravity 安裝目標（含 legacy `.agent` 遷移路徑） |
 
 ---
 
 ## 2. 已移除的 harness / 安裝目標
 
-**保留的目標只有這 5 個**：`claude`、`claude-project`、`antigravity`、`codex`、`joycode`。
+**保留的目標只有這 4 個**：`claude`、`claude-project`、`codex`、`joycode`。
 
 其他一律排除。上游若帶回下列任何目錄，整個丟掉：
 
 ```
-.codebuddy/    .cursor/     .gemini/     .hermes/     .kimi/
-.kiro/         .openclaw/   .opencode/   .qwen/       .trae/     .zed/
+.agent/        .agents/*    .codebuddy/  .cursor/     .gemini/
+.hermes/       .kimi/       .kiro/       .openclaw/   .opencode/
+.pi/           .qwen/       .trae/       .zed/
 ```
+
+> `.agents/` 有兩種用途，別搞混：**倉庫根目錄的 `.agents/`（Codex 的 skill metadata）要保留**；
+> Antigravity 安裝到「使用者專案」的 `.agents/` 已隨目標移除。`.agent/` 是 Antigravity 的舊路徑，一律排除。
 
 對應的程式與測試（上游若復原，一併排除）：
 
@@ -42,6 +48,7 @@ scripts/build-opencode.js
 scripts/gemini-adapt-agents.js
 scripts/hooks/cursor-session-env.js
 scripts/lib/cursor-agent-names.js
+scripts/lib/install-targets/antigravity-project.js
 scripts/lib/install-targets/codebuddy-project.js
 scripts/lib/install-targets/cursor-project.js
 scripts/lib/install-targets/gemini-project.js
@@ -51,25 +58,39 @@ scripts/lib/install-targets/opencode-home.js
 scripts/lib/install-targets/openclaw-home.js
 scripts/lib/install-targets/qwen-home.js
 scripts/lib/install-targets/zed-project.js
+scripts/lib/install/antigravity-agent.js
+scripts/lib/install/antigravity-legacy-migration.js
 scripts/lib/mcp-inventory/readers/opencode.js
 scripts/lib/session-adapters/opencode.js
 skills/hermes-imports/
 skills/openclaw-persona-forge/
+docs/ANTIGRAVITY-GUIDE.md
 docs/HERMES-OPENCLAW-MIGRATION.md
 docs/HERMES-SETUP.md
 docs/QWEN-GUIDE.md
+tests/docs/antigravity-guide.test.js
 tests/hooks/cursor-block-no-verify.test.js
+tests/lib/antigravity-legacy-migration.test.js
 tests/lib/session-adapters-opencode.test.js
 tests/opencode-config.test.js
 tests/opencode-plugin-hooks.test.js
 tests/opencode-tools.test.js
+tests/pi/pi-extension-adapter.test.js
+tests/pi/pi-package-manifest.test.js
 tests/scripts/build-opencode.test.js
 tests/scripts/gemini-adapt-agents.test.js
 tests/scripts/openclaw-persona-forge-gacha.test.js
 tests/scripts/trae-install.test.js
 ```
 
-> **注意**：`.pi/`（Pi harness）**不在**排除清單內。它是上游新增、我們保留的目標。
+### 保留的同名項目（別誤刪）
+
+| 保留 | 原因 |
+|------|------|
+| `commands/multi-*.md` 裡的 `--backend antigravity` | 那是**多模型後端**（`codeagent-wrapper`），與安裝目標無關 |
+| `skills/angular-developer/references/mcp.md` 的 `.antigravity/mcp.json` | 那是 Antigravity IDE 自己的 MCP 設定教學，不是 ECC adapter |
+| 倉庫根目錄 `.agents/` | Codex 的 skill metadata 佈局 |
+| `scripts/lib/install/link-rewrite.js` | 與 antigravity 同批引入但為共用模組，`install-lifecycle` 仍在用 |
 
 ---
 
@@ -118,11 +139,12 @@ tests/scripts/observability-readiness.test.js
 
 | 區塊 | 排除項 |
 |------|--------|
-| `files` | `.hermes/`、`.kimi/`、`.opencode/`、`.openclaw/`、`.qwen/`、`.zed/` |
+| `files` | `.hermes/`、`.kimi/`、`.opencode/`、`.openclaw/`、`.pi/`、`.qwen/`、`.zed/` |
 | `files` | `scripts/control-pane.js`、`scripts/observability-readiness.js` |
 | `bin` | `ecc-control-pane` |
 | `scripts` | `control:pane`、`observability:ready` |
 | `devDependencies` | `@opencode-ai/plugin` |
+| 頂層 | `"pi": { extensions / skills / prompts }` 區塊（Pi 套件宣告） |
 
 ### `scripts/ecc.js`
 
@@ -131,20 +153,34 @@ tests/scripts/observability-readiness.test.js
 
 ### `manifests/install-modules.json`
 
-- `paths` 排除 `.cursor`、`.gemini`、`.opencode`、`.qwen`、`.zed`
-- **每個 module 的 `targets` 陣列**只能包含保留的 5 個目標。
+- `paths` 排除 `.cursor`、`.gemini`、`.opencode`、`.pi`、`.qwen`、`.zed`
+- **每個 module 的 `targets` 陣列**只能包含保留的 4 個目標。
   上游新增模組（例如 `nasiko-control-plane`）常帶滿所有目標，必須過濾，
   否則 `tests/lib/install-manifests.test.js` 會整批失敗。
 
 ### `scripts/lib/install-manifests.js`
 
-`LEGACY_COMPAT_BASE_MODULE_IDS_BY_TARGET` 只保留 `claude`、`claude-project`、`antigravity`。
+`SUPPORTED_INSTALL_TARGETS` 與 `LEGACY_COMPAT_BASE_MODULE_IDS_BY_TARGET` 只保留 `claude`、`claude-project`。
 排除 `TARGET_DEFAULT_PROFILE_IDS` 與 `TARGET_DEFAULT_EXCLUSIONS`（兩者只服務 opencode）。
+排除 `LEGACY_LANGUAGE_RULE_NAMESPACES` 與 `ruleLanguages`（只服務 Antigravity 的規則篩選，已無消費者）。
 
 ### `scripts/lib/harness-adapter-compliance.js` 與 `docs/architecture/harness-adapter-compliance.md`
 
-adapter 記錄只保留：`claude-code`、`codex`、`pi`、`dmux`、`orca`、`superset`、`ghast`、`terminal-only`。
+adapter 記錄只保留：`claude-code`、`codex`、`dmux`、`orca`、`superset`、`ghast`、`terminal-only`。
+排除 `pi` 記錄與文件表格中的 `| Pi |` 列。
 `verification_commands` 不得出現 `npm run observability:ready`。
+
+### `schemas/*.json` 與 `scripts/lib/install-targets/registry.js`
+
+target 列舉與 `ADAPTERS` 陣列只能包含 `claude`、`claude-project`、`codex`、`joycode`。
+上游帶回 `antigravity` 或 `pi` 時一併刪除，並確認 `scripts/lib/harness-capabilities.js`
+的 harness 數量（3 個 harness / 4 個 target）與 `tests/lib/harness-capabilities.test.js` 一致。
+
+### `scripts/lib/install-lifecycle.js` 與 `scripts/lib/install/apply.js`
+
+排除 Antigravity legacy 遷移路徑：`getLegacyAntigravityLocation`、`inspectLegacyAntigravityState`、
+`cleanupLegacyAntigravityInstall`、`adaptAntigravityAgent`、`antigravity-agent-frontmatter` transform，
+以及 discovery/uninstall 的 `legacy` 記錄分支。
 
 ### `scripts/sync-ecc-to-codex.sh`
 
@@ -178,9 +214,6 @@ echo "agents: $(ls agents/*.md | wc -l)   skills: $(ls -d skills/*/ | wc -l)"
 
 | 項目 | 舊（錯） | 新（對） |
 |------|----------|----------|
-| Antigravity 專案根目錄 | `.agent/` | `.agents/` |
-| Antigravity agents 對應 | `agents/` → `skills/` | `agents/` → `agents/` |
-| Antigravity legacy 基礎模組 | 3 個 | 加上 `skill-unified-memory`、`workflow-quality` |
 | Co-Authored-By | 「ECC 不提供覆寫」 | ECC 安裝預設寫入 `includeCoAuthoredBy: false` |
 | 解除安裝行為 | 直接刪除 | 摘要無法驗證或為 symlink 者保留，狀態回報 `partial` |
 
@@ -190,26 +223,31 @@ echo "agents: $(ls agents/*.md | wc -l)   skills: $(ls -d skills/*/ | wc -l)"
 
 ```bash
 # 1. 排除的檔案是否被帶回
-git status --porcelain | grep -E 'ecc2/|control-pane|agent-proximity|proximity-tick|observability-readiness'
+git status --porcelain | grep -E 'ecc2/|control-pane|agent-proximity|proximity-tick|observability-readiness|antigravity|/\.pi/'
 
 # 2. 排除的 harness 目錄是否重現
-ls -d ecc2 .cursor .kiro .opencode .qwen .zed .gemini .hermes .kimi .openclaw .codebuddy .trae 2>/dev/null
+ls -d ecc2 .agent .pi .cursor .kiro .opencode .qwen .zed .gemini .hermes .kimi .openclaw .codebuddy .trae 2>/dev/null
 
 # 3. 設定檔關鍵字
-grep -rn -E 'control-pane|control:pane|ecc-control-pane|observability:ready|agent-proximity|ecc2/' \
-  package.json scripts/ecc.js .gitignore .github/dependabot.yml
+grep -rn -E 'control-pane|control:pane|ecc-control-pane|observability:ready|agent-proximity|ecc2/|antigravity|"pi"' \
+  package.json scripts/ecc.js .gitignore .github/dependabot.yml schemas/*.json
 
 # 4. manifest 的 targets 是否混入已移除目標
 node -e "const m=require('./manifests/install-modules.json');
-const ok=['claude','claude-project','antigravity','codex','joycode'];
+const ok=['claude','claude-project','codex','joycode'];
 const bad=m.modules.filter(x=>(x.targets||[]).some(t=>!ok.includes(t)));
 console.log(bad.length?bad.map(x=>x.id):'clean');"
 
-# 5. 完整測試
+# 5. 安裝目標註冊表與 schema 一致
+node -e "const {listInstallTargetAdapters}=require('./scripts/lib/install-targets/registry');
+console.log(listInstallTargetAdapters().map(a=>a.target).sort().join(','));"
+# 應輸出：claude,claude-project,codex,joycode
+
+# 6. 完整測試
 node tests/run-all.js
 ```
 
-前四項都**沒有輸出**（第 4 項印出 `clean`）才算乾淨。
+第 1～3 項**沒有輸出**、第 4 項印出 `clean`、第 5 項輸出上面那一行，才算乾淨。
 
 若上游帶回整個目錄：
 

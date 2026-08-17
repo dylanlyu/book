@@ -1079,7 +1079,6 @@ cp -r everything-claude-code/rules/common ~/.claude/rules/ecc/
 
 Да. ECC кроссплатформенный:
 - **Codex**: первоклассная поддержка macOS app и CLI, с guards против adapter drift и SessionStart fallback. См. PR [#257](https://github.com/affaan-m/everything-claude-code/pull/257).
-- **Antigravity**: плотная настройка для workflows, skills, agents и flattened rules в `.agents/`. См. [Antigravity Guide](../ANTIGRAVITY-GUIDE.md).
 - **Ненативные среды**: ручной fallback path для Grok и похожих интерфейсов. См. [Manual Adaptation Guide](../MANUAL-ADAPTATION-GUIDE.md).
 - **Claude Code**: нативно — это основная цель.
 </details>

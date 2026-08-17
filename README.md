@@ -143,7 +143,7 @@ Instead of rebuilding that process in every prompt, you install it once and make
 
 > Optimize the context window. Persist everything else.
 
-ECC is MIT-licensed open source. It works best with Claude Code today, with first-class Codex support and adapters for GitHub Copilot, Antigravity, JoyCode, and other harnesses. See the [support status matrix](#platform-support) before assuming feature parity.
+ECC is MIT-licensed open source. It works best with Claude Code today, with first-class Codex support and adapters for GitHub Copilot, JoyCode, and other harnesses. See the [support status matrix](#platform-support) before assuming feature parity.
 
 Access to 68 agents, 283 skills, and 94 legacy command shims, plus hooks, rules, memory, continuous learning, and AgentShield security scanning. The agents are specialized for planning, review, build repair, security, architecture, and domain work.
 
@@ -238,7 +238,7 @@ Verify the native guided Codex path without writing first:
 npx ecc-universal install --guided --harness codex --dry-run
 ```
 
-ECC also ships managed adapters for `antigravity` and `joycode`. Those targets still use their documented `ecc install --target ...` paths until each adapter has passed the guided collision, update, repair, and uninstall lifecycle matrix. Neither wizard silently installs into every detected harness.
+ECC also ships a managed adapter for `joycode`. That target still use their documented `ecc install --target ...` paths until each adapter has passed the guided collision, update, repair, and uninstall lifecycle matrix. Neither wizard silently installs into every detected harness.
 
 ### Claude Code
 
@@ -343,7 +343,7 @@ For repo navigation, surface ownership, and PR diff packet guidance, read the [C
 ### Other agents and editors
 
 <details>
-<summary><strong>Antigravity, JoyCode, Copilot</strong></summary>
+<summary><strong>JoyCode, Copilot</strong></summary>
 
 Clone ECC once, then choose the target that matches your harness:
 
@@ -354,7 +354,6 @@ cd ECC
 
 | Harness | Install or setup | Notes |
 |---|---|---|
-| Antigravity | `./install.sh --profile minimal --target antigravity` | See the [Antigravity guide](docs/ANTIGRAVITY-GUIDE.md) |
 | JoyCode | `./install.sh --profile minimal --target joycode` | Project-local `.joycode/` install |
 
 GitHub Copilot support is already included in this repository. `.github/copilot-instructions.md` provides the instruction layer, `.github/prompts/` contains the reusable `/plan`, `/tdd`, `/security-review`, `/build-fix`, and `/refactor` prompts, and `.vscode/settings.json` enables `chat.promptFiles`.
@@ -698,7 +697,7 @@ npx ecc-universal doctor --target claude
 
 Do not use `npx ecc-install --profile minimal --target claude`: `ecc-install` is a binary name inside `ecc-universal`, not a separately published npm package.
 
-ECC also ships advanced managed adapters for `cursor`, `antigravity`, `gemini`, `opencode`, `codebuddy`, `joycode`, `qwen`, `zed`, `hermes`, and `openclaw`. Those targets still use their documented `ecc install --target ...` paths until each adapter has passed the guided collision, update, repair, and uninstall lifecycle matrix. Neither wizard silently installs into every detected harness.
+ECC also ships an advanced managed adapter for `joycode`. That target still uses its documented `ecc install --target ...` path until the adapter has passed the guided collision, update, repair, and uninstall lifecycle matrix. Neither wizard silently installs into every detected harness.
 
 ## Start Using ECC
 
@@ -1573,7 +1572,7 @@ See [affaan-m/ECC#2065](https://github.com/affaan-m/ECC/issues/2065).
 | Claude Code | Stable primary | Plugin or selective installer | The plugin advertises the installed catalog to the model; use a selective/manual profile when context footprint matters. Optional shell-backed skills are not portable to every OS. |
 | Codex | Supported sync; marketplace experimental | Repo config or `sync-ecc-to-codex.sh` | No ECC hook runtime. The marketplace package can omit shared repository content from Codex's cache; use sync for the reliable path. |
 | GitHub Copilot | Instruction-only | Checked-in instructions and prompt files | No ECC hooks, runtime agents, delegation, or native skill discovery. |
-| Antigravity, JoyCode | Experimental/minimal adapters | Harness-specific selective target | File placement and instruction portability are tested; full Claude feature parity is not claimed. |
+| JoyCode | Experimental/minimal adapter | Harness-specific selective target | File placement and instruction portability are tested; full Claude feature parity is not claimed. |
 
 ### Cross-tool capability map
 
@@ -1918,12 +1917,11 @@ Each component is fully independent.
 </details>
 
 <details>
-<summary><strong>Does this work with Codex / Antigravity / JoyCode / GitHub Copilot?</strong></summary>
+<summary><strong>Does this work with Codex / JoyCode / GitHub Copilot?</strong></summary>
 
 Yes. ECC is cross-platform:
 - **Codex**: First-class support for both macOS app and CLI, with adapter drift guards and SessionStart fallback.
 - **GitHub Copilot (VS Code)**: Instruction and prompt layer via `.github/copilot-instructions.md`, `.vscode/settings.json`, and `.github/prompts/`.
-- **Antigravity**: Native Antigravity 2.0 setup for workflows, skills, custom agents, and flattened rules in `.agents/`. See [Antigravity Guide](docs/ANTIGRAVITY-GUIDE.md).
 - **Non-native harnesses**: Manual fallback path for chat-style interfaces. See [Manual Adaptation Guide](docs/MANUAL-ADAPTATION-GUIDE.md).
 - **Claude Code**: Native. This is the primary target.
 </details>

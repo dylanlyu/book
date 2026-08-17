@@ -35,7 +35,6 @@ function runTests() {
       const targets = adapters.map(adapter => adapter.target);
       assert.ok(targets.includes('claude'), 'Should include claude target');
       assert.ok(targets.includes('claude-project'), 'Should include claude-project target');
-      assert.ok(targets.includes('antigravity'), 'Should include antigravity target');
       assert.ok(targets.includes('codex'), 'Should include codex target');
       assert.ok(targets.includes('joycode'), 'Should include joycode target');
     })
@@ -87,64 +86,6 @@ function runTests() {
           operation => normalizedRelativePath(operation.sourceRelativePath) === 'skills/tdd-workflow' && operation.destinationPath === path.join(homeDir, '.claude', 'skills', 'tdd-workflow')
         ),
         'Should install bundled Claude skills under skills'
-      );
-    })
-  )
-    passed++;
-  else failed++;
-
-  if (
-    test('plans native Antigravity 2.0 rules, workflows, skills, and agents', () => {
-      const repoRoot = path.join(__dirname, '..', '..');
-      const projectRoot = '/workspace/app';
-
-      const plan = planInstallTargetScaffold({
-        target: 'antigravity',
-        repoRoot,
-        projectRoot,
-        modules: [
-          {
-            id: 'commands-core',
-            paths: ['commands']
-          },
-          {
-            id: 'agents-core',
-            paths: ['.agents', 'agents', 'AGENTS.md']
-          },
-          {
-            id: 'workflow-quality',
-            paths: ['skills/tdd-workflow']
-          },
-          {
-            id: 'rules-core',
-            paths: ['rules']
-          }
-        ]
-      });
-
-      assert.ok(
-        plan.operations.some(operation => operation.sourceRelativePath === 'commands' && operation.destinationPath === path.join(projectRoot, '.agents', 'workflows')),
-        'Should remap commands into workflows'
-      );
-      assert.ok(
-        plan.operations.some(operation => operation.sourceRelativePath === 'agents' && operation.destinationPath === path.join(projectRoot, '.agents', 'agents')),
-        'Should remap agents into native agents'
-      );
-      assert.ok(
-        plan.operations.some(operation => operation.sourceRelativePath === 'skills/tdd-workflow' && operation.destinationPath === path.join(projectRoot, '.agents', 'skills', 'tdd-workflow')),
-        'Should remap canonical skills into native skills'
-      );
-      assert.ok(
-        plan.operations.some(
-          operation =>
-            normalizedRelativePath(operation.sourceRelativePath) === 'rules/common/coding-style.md' &&
-            operation.destinationPath === path.join(projectRoot, '.agents', 'rules', 'common-coding-style.md')
-        ),
-        'Should flatten common rules for antigravity'
-      );
-      assert.ok(
-        plan.operations.every(operation => !['.agents', 'AGENTS.md'].includes(operation.sourceRelativePath)),
-        'Should exclude Codex-only .agents metadata and root AGENTS.md'
       );
     })
   )

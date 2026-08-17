@@ -11,7 +11,6 @@
       "targets": [
         "claude",
         "claude-project",
-        "antigravity",
         "joycode"
       ],
       "dependencies": [],
@@ -31,7 +30,6 @@
       "targets": [
         "claude",
         "claude-project",
-        "antigravity",
         "codex",
         "joycode"
       ],
@@ -52,7 +50,6 @@
       "targets": [
         "claude",
         "claude-project",
-        "antigravity",
         "joycode"
       ],
       "dependencies": [],
@@ -85,7 +82,6 @@
       "paths": [
         ".claude-plugin",
         ".codex",
-        ".pi",
         "mcp-configs",
         "scripts/auto-update.js",
         "scripts/setup-package-manager.js"
@@ -93,7 +89,6 @@
       "targets": [
         "claude",
         "claude-project",
-        "antigravity",
         "codex",
         "joycode"
       ],
@@ -180,7 +175,6 @@
       "targets": [
         "claude",
         "claude-project",
-        "antigravity",
         "codex",
         "joycode"
       ],
@@ -210,7 +204,6 @@
       "targets": [
         "claude",
         "claude-project",
-        "antigravity",
         "codex",
         "joycode"
       ],
@@ -231,7 +224,6 @@
       "targets": [
         "claude",
         "claude-project",
-        "antigravity",
         "codex",
         "joycode"
       ],
@@ -297,7 +289,6 @@
       "targets": [
         "claude",
         "claude-project",
-        "antigravity",
         "codex",
         "joycode"
       ],
@@ -325,7 +316,6 @@
       "targets": [
         "claude",
         "claude-project",
-        "antigravity",
         "codex",
         "joycode"
       ],
@@ -366,7 +356,6 @@
       "targets": [
         "claude",
         "claude-project",
-        "antigravity",
         "codex",
         "joycode"
       ],
@@ -395,7 +384,6 @@
       "targets": [
         "claude",
         "claude-project",
-        "antigravity",
         "codex",
         "joycode"
       ],
@@ -429,7 +417,6 @@
       "targets": [
         "claude",
         "claude-project",
-        "antigravity",
         "codex",
         "joycode"
       ],
@@ -468,7 +455,6 @@
       "targets": [
         "claude",
         "claude-project",
-        "antigravity",
         "codex",
         "joycode"
       ],
@@ -491,7 +477,6 @@
       "targets": [
         "claude",
         "claude-project",
-        "antigravity",
         "codex",
         "joycode"
       ],
@@ -516,7 +501,6 @@
       "targets": [
         "claude",
         "claude-project",
-        "antigravity",
         "codex",
         "joycode"
       ],
@@ -537,7 +521,6 @@
       "targets": [
         "claude",
         "claude-project",
-        "antigravity",
         "codex",
         "joycode"
       ],
@@ -560,7 +543,6 @@
       "targets": [
         "claude",
         "claude-project",
-        "antigravity",
         "codex",
         "joycode"
       ],
@@ -639,7 +621,6 @@
       "targets": [
         "claude",
         "claude-project",
-        "antigravity",
         "codex",
         "joycode"
       ],
@@ -693,7 +674,6 @@
       "targets": [
         "claude",
         "claude-project",
-        "antigravity",
         "codex",
         "joycode"
       ],
@@ -730,7 +710,6 @@
       "targets": [
         "claude",
         "claude-project",
-        "antigravity",
         "codex",
         "joycode"
       ],
@@ -754,7 +733,6 @@
       "targets": [
         "claude",
         "claude-project",
-        "antigravity",
         "codex",
         "joycode"
       ],
@@ -786,7 +764,6 @@
       "targets": [
         "claude",
         "claude-project",
-        "antigravity",
         "codex",
         "joycode"
       ],
@@ -808,7 +785,6 @@
       "targets": [
         "claude",
         "claude-project",
-        "antigravity",
         "codex",
         "joycode"
       ],

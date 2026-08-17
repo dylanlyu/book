@@ -27,7 +27,6 @@ Usage: install.sh [--target <${LEGACY_INSTALL_TARGETS.join('|')}>] [--dry-run] [
 Targets:
   claude       (default) - Install ECC into ~/.claude/ with managed rules under rules/ecc and flat skills under skills/
   claude-project - Install ECC into ./.claude/ (per-project) with managed rules under rules/ecc and flat skills under skills/
-  antigravity  - Install rules, workflows, skills, and agents to ./.agents/
   codex        - Install shared agents/config into ~/.codex/
   joycode      - Install commands, agents, skills, and flattened rules into ./.joycode/
 

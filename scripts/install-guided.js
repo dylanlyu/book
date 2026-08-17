@@ -19,7 +19,7 @@ const { startTerminalSpinner } = require('./lib/terminal-spinner');
 const { showTerminalWelcome } = require('./lib/terminal-welcome');
 const { stripAnsi } = require('./lib/utils');
 
-const ADVANCED_HARNESSES = 'Antigravity and JoyCode';
+const ADVANCED_HARNESSES = 'JoyCode';
 
 function showHelp(output = process.stdout) {
   output.write(`

@@ -125,12 +125,12 @@ function runTests() {
 
   if (!powerShellCommand) {
     console.log('  - skipped delegation test; PowerShell is not available in PATH');
-  } else if (test('delegates to the Antigravity installer while preserving the project cwd', () => {
+  } else if (test('delegates to the project installer while preserving the project cwd', () => {
     const homeDir = createTempDir('install-ps1-home-');
     const projectDir = createTempDir('install-ps1-project-');
 
     try {
-      const result = run(powerShellCommand, ['--target', 'antigravity', '--dry-run', 'typescript'], {
+      const result = run(powerShellCommand, ['--target', 'claude-project', '--dry-run', 'typescript'], {
         cwd: projectDir,
         homeDir,
       });
@@ -139,10 +139,10 @@ function runTests() {
       assert.ok(result.stdout.includes('Dry-run install plan'));
       assert.strictEqual(
         canonicalizePlannedPath(extractInstallRoot(result.stdout)),
-        canonicalizePlannedPath(path.join(projectDir, '.agents')),
-        `dry-run output should target the project .agents directory:\n${result.stdout}`
+        canonicalizePlannedPath(path.join(projectDir, '.claude')),
+        `dry-run output should target the project .claude directory:\n${result.stdout}`
       );
-      assert.ok(!fs.existsSync(path.join(projectDir, '.agents')));
+      assert.ok(!fs.existsSync(path.join(projectDir, '.claude')));
     } finally {
       cleanup(homeDir);
       cleanup(projectDir);

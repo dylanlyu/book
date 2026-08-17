@@ -1,10 +1,9 @@
-const antigravityProject = require('./antigravity-project');
 const claudeHome = require('./claude-home');
 const claudeProject = require('./claude-project');
 const codexHome = require('./codex-home');
 const joycodeProject = require('./joycode-project');
 
-const ADAPTERS = Object.freeze([claudeHome, claudeProject, antigravityProject, codexHome, joycodeProject]);
+const ADAPTERS = Object.freeze([claudeHome, claudeProject, codexHome, joycodeProject]);
 
 function listInstallTargetAdapters() {
   return ADAPTERS.slice();

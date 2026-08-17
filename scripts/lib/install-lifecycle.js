@@ -10,11 +10,6 @@ const { createManifestInstallPlan } = require('./install-executor');
 const {
   prepareClaudeSkillMigration,
 } = require('./install/claude-skill-migration');
-const {
-  getLegacyAntigravityLocation,
-  inspectLegacyAntigravityState,
-} = require('./install/antigravity-legacy-migration');
-const { adaptAntigravityAgent } = require('./install/antigravity-agent');
 const { buildInstallIndex, rewriteRelativeLinks } = require('./install/link-rewrite');
 const { getInstallTargetAdapter, listInstallTargetAdapters } = require('./install-targets/registry');
 
@@ -140,9 +135,6 @@ function buildLinkIndexForOperations(operations, trustedRoot) {
 function transformCopyFileContent(operation, content) {
   if (!operation.contentTransform) {
     return content;
-  }
-  if (operation.contentTransform === 'antigravity-agent-frontmatter') {
-    return adaptAntigravityAgent(content, operation.sourceRelativePath);
   }
   throw new Error(`Unknown install content transform: ${operation.contentTransform}`);
 }
@@ -1032,18 +1024,14 @@ function getUnsafeOperationResult(record, operationHealth) {
   };
 }
 
-function buildDiscoveryRecord(adapter, context, location = null, knownState = null) {
+function buildDiscoveryRecord(adapter, context) {
   const installTargetInput = {
     homeDir: context.homeDir,
     projectRoot: context.projectRoot,
     repoRoot: context.projectRoot
   };
-  const targetRoot = location
-    ? location.targetRoot
-    : adapter.resolveRoot(installTargetInput);
-  const installStatePath = location
-    ? location.installStatePath
-    : adapter.getInstallStatePath(installTargetInput);
+  const targetRoot = adapter.resolveRoot(installTargetInput);
+  const installStatePath = adapter.getInstallStatePath(installTargetInput);
   const exists = fs.existsSync(installStatePath);
 
   if (!exists) {
@@ -1057,24 +1045,7 @@ function buildDiscoveryRecord(adapter, context, location = null, knownState = nu
       installStatePath,
       exists: false,
       state: null,
-      error: null,
-      legacy: Boolean(location)
-    };
-  }
-
-  if (knownState) {
-    return {
-      adapter: {
-        id: adapter.id,
-        target: adapter.target,
-        kind: adapter.kind
-      },
-      targetRoot,
-      installStatePath,
-      exists: true,
-      state: knownState,
-      error: null,
-      legacy: Boolean(location)
+      error: null
     };
   }
 
@@ -1090,8 +1061,7 @@ function buildDiscoveryRecord(adapter, context, location = null, knownState = nu
       installStatePath,
       exists: true,
       state,
-      error: null,
-      legacy: Boolean(location)
+      error: null
     };
   } catch (error) {
     return {
@@ -1104,8 +1074,7 @@ function buildDiscoveryRecord(adapter, context, location = null, knownState = nu
       installStatePath,
       exists: true,
       state: null,
-      error: error.message,
-      legacy: Boolean(location)
+      error: error.message
     };
   }
 }
@@ -1117,44 +1086,7 @@ function discoverInstalledStates(options = {}) {
   };
   const targets = normalizeTargets(options.targets);
 
-  return targets.flatMap(target => {
-    const adapter = getInstallTargetAdapter(target);
-    const canonicalRecord = buildDiscoveryRecord(adapter, context);
-    if (adapter.target !== 'antigravity') {
-      return [canonicalRecord];
-    }
-
-    const legacyLocation = getLegacyAntigravityLocation(context.projectRoot);
-    const legacyInspection = inspectLegacyAntigravityState(legacyLocation);
-    if (
-      path.resolve(legacyLocation.installStatePath) === path.resolve(canonicalRecord.installStatePath)
-      || legacyInspection.status === 'absent'
-      || legacyInspection.status === 'invalid'
-    ) {
-      return [canonicalRecord];
-    }
-
-    if (legacyInspection.status === 'unreadable') {
-      return [canonicalRecord, {
-        adapter: {
-          id: adapter.id,
-          target: adapter.target,
-          kind: adapter.kind,
-        },
-        targetRoot: legacyLocation.targetRoot,
-        installStatePath: legacyLocation.installStatePath,
-        exists: true,
-        state: null,
-        error: legacyInspection.error,
-        legacy: true,
-      }];
-    }
-
-    return [
-      canonicalRecord,
-      buildDiscoveryRecord(adapter, context, legacyLocation, legacyInspection.state),
-    ];
-  });
+  return targets.map(target => buildDiscoveryRecord(getInstallTargetAdapter(target), context));
 }
 
 function buildIssue(severity, code, message, extra = {}) {
@@ -1180,14 +1112,6 @@ function determineStatus(issues) {
 
 function analyzeRecord(record, context) {
   const issues = [];
-
-  if (record.legacy) {
-    issues.push(buildIssue(
-      'warning',
-      'legacy-antigravity-layout',
-      'Legacy Antigravity install-state remains under .agent. Review and move any preserved modified or unmanaged files out of .agent, then rerun the Antigravity install to finish migration.'
-    ));
-  }
 
   if (record.error) {
     issues.push(buildIssue('error', 'invalid-install-state', record.error));
@@ -1494,7 +1418,7 @@ function repairInstalledStates(options = {}) {
     homeDir: context.homeDir,
     projectRoot: context.projectRoot,
     targets: options.targets
-  }).filter(record => record.exists && !record.legacy);
+  }).filter(record => record.exists);
 
   const results = records.map(record => {
     if (record.error) {
@@ -1690,18 +1614,6 @@ function uninstallInstalledStates(options = {}) {
 
     const state = record.state;
     const managedOperations = getManagedOperations(state);
-    if (record.legacy && managedOperations.length > 0) {
-      return {
-        adapter: record.adapter,
-        status: 'partial',
-        installStatePath: record.installStatePath,
-        removedPaths: [],
-        plannedRemovals: [],
-        retainedPaths: managedOperations.map(operation => operation.destinationPath),
-        warning: 'Legacy Antigravity files were preserved because their provenance cannot be revalidated during uninstall. Rerun the Antigravity installer to migrate verified files, then review .agent manually.',
-        error: null
-      };
-    }
     const plannedRemovals = Array.from(new Set([
       ...managedOperations.map(operation => operation.destinationPath),
       record.installStatePath

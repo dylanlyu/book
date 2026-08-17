@@ -42,7 +42,6 @@
     ".codex/",
     ".codex-plugin/",
     ".github/PULL_REQUEST_TEMPLATE.md",
-    ".pi/",
     ".mcp.json",
     "AGENTS.md",
     "COMMANDS-QUICK-REF.md",
@@ -456,17 +455,6 @@
     "ajv": "8.20.0",
     "js-yaml": "4.3.1",
     "sql.js": "1.14.1"
-  },
-  "pi": {
-    "extensions": [
-      "./.pi/extensions/index.ts"
-    ],
-    "skills": [
-      "./skills"
-    ],
-    "prompts": [
-      "./commands"
-    ]
   },
   "devDependencies": {
     "@eslint/js": "9.39.2",

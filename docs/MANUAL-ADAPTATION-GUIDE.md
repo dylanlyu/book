@@ -18,7 +18,6 @@ Prefer a first-class ECC target whenever one exists:
 
 - Claude Code
 - Codex
-- Antigravity
 - JoyCode
 
 Use this guide only when you need ECC behavior in a non-native harness.
@@ -208,5 +207,4 @@ So the rule is simple:
 
 - [Issue #1186](https://github.com/affaan-m/everything-claude-code/issues/1186)
 - [Discussion #1077](https://github.com/affaan-m/everything-claude-code/discussions/1077)
-- [Antigravity Guide](./ANTIGRAVITY-GUIDE.md)
 - [Troubleshooting](./TROUBLESHOOTING.md)

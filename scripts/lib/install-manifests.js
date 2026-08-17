@@ -4,7 +4,7 @@ const path = require('path');
 const { getInstallTargetAdapter, planInstallTargetScaffold } = require('./install-targets/registry');
 
 const DEFAULT_REPO_ROOT = path.join(__dirname, '../..');
-const SUPPORTED_INSTALL_TARGETS = ['claude', 'claude-project', 'antigravity', 'codex', 'joycode'];
+const SUPPORTED_INSTALL_TARGETS = ['claude', 'claude-project', 'codex', 'joycode'];
 const COMPONENT_FAMILY_PREFIXES = {
   baseline: 'baseline:',
   language: 'lang:',
@@ -53,13 +53,6 @@ const LEGACY_COMPAT_BASE_MODULE_IDS_BY_TARGET = Object.freeze({
     'platform-configs',
     'workflow-quality',
   ],
-  antigravity: [
-    'rules-core',
-    'agents-core',
-    'commands-core',
-    'skill-unified-memory',
-    'workflow-quality',
-  ],
 });
 const LEGACY_LANGUAGE_ALIAS_TO_CANONICAL = Object.freeze({
   c: 'c',
@@ -97,14 +90,6 @@ const LEGACY_LANGUAGE_EXTRA_MODULE_IDS = Object.freeze({
   rust: ['framework-language'],
   swift: [],
   typescript: ['framework-language']
-});
-const LEGACY_LANGUAGE_RULE_NAMESPACES = Object.freeze({
-  c: 'cpp',
-  harmonyos: 'arkts',
-  javascript: 'typescript',
-  go: 'golang',
-  golang: 'golang',
-  rails: 'ruby',
 });
 function readJson(filePath, label) {
   try {
@@ -417,16 +402,11 @@ function resolveLegacyCompatibilitySelection(options = {}) {
 
   const canonicalLegacyLanguages = normalizedLegacyLanguages
     .map(language => LEGACY_LANGUAGE_ALIAS_TO_CANONICAL[language]);
-  const ruleLanguages = normalizedLegacyLanguages.map(language => (
-    LEGACY_LANGUAGE_RULE_NAMESPACES[language] || language
-  ));
   const baseModuleIds = LEGACY_COMPAT_BASE_MODULE_IDS_BY_TARGET[target || 'claude']
     || LEGACY_COMPAT_BASE_MODULE_IDS_BY_TARGET.claude;
   const moduleIds = dedupeStrings([
     ...baseModuleIds,
-    ...(target === 'antigravity'
-      ? []
-      : canonicalLegacyLanguages.flatMap(language => LEGACY_LANGUAGE_EXTRA_MODULE_IDS[language] || [])),
+    ...canonicalLegacyLanguages.flatMap(language => LEGACY_LANGUAGE_EXTRA_MODULE_IDS[language] || []),
   ]);
 
   assertKnownModuleIds(moduleIds, manifests);
@@ -434,7 +414,6 @@ function resolveLegacyCompatibilitySelection(options = {}) {
   return {
     legacyLanguages: normalizedLegacyLanguages,
     canonicalLegacyLanguages,
-    ruleLanguages,
     moduleIds,
   };
 }

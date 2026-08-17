@@ -234,46 +234,7 @@ function runTests() {
     }
   })) passed++; else failed++;
 
-  if (test('plans Antigravity legacy files with flattened rule names', () => {
-    const sourceRoot = createTempDir('install-executor-source-');
-    const projectRoot = createTempDir('install-executor-project-');
-    const homeDir = createTempDir('install-executor-home-');
-    try {
-      writeLegacySourceFixture(sourceRoot);
-      writeFile(projectRoot, path.join('.agents', 'rules', 'existing.md'), '# Existing\n');
-
-      const plan = createLegacyInstallPlan({
-        sourceRoot,
-        projectRoot,
-        homeDir,
-        target: 'antigravity',
-        languages: ['typescript', 'missing-lang', 'bad/name'],
-      });
-
-      assert.strictEqual(plan.installRoot, path.join(projectRoot, '.agents'));
-      assert.ok(plan.warnings.some(warning => warning.includes('files may be overwritten')));
-      assert.ok(plan.warnings.some(warning => warning.includes("rules/missing-lang/ does not exist")));
-      assert.ok(plan.warnings.some(warning => warning.includes("Invalid language name 'bad/name'")));
-      assert.ok(operationFor(plan, path.join('.agents', 'rules', 'common-coding-style.md')));
-      assert.ok(operationFor(plan, path.join('.agents', 'rules', 'typescript-testing.md')));
-      assert.ok(operationFor(plan, path.join('.agents', 'workflows', 'plan.md')));
-      const agentOperation = plan.operations.find(operation => (
-        operation.destinationPath.endsWith(path.join('.agents', 'agents', 'architect.md'))
-      ));
-      assert.ok(agentOperation);
-      assert.strictEqual(agentOperation.contentTransform, 'antigravity-agent-frontmatter');
-      assert.ok(plan.operations.some(operation => (
-        operation.destinationPath.endsWith(path.join('.agents', 'skills', 'demo', 'SKILL.md'))
-      )));
-      assert.strictEqual(plan.statePreview.target.id, 'antigravity-project');
-    } finally {
-      cleanup(sourceRoot);
-      cleanup(projectRoot);
-      cleanup(homeDir);
-    }
-  })) passed++; else failed++;
-
-  if (test('materializes manifest scaffold operations and filters generated runtime state', () => {
+    if (test('materializes manifest scaffold operations and filters generated runtime state', () => {
     const sourceRoot = createTempDir('install-executor-source-');
     const homeDir = createTempDir('install-executor-home-');
     try {

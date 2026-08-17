@@ -92,26 +92,26 @@ function runTests() {
       const projectRoot = createTempDir('repair-project-');
 
       try {
-        const installResult = runNode(INSTALL_SCRIPT, ['--target', 'antigravity', 'typescript'], {
+        const installResult = runNode(INSTALL_SCRIPT, ['--target', 'joycode', '--profile', 'minimal'], {
           cwd: projectRoot,
           homeDir
         });
         assert.strictEqual(installResult.code, 0, installResult.stderr);
 
         const normalizedProjectRoot = fs.realpathSync(projectRoot);
-        const managedPath = path.join(normalizedProjectRoot, '.agents', 'workflows', 'plan.md');
-        const statePath = path.join(normalizedProjectRoot, '.agents', 'ecc-install-state.json');
+        const managedPath = path.join(normalizedProjectRoot, '.joycode', 'commands', 'plan.md');
+        const statePath = path.join(normalizedProjectRoot, '.joycode', 'ecc-install-state.json');
         const expectedContent = fs.readFileSync(path.join(REPO_ROOT, 'commands', 'plan.md'), 'utf8');
         fs.writeFileSync(managedPath, '// drifted\n');
 
-        const doctorBefore = runNode(DOCTOR_SCRIPT, ['--target', 'antigravity', '--json'], {
+        const doctorBefore = runNode(DOCTOR_SCRIPT, ['--target', 'joycode', '--json'], {
           cwd: projectRoot,
           homeDir
         });
         assert.strictEqual(doctorBefore.code, 1);
         assert.ok(JSON.parse(doctorBefore.stdout).results[0].issues.some(issue => issue.code === 'drifted-managed-files'));
 
-        const repairResult = runNode(REPAIR_SCRIPT, ['--target', 'antigravity', '--json'], {
+        const repairResult = runNode(REPAIR_SCRIPT, ['--target', 'joycode', '--json'], {
           cwd: projectRoot,
           homeDir
         });
@@ -137,7 +137,7 @@ function runTests() {
       const projectRoot = createTempDir('repair-project-');
 
       try {
-        const targetRoot = path.join(projectRoot, '.agents');
+        const targetRoot = path.join(projectRoot, '.joycode');
         fs.mkdirSync(targetRoot, { recursive: true });
         const normalizedTargetRoot = fs.realpathSync(targetRoot);
         const statePath = path.join(normalizedTargetRoot, 'ecc-install-state.json');
@@ -149,7 +149,7 @@ function runTests() {
         fs.writeFileSync(removedPath, 'stale\n');
 
         writeState(statePath, {
-          adapter: { id: 'antigravity-project', target: 'antigravity', kind: 'project' },
+          adapter: { id: 'joycode-project', target: 'joycode', kind: 'project' },
           targetRoot: normalizedTargetRoot,
           installStatePath: statePath,
           request: {
@@ -207,7 +207,7 @@ function runTests() {
           }
         });
 
-        const doctorBefore = runNode(DOCTOR_SCRIPT, ['--target', 'antigravity', '--json'], {
+        const doctorBefore = runNode(DOCTOR_SCRIPT, ['--target', 'joycode', '--json'], {
           cwd: projectRoot,
           homeDir
         });
@@ -215,7 +215,7 @@ function runTests() {
         assert.ok(JSON.parse(doctorBefore.stdout).results[0].issues.some(issue => issue.code === 'drifted-managed-files'));
 
         const installedAtBefore = JSON.parse(fs.readFileSync(statePath, 'utf8')).installedAt;
-        const repairResult = runNode(REPAIR_SCRIPT, ['--target', 'antigravity', '--json'], {
+        const repairResult = runNode(REPAIR_SCRIPT, ['--target', 'joycode', '--json'], {
           cwd: projectRoot,
           homeDir
         });
@@ -240,7 +240,7 @@ function runTests() {
         assert.strictEqual(repairedState.installedAt, installedAtBefore);
         assert.ok(repairedState.lastValidatedAt);
 
-        const doctorAfter = runNode(DOCTOR_SCRIPT, ['--target', 'antigravity'], {
+        const doctorAfter = runNode(DOCTOR_SCRIPT, ['--target', 'joycode'], {
           cwd: projectRoot,
           homeDir
         });
@@ -261,7 +261,7 @@ function runTests() {
       const projectRoot = createTempDir('repair-project-');
 
       try {
-        const targetRoot = path.join(projectRoot, '.agents');
+        const targetRoot = path.join(projectRoot, '.joycode');
         fs.mkdirSync(targetRoot, { recursive: true });
         const normalizedTargetRoot = fs.realpathSync(targetRoot);
         const statePath = path.join(normalizedTargetRoot, 'ecc-install-state.json');
@@ -269,7 +269,7 @@ function runTests() {
         fs.writeFileSync(renderedPath, '# drifted\n');
 
         writeState(statePath, {
-          adapter: { id: 'antigravity-project', target: 'antigravity', kind: 'project' },
+          adapter: { id: 'joycode-project', target: 'joycode', kind: 'project' },
           targetRoot: normalizedTargetRoot,
           installStatePath: statePath,
           request: {
@@ -303,7 +303,7 @@ function runTests() {
           }
         });
 
-        const repairResult = runNode(REPAIR_SCRIPT, ['--target', 'antigravity', '--dry-run', '--json'], {
+        const repairResult = runNode(REPAIR_SCRIPT, ['--target', 'joycode', '--dry-run', '--json'], {
           cwd: projectRoot,
           homeDir
         });

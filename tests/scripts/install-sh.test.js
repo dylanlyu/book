@@ -73,7 +73,7 @@ function runTests() {
     const projectDir = createTempDir('install-sh-project-');
 
     try {
-      const result = run(['--target', 'antigravity', '--dry-run', 'typescript'], {
+      const result = run(['--target', 'claude-project', '--dry-run', 'typescript'], {
         cwd: projectDir,
         homeDir,
       });
@@ -109,7 +109,7 @@ function runTests() {
         'console.log(JSON.stringify({ cwd: process.cwd(), args: process.argv.slice(2) }));\n'
       );
 
-      const result = run(['--target', 'antigravity', '--dry-run', 'typescript'], {
+      const result = run(['--target', 'claude-project', '--dry-run', 'typescript'], {
         cwd: projectDir,
         scriptPath: fixtureScript,
         env: {
@@ -121,7 +121,7 @@ function runTests() {
       assert.strictEqual(result.code, 0, result.stderr);
       const payload = JSON.parse(result.stdout.trim().split('\n').at(-1));
       assert.strictEqual(payload.cwd, fs.realpathSync(projectDir));
-      assert.deepStrictEqual(payload.args, ['--target', 'antigravity', '--dry-run', 'typescript']);
+      assert.deepStrictEqual(payload.args, ['--target', 'claude-project', '--dry-run', 'typescript']);
       assert.strictEqual(fs.readFileSync(npmCwdPath, 'utf8').trim(), sourceDir);
       assert.ok(fs.existsSync(path.join(sourceDir, 'node_modules')));
     } finally {

@@ -190,7 +190,7 @@ Examples:
   ecc work-items sync-github --repo affaan-m/ECC
   ecc session-inspect claude:latest
   ecc loop-status --json
-  ecc uninstall --target antigravity --dry-run
+  ecc uninstall --target joycode --dry-run
 `);
 
   process.exit(exitCode);

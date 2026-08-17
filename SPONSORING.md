@@ -1,6 +1,6 @@
 # Sponsoring ECC
 
-ECC is maintained as an open-source agent harness operating system across Claude Code, Codex, Antigravity, JoyCode, and other agent workflows.
+ECC is maintained as an open-source agent harness operating system across Claude Code, Codex, JoyCode, and other agent workflows.
 
 ## Why Sponsor
 
