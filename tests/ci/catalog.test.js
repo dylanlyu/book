@@ -99,49 +99,6 @@ function writeZhRootReadme(root, counts) {
   fs.writeFileSync(path.join(root, 'README.zh-CN.md'), `你现在可以使用 ${counts.agents} 个代理、${counts.skills} 个技能和 ${counts.commands} 个命令。\n`);
 }
 
-function writeZhDocsReadme(root, counts, options = {}) {
-  const tableCounts = options.tableCounts || counts;
-  const parityCounts = options.parityCounts || counts;
-  const unrelatedSkillsCount = options.unrelatedSkillsCount || 16;
-  const dir = path.join(root, 'docs', 'zh-CN');
-  fs.mkdirSync(dir, { recursive: true });
-
-  fs.writeFileSync(path.join(dir, 'README.md'), `你现在可以使用 ${counts.agents} 个智能体、${counts.skills} 项技能和 ${counts.commands} 个命令了。
-| 功能特性 | Claude Code | 状态 |
-| --- | --- | --- |
-| 智能体 | PASS: ${tableCounts.agents} 个 |
-| 命令 | PASS: ${tableCounts.commands} 个 |
-| 技能 | PASS: ${tableCounts.skills} 项 |
-
-| 功能特性 | 数量 | 格式 |
-| --- | ---: | --- |
-| 技能 | ${unrelatedSkillsCount} | .agents/skills/ |
-
-## 跨工具功能对等
-
-| 功能特性 | Claude Code | Codex CLI |
-| --- | --- | --- |
-| **智能体** | ${parityCounts.agents} | 共享 (AGENTS.md) |
-| **命令** | ${parityCounts.commands} | 基于指令 |
-| **技能** | ${parityCounts.skills} | 10 (原生格式) |
-`);
-}
-
-function writeZhAgents(root, counts, options = {}) {
-  const plus = options.skillsMinimum ? '+' : '';
-  const dir = path.join(root, 'docs', 'zh-CN');
-  fs.mkdirSync(dir, { recursive: true });
-
-  fs.writeFileSync(path.join(dir, 'AGENTS.md'), `这是一个生产就绪的 AI 编码插件，提供 ${counts.agents} 个专业代理、${counts.skills}${plus} 项技能、${counts.commands} 条命令。
-
-\`\`\`
-agents/ - ${counts.agents} 个专业子代理
-skills/ - ${counts.skills}${plus} 个工作流技能和领域知识
-commands/ - ${counts.commands} 个斜杠命令
-\`\`\`
-`);
-}
-
 function writeCatalogFixture(root, options = {}) {
   const actualCounts = options.actualCounts || { agents: 1, skills: 1, commands: 1 };
   const documentedCounts = options.documentedCounts || actualCounts;
@@ -159,8 +116,6 @@ function writeCatalogFixture(root, options = {}) {
   writeEnglishReadme(root, documentedCounts, { unrelatedSkillsCount });
   writeEnglishAgents(root, documentedCounts, { skillsMinimum });
   writeZhRootReadme(root, documentedCounts);
-  writeZhDocsReadme(root, documentedCounts, { unrelatedSkillsCount });
-  writeZhAgents(root, documentedCounts, { skillsMinimum });
   writePluginMetadata(root, documentedCounts);
 }
 
@@ -227,8 +182,6 @@ function runTests() {
       assert.ok(formatted.includes('.claude-plugin/plugin.json description'));
       assert.ok(formatted.includes('.claude-plugin/marketplace.json plugin description'));
       assert.ok(formatted.includes('README.zh-CN.md quick-start summary'));
-      assert.ok(formatted.includes('docs/zh-CN/README.md parity table'));
-      assert.ok(formatted.includes('docs/zh-CN/AGENTS.md project structure'));
     } finally {
       cleanupTestDir(testDir);
     }
@@ -250,8 +203,6 @@ function runTests() {
 
       const readme = fs.readFileSync(path.join(testDir, 'README.md'), 'utf8');
       const agentsDoc = fs.readFileSync(path.join(testDir, 'AGENTS.md'), 'utf8');
-      const zhReadme = fs.readFileSync(path.join(testDir, 'docs', 'zh-CN', 'README.md'), 'utf8');
-      const zhAgentsDoc = fs.readFileSync(path.join(testDir, 'docs', 'zh-CN', 'AGENTS.md'), 'utf8');
       const pluginJson = fs.readFileSync(path.join(testDir, '.claude-plugin', 'plugin.json'), 'utf8');
       const marketplaceJson = fs.readFileSync(path.join(testDir, '.claude-plugin', 'marketplace.json'), 'utf8');
 
@@ -261,9 +212,6 @@ function runTests() {
       assert.ok(readme.includes('| Skills | 42 | .agents/skills/ |'));
       assert.ok(agentsDoc.includes('providing 1 specialized agents, 1+ skills, 1 commands'));
       assert.ok(agentsDoc.includes('skills/ - 1+ workflow skills and domain knowledge'));
-      assert.ok(zhReadme.includes('| 技能 | 42 | .agents/skills/ |'));
-      assert.ok(zhAgentsDoc.includes('提供 1 个专业代理、1+ 项技能、1 条命令'));
-      assert.ok(zhAgentsDoc.includes('skills/ - 1+ 个工作流技能和领域知识'));
       assert.ok(pluginJson.includes('1 agents, 1 skills, 1 legacy command shims'));
       assert.ok(marketplaceJson.includes('1 agents, 1 skills, 1 legacy command shims'));
     } finally {
@@ -275,7 +223,7 @@ function runTests() {
     const testDir = createTestDir();
     try {
       writeCatalogFixture(testDir);
-      fs.rmSync(path.join(testDir, 'docs', 'zh-CN', 'AGENTS.md'));
+      fs.rmSync(path.join(testDir, 'AGENTS.md'));
 
       assert.throws(
         () => runCatalogCheck({ root: testDir }),

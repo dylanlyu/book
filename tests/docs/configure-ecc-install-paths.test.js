@@ -8,8 +8,6 @@ const repoRoot = path.resolve(__dirname, '..', '..');
 
 const configureEccDocs = [
   'skills/configure-ecc/SKILL.md',
-  'docs/zh-CN/skills/configure-ecc/SKILL.md',
-  'docs/ja-JP/skills/configure-ecc/SKILL.md',
 ];
 
 const localizedWizardContract = {
@@ -17,16 +15,6 @@ const localizedWizardContract = {
     'Ask exactly one scope question',
     'Ask exactly one hook-mode question',
     'Show exactly one confirmation summary',
-  ],
-  'docs/zh-CN/skills/configure-ecc/SKILL.md': [
-    '只询问一次安装范围',
-    '只询问一次 Hook 模式',
-    '只显示一次确认摘要',
-  ],
-  'docs/ja-JP/skills/configure-ecc/SKILL.md': [
-    'スコープについて 1 回だけ質問',
-    'フックモードについて 1 回だけ質問',
-    '確認サマリーは 1 回だけ表示',
   ],
 };
 
@@ -131,23 +119,6 @@ test('Codex legacy sync docs do not require an unrelated package install', () =>
 
   assert.ok(content.includes('bash scripts/sync-ecc-to-codex.sh'));
   assert.ok(!content.includes('npm install && bash scripts/sync-ecc-to-codex.sh'));
-});
-
-test('Turkish agent instructions report the live catalog counts', () => {
-  const content = readConfigureEccDoc('docs/tr/AGENTS.md');
-  const agentCount = countEntries('agents', entry => entry.isFile() && entry.name.endsWith('.md'));
-  const skillCount = countEntries('skills', entry => entry.isDirectory());
-  const commandCount = countEntries(
-    'commands',
-    entry => entry.isFile() && entry.name.endsWith('.md')
-  );
-
-  assert.ok(content.includes(`${agentCount} özel agent`));
-  assert.ok(content.includes(`${skillCount} skill`));
-  assert.ok(content.includes(`${commandCount} command`));
-  assert.ok(content.includes(`agents/          — ${agentCount} özel subagent`));
-  assert.ok(content.includes(`skills/          — ${skillCount} iş akışı`));
-  assert.ok(content.includes(`commands/        — ${commandCount} slash command`));
 });
 
 if (failed > 0) {

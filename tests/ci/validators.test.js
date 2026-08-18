@@ -190,8 +190,6 @@ function runCatalogValidator(overrides = {}) {
     README_PATH: path.join(repoRoot, 'README.md'),
     AGENTS_PATH: path.join(repoRoot, 'AGENTS.md'),
     README_ZH_CN_PATH: path.join(repoRoot, 'README.zh-CN.md'),
-    DOCS_ZH_CN_README_PATH: path.join(repoRoot, 'docs', 'zh-CN', 'README.md'),
-    DOCS_ZH_CN_AGENTS_PATH: path.join(repoRoot, 'docs', 'zh-CN', 'AGENTS.md'),
     PLUGIN_JSON_PATH: path.join(repoRoot, '.claude-plugin', 'plugin.json'),
     MARKETPLACE_JSON_PATH: path.join(repoRoot, '.claude-plugin', 'marketplace.json'),
     ...overrides,
@@ -261,16 +259,6 @@ function writeCatalogFixture(testDir, options = {}) {
       'commands/        — 1 slash commands',
     ],
     zhRootReadmeCounts = { agents: 1, skills: 1, commands: 1 },
-    zhDocsReadmeCounts = { agents: 1, skills: 1, commands: 1 },
-    zhDocsTableCounts = zhDocsReadmeCounts,
-    zhDocsParityCounts = zhDocsReadmeCounts,
-    zhDocsUnrelatedSkillsCount = 16,
-    zhAgentsSummaryCounts = { agents: 1, skills: 1, commands: 1 },
-    zhAgentsStructureLines = [
-      'agents/          — 1 个专业子代理',
-      'skills/          — 1 个工作流技能和领域知识',
-      'commands/        — 1 个斜杠命令',
-    ],
     pluginCounts = { agents: 1, skills: 1, commands: 1 },
     marketplaceCounts = { agents: 1, skills: 1, commands: 1 },
   } = options;
@@ -278,8 +266,6 @@ function writeCatalogFixture(testDir, options = {}) {
   const readmePath = path.join(testDir, 'README.md');
   const agentsPath = path.join(testDir, 'AGENTS.md');
   const zhRootReadmePath = path.join(testDir, 'README.zh-CN.md');
-  const zhDocsReadmePath = path.join(testDir, 'docs', 'zh-CN', 'README.md');
-  const zhAgentsPath = path.join(testDir, 'docs', 'zh-CN', 'AGENTS.md');
   const pluginJsonPath = path.join(testDir, '.claude-plugin', 'plugin.json');
   const marketplaceJsonPath = path.join(testDir, '.claude-plugin', 'marketplace.json');
 
@@ -296,8 +282,6 @@ function writeCatalogFixture(testDir, options = {}) {
   fs.writeFileSync(readmePath, `Access to ${readmeCounts.agents} agents, ${readmeCounts.skills} skills, and ${readmeCounts.commands} commands.\n- **Public surface synced to the live repo** - metadata, catalog counts, plugin manifests, and install-facing docs now match the actual OSS surface: ${readmeCounts.agents} agents, ${readmeCounts.skills} skills, and ${readmeCounts.commands} legacy command shims.\n|-- agents/           # ${readmeProjectTreeAgents} specialized subagents for delegation\n| Feature | Claude Code | Codex CLI |\n|---------|------------|-----------|\n| Agents | PASS: ${readmeTableCounts.agents} agents | Shared | 1 |\n| Commands | PASS: ${readmeTableCounts.commands} commands | Shared | 1 |\n| Skills | PASS: ${readmeTableCounts.skills} skills | Shared | 1 |\n\n| Feature | Count | Format |\n|-----------|-------|---------|\n| Skills | ${readmeUnrelatedSkillsCount} | .agents/skills/ |\n\n## Cross-Tool Feature Parity\n\n| Feature | Claude Code | Codex CLI |\n|---------|------------|-----------|\n| **Agents** | ${readmeParityCounts.agents} | Shared (AGENTS.md) |\n| **Commands** | ${readmeParityCounts.commands} | Instruction-based |\n| **Skills** | ${readmeParityCounts.skills} | 10 (native format) |\n`);
   fs.writeFileSync(agentsPath, `This is a **production-ready AI coding plugin** providing ${summaryCounts.agents} specialized agents, ${summaryCounts.skills} skills, ${summaryCounts.commands} commands, and automated hook workflows for software development.\n\n\`\`\`\n${structureLines.join('\n')}\n\`\`\`\n`);
   fs.writeFileSync(zhRootReadmePath, `**完成！** 你现在可以使用 ${zhRootReadmeCounts.agents} 个代理、${zhRootReadmeCounts.skills} 个技能和 ${zhRootReadmeCounts.commands} 个命令。\n`);
-  fs.writeFileSync(zhDocsReadmePath, `**搞定！** 你现在可以使用 ${zhDocsReadmeCounts.agents} 个智能体、${zhDocsReadmeCounts.skills} 项技能和 ${zhDocsReadmeCounts.commands} 个命令了。\n| 功能特性 | Claude Code | 状态 |\n|---------|-------------|--------|\n| 智能体 | \u2705 ${zhDocsTableCounts.agents} 个 | \u2705 12 个 | **Claude Code 领先** |\n| 命令 | \u2705 ${zhDocsTableCounts.commands} 个 | \u2705 31 个 | **Claude Code 领先** |\n| 技能 | \u2705 ${zhDocsTableCounts.skills} 项 | \u2705 37 项 | **Claude Code 领先** |\n\n| 功能特性 | 数量 | 格式 |\n|-----------|-------|---------|\n| 技能 | ${zhDocsUnrelatedSkillsCount} | .agents/skills/ |\n\n## 跨工具功能对等\n\n| 功能特性 | Claude Code | Codex CLI |\n|---------|------------|-----------|\n| **智能体** | ${zhDocsParityCounts.agents} | 共享 (AGENTS.md) |\n| **命令** | ${zhDocsParityCounts.commands} | 基于指令 |\n| **技能** | ${zhDocsParityCounts.skills} | 10 (原生格式) |\n`);
-  fs.writeFileSync(zhAgentsPath, `这是一个**生产就绪的 AI 编码插件**，提供 ${zhAgentsSummaryCounts.agents} 个专业代理、${zhAgentsSummaryCounts.skills} 项技能、${zhAgentsSummaryCounts.commands} 条命令以及自动化钩子工作流，用于软件开发。\n\n\`\`\`\n${zhAgentsStructureLines.join('\n')}\n\`\`\`\n`);
   fs.writeFileSync(pluginJsonPath, JSON.stringify({
     name: 'ecc',
     description: `Battle-tested plugin — ${pluginCounts.agents} agents, ${pluginCounts.skills} skills, ${pluginCounts.commands} legacy command shims`,
@@ -309,7 +293,7 @@ function writeCatalogFixture(testDir, options = {}) {
     }],
   }, null, 2));
 
-  return { readmePath, agentsPath, zhRootReadmePath, zhDocsReadmePath, zhAgentsPath, pluginJsonPath, marketplaceJsonPath };
+  return { readmePath, agentsPath, zhRootReadmePath, pluginJsonPath, marketplaceJsonPath };
 }
 
 function runTests() {
@@ -456,8 +440,6 @@ function runTests() {
       readmePath,
       agentsPath,
       zhRootReadmePath,
-      zhDocsReadmePath,
-      zhAgentsPath,
       pluginJsonPath,
       marketplaceJsonPath,
     } = writeCatalogFixture(testDir, {
@@ -471,15 +453,6 @@ function runTests() {
         'commands/        — 99 slash commands',
       ],
       zhRootReadmeCounts: { agents: 99, skills: 99, commands: 99 },
-      zhDocsReadmeCounts: { agents: 99, skills: 99, commands: 99 },
-      zhDocsTableCounts: { agents: 99, skills: 99, commands: 99 },
-      zhDocsParityCounts: { agents: 99, skills: 99, commands: 99 },
-      zhAgentsSummaryCounts: { agents: 99, skills: 99, commands: 99 },
-      zhAgentsStructureLines: [
-        'agents/          — 99 个专业子代理',
-        'skills/          — 99 个工作流技能和领域知识',
-        'commands/        — 99 个斜杠命令',
-      ],
     });
 
     const result = runCatalogValidator({
@@ -487,8 +460,6 @@ function runTests() {
       README_PATH: readmePath,
       AGENTS_PATH: agentsPath,
       README_ZH_CN_PATH: zhRootReadmePath,
-      DOCS_ZH_CN_README_PATH: zhDocsReadmePath,
-      DOCS_ZH_CN_AGENTS_PATH: zhAgentsPath,
       PLUGIN_JSON_PATH: pluginJsonPath,
       MARKETPLACE_JSON_PATH: marketplaceJsonPath,
     });
@@ -504,8 +475,6 @@ function runTests() {
       readmePath,
       agentsPath,
       zhRootReadmePath,
-      zhDocsReadmePath,
-      zhAgentsPath,
       pluginJsonPath,
       marketplaceJsonPath,
     } = writeCatalogFixture(testDir, {
@@ -520,8 +489,6 @@ function runTests() {
       README_PATH: readmePath,
       AGENTS_PATH: agentsPath,
       README_ZH_CN_PATH: zhRootReadmePath,
-      DOCS_ZH_CN_README_PATH: zhDocsReadmePath,
-      DOCS_ZH_CN_AGENTS_PATH: zhAgentsPath,
       PLUGIN_JSON_PATH: pluginJsonPath,
       MARKETPLACE_JSON_PATH: marketplaceJsonPath,
     });
@@ -536,20 +503,16 @@ function runTests() {
       readmePath,
       agentsPath,
       zhRootReadmePath,
-      zhDocsReadmePath,
       pluginJsonPath,
       marketplaceJsonPath,
     } = writeCatalogFixture(testDir);
-    const missingZhAgentsPath = path.join(testDir, 'docs', 'zh-CN', 'AGENTS.md');
-    fs.rmSync(missingZhAgentsPath);
+    fs.rmSync(agentsPath);
 
     const result = runCatalogValidator({
       ROOT: testDir,
       README_PATH: readmePath,
       AGENTS_PATH: agentsPath,
       README_ZH_CN_PATH: zhRootReadmePath,
-      DOCS_ZH_CN_README_PATH: zhDocsReadmePath,
-      DOCS_ZH_CN_AGENTS_PATH: missingZhAgentsPath,
       PLUGIN_JSON_PATH: pluginJsonPath,
       MARKETPLACE_JSON_PATH: marketplaceJsonPath,
     });
@@ -568,8 +531,6 @@ function runTests() {
       readmePath,
       agentsPath,
       zhRootReadmePath,
-      zhDocsReadmePath,
-      zhAgentsPath,
       pluginJsonPath,
       marketplaceJsonPath,
     } = writeCatalogFixture(testDir, {
@@ -578,17 +539,8 @@ function runTests() {
       readmeParityCounts: { agents: 7, skills: 7, commands: 7 },
       summaryCounts: { agents: 6, skills: 6, commands: 6 },
       zhRootReadmeCounts: { agents: 10, skills: 10, commands: 10 },
-      zhDocsReadmeCounts: { agents: 11, skills: 11, commands: 11 },
-      zhDocsTableCounts: { agents: 12, skills: 12, commands: 12 },
-      zhDocsParityCounts: { agents: 13, skills: 13, commands: 13 },
-      zhAgentsSummaryCounts: { agents: 14, skills: 14, commands: 14 },
       pluginCounts: { agents: 18, skills: 18, commands: 18 },
       marketplaceCounts: { agents: 19, skills: 19, commands: 19 },
-      zhAgentsStructureLines: [
-        'agents/          — 15 个专业子代理',
-        'skills/          — 16 个工作流技能和领域知识',
-        'commands/        — 17 个斜杠命令',
-      ],
     });
 
     const result = runCatalogValidator({
@@ -597,8 +549,6 @@ function runTests() {
       README_PATH: readmePath,
       AGENTS_PATH: agentsPath,
       README_ZH_CN_PATH: zhRootReadmePath,
-      DOCS_ZH_CN_README_PATH: zhDocsReadmePath,
-      DOCS_ZH_CN_AGENTS_PATH: zhAgentsPath,
       PLUGIN_JSON_PATH: pluginJsonPath,
       MARKETPLACE_JSON_PATH: marketplaceJsonPath,
     });
@@ -608,8 +558,6 @@ function runTests() {
     const readme = fs.readFileSync(readmePath, 'utf8');
     const agentsDoc = fs.readFileSync(agentsPath, 'utf8');
     const zhRootReadme = fs.readFileSync(zhRootReadmePath, 'utf8');
-    const zhDocsReadme = fs.readFileSync(zhDocsReadmePath, 'utf8');
-    const zhAgentsDoc = fs.readFileSync(zhAgentsPath, 'utf8');
     const pluginJson = fs.readFileSync(pluginJsonPath, 'utf8');
     const marketplaceJson = fs.readFileSync(marketplaceJsonPath, 'utf8');
 
@@ -622,12 +570,6 @@ function runTests() {
     assert.ok(agentsDoc.includes('providing 1 specialized agents, 1 skills, 1 commands'), 'Should sync AGENTS summary');
     assert.ok(agentsDoc.includes('skills/          — 1 workflow skills and domain knowledge'), 'Should sync AGENTS structure');
     assert.ok(zhRootReadme.includes('你现在可以使用 1 个代理、1 个技能和 1 个命令'), 'Should sync README.zh-CN quick-start summary');
-    assert.ok(zhDocsReadme.includes('你现在可以使用 1 个智能体、1 项技能和 1 个命令了'), 'Should sync docs/zh-CN/README quick-start summary');
-    assert.ok(zhDocsReadme.includes('| 智能体 | \u2705 1 个 |'), 'Should sync docs/zh-CN/README comparison table');
-    assert.ok(zhDocsReadme.includes('| 技能 | 16 | .agents/skills/ |'), 'Should not rewrite unrelated docs/zh-CN/README tables');
-    assert.ok(zhDocsReadme.includes('| **智能体** | 1 | 共享 (AGENTS.md) |'), 'Should sync docs/zh-CN/README parity table');
-    assert.ok(zhAgentsDoc.includes('提供 1 个专业代理、1 项技能、1 条命令'), 'Should sync docs/zh-CN/AGENTS summary');
-    assert.ok(zhAgentsDoc.includes('commands/        — 1 个斜杠命令'), 'Should sync docs/zh-CN/AGENTS structure');
     assert.ok(pluginJson.includes('1 agents, 1 skills, 1 legacy command shims'), 'Should sync plugin manifest catalog description');
     assert.ok(marketplaceJson.includes('1 agents, 1 skills, 1 legacy command shims'), 'Should sync marketplace plugin catalog description');
 
@@ -640,8 +582,6 @@ function runTests() {
       readmePath,
       agentsPath,
       zhRootReadmePath,
-      zhDocsReadmePath,
-      zhAgentsPath,
       pluginJsonPath,
       marketplaceJsonPath,
     } = writeCatalogFixture(testDir, {
@@ -650,11 +590,6 @@ function runTests() {
         '\tskills/\t–\t1+ workflow skills and domain knowledge\t',
         ' commands/ — 1 slash commands ',
       ],
-      zhAgentsStructureLines: [
-        '  agents/   -   1 个专业子代理   ',
-        '\tskills/\t–\t1+ 个工作流技能和领域知识\t',
-        ' commands/ — 1 个斜杠命令 ',
-      ],
     });
 
     const result = runCatalogValidator({
@@ -662,8 +597,6 @@ function runTests() {
       README_PATH: readmePath,
       AGENTS_PATH: agentsPath,
       README_ZH_CN_PATH: zhRootReadmePath,
-      DOCS_ZH_CN_README_PATH: zhDocsReadmePath,
-      DOCS_ZH_CN_AGENTS_PATH: zhAgentsPath,
       PLUGIN_JSON_PATH: pluginJsonPath,
       MARKETPLACE_JSON_PATH: marketplaceJsonPath,
     });

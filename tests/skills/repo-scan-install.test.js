@@ -16,19 +16,7 @@ const skillFiles = [
     relativePath: path.join('skills', 'repo-scan', 'SKILL.md'),
     heading: '## Installation',
     descriptionTerms: ['bootstrap', 'external', 'install'],
-    reinvocationText: 'Reload your agent harness, then invoke `repo-scan` again',
-  },
-  {
-    relativePath: path.join('docs', 'zh-CN', 'skills', 'repo-scan', 'SKILL.md'),
-    heading: '## 安装',
-    descriptionTerms: ['引导', '外部', '安装'],
-    reinvocationText: '重新加载智能体运行环境，然后再次调用 `repo-scan`',
-  },
-  {
-    relativePath: path.join('docs', 'ja-JP', 'skills', 'repo-scan', 'SKILL.md'),
-    heading: '## インストール',
-    descriptionTerms: ['ブートストラップ', '外部', 'インストール'],
-    reinvocationText: 'エージェントハーネスを再読み込みしてから、`repo-scan` を再度呼び出してください',
+    reinvocationText: 'Reload your agent harness, then invoke `repo-scan` again'
   }
 ];
 const pinnedCommit = '2742664ebcad1450c208eda0ae45d3c17fad5dd8';
@@ -38,7 +26,7 @@ function run(command, args, options = {}) {
   return spawnSync(command, args, {
     encoding: 'utf8',
     ...options,
-    env: { ...process.env, ...(options.env || {}) },
+    env: { ...process.env, ...(options.env || {}) }
   });
 }
 
@@ -72,8 +60,8 @@ function createLocalSource(root) {
       GIT_AUTHOR_NAME: 'Test',
       GIT_AUTHOR_EMAIL: 'test@example.com',
       GIT_COMMITTER_NAME: 'Test',
-      GIT_COMMITTER_EMAIL: 'test@example.com',
-    },
+      GIT_COMMITTER_EMAIL: 'test@example.com'
+    }
   });
   assert.strictEqual(commit.status, 0, commit.stderr);
   return sourceRepo;
@@ -82,7 +70,9 @@ function createLocalSource(root) {
 function createCommandShims(root) {
   const binDir = path.join(root, 'bin');
   fs.mkdirSync(binDir);
-  writeExecutable(path.join(binDir, 'git'), `#!/usr/bin/env bash
+  writeExecutable(
+    path.join(binDir, 'git'),
+    `#!/usr/bin/env bash
 set -euo pipefail
 if [ "\${1:-}" = clone ]; then
   target="\${!#}"
@@ -95,8 +85,11 @@ if [ "\${1:-}" = -C ] && [ "\${3:-}" = archive ]; then
   exec "$REAL_GIT" -C "$2" archive HEAD
 fi
 exec "$REAL_GIT" "$@"
-`);
-  writeExecutable(path.join(binDir, 'mv'), `#!/usr/bin/env bash
+`
+  );
+  writeExecutable(
+    path.join(binDir, 'mv'),
+    `#!/usr/bin/env bash
 set -euo pipefail
 original_args=("$@")
 no_target=0
@@ -146,15 +139,14 @@ case "$source_path" in
     ;;
 esac
 exec "$REAL_MV" "\${original_args[@]}"
-`);
+`
+  );
   return binDir;
 }
 
 function transactionDirs(installParent) {
   if (!fs.existsSync(installParent)) return [];
-  return fs.readdirSync(installParent).filter(
-    name => name.startsWith('.repo-scan-install.') && name !== '.repo-scan-install.lock'
-  );
+  return fs.readdirSync(installParent).filter(name => name.startsWith('.repo-scan-install.') && name !== '.repo-scan-install.lock');
 }
 
 function prepareInstallScenario(installParent, installDir, scenario) {
@@ -180,10 +172,7 @@ function assertPreservedBackup(result, installParent) {
   const backupName = fs.readdirSync(workspace).find(name => name.startsWith('backup-'));
   assert.ok(backupName, result.stderr);
   const preservedBackup = path.join(workspace, backupName);
-  assert.strictEqual(
-    fs.readFileSync(path.join(preservedBackup, 'old-marker.txt'), 'utf8'),
-    'previous installation\n'
-  );
+  assert.strictEqual(fs.readFileSync(path.join(preservedBackup, 'old-marker.txt'), 'utf8'), 'previous installation\n');
 }
 
 function assertInstallationResult({ result, scenario, installDir, installParent }) {
@@ -200,10 +189,7 @@ function assertInstallationResult({ result, scenario, installDir, installParent 
 
   assert.notStrictEqual(result.status, 0, 'forced installation failure must propagate');
   if (scenario === 'replacement-failure' || scenario === 'lock-held') {
-    assert.strictEqual(
-      fs.readFileSync(path.join(installDir, 'old-marker.txt'), 'utf8'),
-      'previous installation\n'
-    );
+    assert.strictEqual(fs.readFileSync(path.join(installDir, 'old-marker.txt'), 'utf8'), 'previous installation\n');
     assert.deepStrictEqual(transactionDirs(installParent), []);
     assert.strictEqual(fs.existsSync(lockDir), scenario === 'lock-held');
     if (scenario === 'lock-held') assert.match(result.stderr, /holds the lock/);
@@ -214,10 +200,7 @@ function assertInstallationResult({ result, scenario, installDir, installParent 
   assert.ok(!fs.existsSync(lockDir));
   if (scenario.includes('target-conflict')) {
     assert.ok(fs.existsSync(path.join(installDir, 'concurrent-marker.txt')));
-    assert.ok(
-      !fs.readdirSync(installDir).some(name => /^(stage|backup)-/.test(name)),
-      'native mv must not leave staged or backup directories nested in the target'
-    );
+    assert.ok(!fs.readdirSync(installDir).some(name => /^(stage|backup)-/.test(name)), 'native mv must not leave staged or backup directories nested in the target');
     assert.match(result.stderr, /target was recreated|rollback failed/);
   } else {
     assert.match(result.stderr, /previous installation preserved at/);
@@ -242,9 +225,9 @@ function executeInstallation(block, scenario) {
         REAL_GIT: requireShellCommand('git'),
         REAL_MV: requireShellCommand('mv'),
         REPO_SCAN_TEST_MV_FAILURE: failureMode(scenario),
-        SHIM_DIR: toShellPath(binDir),
+        SHIM_DIR: toShellPath(binDir)
       },
-      timeout: 30000,
+      timeout: 30000
     });
     assertInstallationResult({ result, scenario, installDir, installParent });
   } finally {
@@ -271,15 +254,9 @@ function assertPointerContract({ relativePath, descriptionTerms, reinvocationTex
   const description = frontmatter[1].match(/^description:\s*(.+)$/m);
   assert.ok(description, `${relativePath} must contain a frontmatter description`);
   for (const term of descriptionTerms) {
-    assert.ok(
-      description[1].toLocaleLowerCase().includes(term.toLocaleLowerCase()),
-      `${relativePath} description must identify this as an external installer pointer (${term})`
-    );
+    assert.ok(description[1].toLocaleLowerCase().includes(term.toLocaleLowerCase()), `${relativePath} description must identify this as an external installer pointer (${term})`);
   }
-  assert.ok(
-    source.includes(reinvocationText),
-    `${relativePath} must tell users to reload and invoke repo-scan again after installation`
-  );
+  assert.ok(source.includes(reinvocationText), `${relativePath} must tell users to reload and invoke repo-scan again after installation`);
 }
 
 console.log('\nrepo-scan installation docs (#2774):');
@@ -339,7 +316,7 @@ if (bashBinary) {
       'target-conflict-portable',
       'rollback-target-conflict',
       'rollback-target-conflict-portable',
-      'lock-held',
+      'lock-held'
     ]) {
       executeInstallation(block, scenario);
       passed++;

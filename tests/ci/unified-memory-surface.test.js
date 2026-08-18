@@ -6,7 +6,7 @@ const path = require('path');
 
 const REPO_ROOT = path.join(__dirname, '..', '..');
 const SKILL_PATHS = ['skills/unified-memory/SKILL.md', '.agents/skills/unified-memory/SKILL.md'];
-const RUNTIME_DOC_PATHS = [...SKILL_PATHS, 'README.md', 'README.zh-CN.md', 'docs/zh-CN/README.md'];
+const RUNTIME_DOC_PATHS = [...SKILL_PATHS, 'README.md', 'README.zh-CN.md'];
 
 let passed = 0;
 let failed = 0;

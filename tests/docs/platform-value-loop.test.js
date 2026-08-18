@@ -89,23 +89,6 @@ test('Ito example preserves non-advisory and gated-access boundaries', () => {
   }
 });
 
-test('release docs link the platform value loop into the rc surface', () => {
-  const crossHarness = read('docs/architecture/cross-harness.md');
-  const previewManifest = read('docs/releases/2.0.0-rc.1/preview-pack-manifest.md');
-  const itoPack = read('docs/releases/2.0.0-rc.1/ito-prediction-market-skill-pack.md');
-  const hypergrowth = read('docs/releases/2.0.0/ecc-2-hypergrowth-release-command-center.md');
-
-  for (const source of [crossHarness, previewManifest, itoPack, hypergrowth]) {
-    assert.ok(
-      source.includes('platform-value-loop.md'),
-      'expected release/cross-harness surface to link platform-value-loop.md'
-    );
-  }
-
-  assert.ok(previewManifest.includes('Product integration and full-stack platform thesis'));
-  assert.ok(hypergrowth.includes('Product integrations should behave like repeatable distribution loops'));
-});
-
 test('platform value loop does not overclaim release status or trading ability', () => {
   const source = read('docs/architecture/platform-value-loop.md');
   const forbidden = [

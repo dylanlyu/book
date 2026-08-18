@@ -55,21 +55,11 @@ test('auto-update command probes for the script it runs, not just scripts/lib', 
   // sentinel ECC skill, per #2544/#2577) yet still lack scripts/auto-update.js.
   // The command's inline resolver must probe for the script it actually
   // executes so such roots don't shadow the complete plugin root.
-  const autoUpdateDocs = [
-    path.join(__dirname, '..', '..', 'commands', 'auto-update.md'),
-    path.join(__dirname, '..', '..', 'docs', 'ja-JP', 'commands', 'auto-update.md'),
-    path.join(__dirname, '..', '..', 'docs', 'zh-CN', 'commands', 'auto-update.md'),
-  ];
+  const autoUpdateDocs = [path.join(__dirname, '..', '..', 'commands', 'auto-update.md')];
   for (const docPath of autoUpdateDocs) {
     const doc = fs.readFileSync(docPath, 'utf8');
-    assert.strictEqual(
-      (doc.match(/scripts','lib','resolve-ecc-root/g) || []).length, 1,
-      `${docPath} should embed the shared inline resolver`
-    );
-    assert.ok(
-      doc.includes("resolveEccRoot({probe:p.join('scripts','auto-update.js')})"),
-      `${docPath} should probe for scripts/auto-update.js`
-    );
+    assert.strictEqual((doc.match(/scripts','lib','resolve-ecc-root/g) || []).length, 1, `${docPath} should embed the shared inline resolver`);
+    assert.ok(doc.includes("resolveEccRoot({probe:p.join('scripts','auto-update.js')})"), `${docPath} should probe for scripts/auto-update.js`);
   }
 });
 

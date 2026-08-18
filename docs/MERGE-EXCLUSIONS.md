@@ -4,7 +4,8 @@
 凡是清單內的路徑或設定，**一律不併入**，直接捨棄。
 
 > 上一次全面套用：2026-08-17（合併上游 52 個 commit，處理 40 個衝突檔）。
-> 同日移除 Pi harness、Antigravity 目標與 JoyCode 目標（見第 1、2、3 節）。
+> 同日移除 Pi harness、Antigravity 目標與 JoyCode 目標（見第 1、2 節）。
+> 2026-08-18 移除全部翻譯文件、release 文件與 locale 安裝功能（見第 8 節）。
 
 ---
 
@@ -22,7 +23,8 @@
 | `0b202b07` | OpenCode、Qwen、Trae、Zed 整合 |
 | `465cd72f` | ecc2 實驗性 Rust runtime、control pane、agent proximity、observability readiness |
 | `01f5ba4b` | Pi harness 與 Antigravity 安裝目標（含 legacy `.agent` 遷移路徑） |
-| _本次_ | JoyCode 安裝目標（`.joycode/` adapter、扁平化 rules 佈局、guided wizard 的 advanced 提示） |
+| `6bb0edaa` | JoyCode 安裝目標（`.joycode/` adapter、扁平化 rules 佈局、guided wizard 的 advanced 提示） |
+| _本次_ | 全部翻譯文件（12 個語言目錄）、release 文件（`docs/releases/`、`docs/drafts/`）、`docs/stale-pr-salvage-ledger.md`，以及 `locale:*` 安裝元件家族 |
 
 ---
 
@@ -235,7 +237,80 @@ echo "agents: $(ls agents/*.md | wc -l)   skills: $(ls -d skills/*/ | wc -l)"
 
 ---
 
-## 8. 合併後檢查
+## 8. 翻譯文件與 release 文件
+
+本 fork **只維護英文文件**。上游的翻譯目錄與 release 存檔一律不併入。
+
+### 8.1 排除的目錄與檔案
+
+```
+docs/de-DE/    docs/es/       docs/ja-JP/    docs/ko-KR/
+docs/pt-BR/    docs/ru/       docs/th/       docs/tr/
+docs/ur/       docs/vi-VN/    docs/zh-CN/    docs/zh-TW/
+docs/releases/                （1.8.0、1.10.0、2.0.0、2.0.0-rc.1、2.1.0 全部版本）
+docs/drafts/                  （release 公告草稿）
+docs/stale-pr-salvage-ledger.md
+```
+
+上游若帶回任一目錄，整個丟掉，不做選擇性保留。
+
+### 8.2 保留的同名項目（別誤刪）
+
+| 保留 | 原因 |
+|------|------|
+| 倉庫根目錄 `README.zh-CN.md` | 唯一保留的非英文文件，`scripts/ci/catalog.js` 仍對它做數量驗證 |
+| `README.md` 與 `README.zh-CN.md` 的語言選擇器 | 已縮減為 English／简体中文兩項，上游會把 10 個死連結加回來 |
+| `CHANGELOG.md`、`WORKING-CONTEXT.md` 裡提到 `docs/releases/` 的行 | 歷史紀錄，照既有慣例保留原文 |
+| `skills/eval-harness/SKILL.md` 的 `docs/releases/<version>/eval-summary.md` | 那是**輸出路徑模板**，不是既有檔案 |
+| README 中指向 `github.com/affaan-m/ECC/.../docs/releases/...` 的絕對 URL | 指向上游倉庫，仍可連通 |
+
+### 8.3 連帶移除的 locale 安裝功能
+
+翻譯目錄是 `locale:*` 安裝元件的內容來源，目錄移除後整個家族失去意義：
+
+```
+manifests/install-components.json   9 個 locale:* 元件（82 → 73）
+manifests/install-modules.json      9 個 docs-* 模組（35 → 26）
+package.json                        files 陣列中 9 個 docs/<lang>/ 路徑
+tests/lib/locale-install.test.js    整檔（--locale 安裝測試）
+```
+
+上游若帶回 `locale:` 開頭的元件或 `docs-` 開頭的模組，一律刪除。
+
+### 8.4 連帶移除的 release 驗證面
+
+`docs/releases/` 不只是存檔，它是下列腳本的**輸入資料**。這些腳本在本 fork 已無資料可讀：
+
+```
+scripts/platform-audit.js              讀 publication-evidence / operator-readiness-dashboard
+scripts/preview-pack-smoke.js          讀 docs/releases/<version>
+scripts/release-approval-gate.js       讀 docs/releases/<version>
+scripts/release-video-suite.js         讀 ecc-2-hypergrowth-release-command-center.md
+tests/docs/stale-pr-salvage-ledger.test.js   整檔
+```
+
+> 這些 release 腳本本身尚未移除，僅其文件輸入已不存在。
+> 若要恢復 release 流程，需一併恢復 `docs/releases/`，或改寫腳本改用其他證據來源。
+
+### 8.5 連帶修改的驗證程式與測試
+
+上游合併時這些檔案最容易把翻譯路徑帶回來：
+
+| 檔案 | 排除項 |
+|------|--------|
+| `scripts/ci/catalog.js` | `DOCS_ZH_CN_README_PATH`、`DOCS_ZH_CN_AGENTS_PATH` 常數；`parseZhDocsReadmeExpectations`、`parseZhAgentsDocExpectations`、`syncZhDocsReadme`、`syncZhAgents` 四個函式；`createDocumentSpecs` 的 `zhDocsReadmePath` / `zhDocsAgentsPath` 參數與對應 spec。**保留** `parseZhRootReadmeExpectations` / `syncZhRootReadme`（服務根目錄 `README.zh-CN.md`） |
+| `tests/ci/validators.test.js` | 所有 `zhDocs*` / `zhAgents*` fixture 與斷言。**保留** `zhRoot*` |
+| `tests/ci/catalog.test.js` | `writeZhDocsReadme` / `writeZhAgents` fixture 產生器與對應斷言 |
+| `tests/plugin-manifest.test.js` | 7 個針對 `docs/tr`、`docs/zh-CN`、`docs/pt-BR` 的 test 區塊與路徑變數 |
+| `tests/docs/install-identifiers.test.js`、`tests/docs/configure-ecc-install-paths.test.js`、`tests/docs/continuous-learning-v2-docs.test.js`、`tests/skills/repo-scan-install.test.js`、`tests/lib/command-plugin-root.test.js`、`tests/ci/secret-curl-flags.test.js`、`tests/ci/unified-memory-surface.test.js` | 陣列中指向翻譯文件的路徑項 |
+| `tests/docs/platform-value-loop.test.js` | `release docs link the platform value loop into the rc surface` 整個 test |
+
+**注意**：`tests/ci/catalog.test.js` 與 `tests/ci/validators.test.js` 的「缺少文件時要報錯」測試，
+刪除目標已從 `docs/zh-CN/AGENTS.md` 改為英文 `AGENTS.md`。測試意圖不變，別在合併時改回去。
+
+---
+
+## 9. 合併後檢查
 
 ```bash
 # 1. 排除的檔案是否被帶回
@@ -259,11 +334,20 @@ node -e "const {listInstallTargetAdapters}=require('./scripts/lib/install-target
 console.log(listInstallTargetAdapters().map(a=>a.target).sort().join(','));"
 # 應輸出：claude,claude-project,codex
 
-# 6. 完整測試
+# 6. 翻譯目錄與 release 文件是否被帶回
+ls -d docs/de-DE docs/es docs/ja-JP docs/ko-KR docs/pt-BR docs/ru docs/th \
+      docs/tr docs/ur docs/vi-VN docs/zh-CN docs/zh-TW docs/releases docs/drafts 2>/dev/null
+
+# 7. locale 安裝元件與 docs-* 模組是否被帶回
+node -e "const c=require('./manifests/install-components.json').components.filter(x=>x.family==='locale');
+const m=require('./manifests/install-modules.json').modules.filter(x=>/^docs-/.test(x.id));
+console.log(c.length||m.length?'DIRTY '+[...c.map(x=>x.id),...m.map(x=>x.id)]:'clean');"
+
+# 8. 完整測試
 node tests/run-all.js
 ```
 
-第 1～3 項**沒有輸出**、第 4 項印出 `clean`、第 5 項輸出上面那一行，才算乾淨。
+第 1～3、6 項**沒有輸出**、第 4、7 項印出 `clean`、第 5 項輸出上面那一行，才算乾淨。
 
 若上游帶回整個目錄：
 
@@ -273,7 +357,7 @@ git rm -r --cached <dir> && rm -rf <dir>
 
 ---
 
-## 9. 維護
+## 10. 維護
 
 - 再移除任何功能時，**同時**更新第 1 節的移除紀錄與對應章節。清單不完整＝下次合併加倍痛。
 - 決定重新引入某功能時，把該章節整段刪除，不要留註解。
