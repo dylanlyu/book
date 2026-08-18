@@ -3,9 +3,10 @@ const fs = require('fs');
 const path = require('path');
 
 const root = path.join(__dirname, '..', '..');
-const releaseAnnounceWorkflow = fs.readFileSync(path.join(root, '.github/workflows/release-announce.yml'), 'utf8');
-const discussionWorkflow = fs.readFileSync(path.join(root, '.github/workflows/discussion-announce.yml'), 'utf8');
-const releaseWorkflow = fs.readFileSync(path.join(root, '.github/workflows/release.yml'), 'utf8');
+const { resolveWorkflowPath } = require('../helpers/workflow-file');
+const releaseAnnounceWorkflow = fs.readFileSync(resolveWorkflowPath(path.join(root, '.github/workflows/release-announce.yml')), 'utf8');
+const discussionWorkflow = fs.readFileSync(resolveWorkflowPath(path.join(root, '.github/workflows/discussion-announce.yml')), 'utf8');
+const releaseWorkflow = fs.readFileSync(resolveWorkflowPath(path.join(root, '.github/workflows/release.yml')), 'utf8');
 
 assert.match(discussionWorkflow, /discussion:\s*\n\s*types:\s*\[created\]/);
 assert.match(discussionWorkflow, /category\.name\s*==\s*'Announcements'/);

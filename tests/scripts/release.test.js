@@ -3,21 +3,22 @@
  */
 
 const assert = require('assert');
+const { resolveWorkflowPath } = require('../helpers/workflow-file');
 const fs = require('fs');
 const path = require('path');
 
 const scriptPath = path.join(__dirname, '..', '..', 'scripts', 'release.sh');
 const source = fs.readFileSync(scriptPath, 'utf8');
-const releaseWorkflowPath = path.join(__dirname, '..', '..', '.github', 'workflows', 'release.yml');
-const reusableReleaseWorkflowPath = path.join(
+const releaseWorkflowPath = resolveWorkflowPath(path.join(__dirname, '..', '..', '.github', 'workflows', 'release.yml'));
+const reusableReleaseWorkflowPath = resolveWorkflowPath(path.join(
   __dirname,
   '..',
   '..',
   '.github',
   'workflows',
   'reusable-release.yml'
-);
-const ciWorkflowPath = path.join(__dirname, '..', '..', '.github', 'workflows', 'ci.yml');
+));
+const ciWorkflowPath = resolveWorkflowPath(path.join(__dirname, '..', '..', '.github', 'workflows', 'ci.yml'));
 const releaseWorkflowSource = fs.readFileSync(releaseWorkflowPath, 'utf8');
 const reusableReleaseWorkflowSource = fs.readFileSync(reusableReleaseWorkflowPath, 'utf8');
 const ciWorkflowSource = fs.readFileSync(ciWorkflowPath, 'utf8');

@@ -3,6 +3,7 @@
 const assert = require('assert');
 const fs = require('fs');
 const path = require('path');
+const { resolveWorkflowPath } = require('../helpers/workflow-file');
 
 const repoRoot = path.resolve(__dirname, '..', '..');
 const workflowPaths = [
@@ -27,7 +28,7 @@ function test(name, fn) {
 }
 
 function load(relativePath) {
-  return fs.readFileSync(path.join(repoRoot, relativePath), 'utf8').replace(/\r\n/g, '\n');
+  return fs.readFileSync(resolveWorkflowPath(path.join(repoRoot, relativePath)), 'utf8').replace(/\r\n/g, '\n');
 }
 
 function jobBlock(source, jobName, nextJobName) {

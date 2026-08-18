@@ -4,13 +4,14 @@ const assert = require('assert');
 const { spawnSync } = require('child_process');
 const fs = require('fs');
 const os = require('os');
+const { resolveWorkflowPath } = require('../helpers/workflow-file');
 const path = require('path');
 
 const repoRoot = path.join(__dirname, '..', '..');
 const harnessRoot = path.join(repoRoot, 'docker', 'plugin-setup');
 const SUBPROCESS_TIMEOUT_MS = 30_000;
 const files = {
-  ci: path.join(repoRoot, '.github', 'workflows', 'ci.yml'),
+  ci: resolveWorkflowPath(path.join(repoRoot, '.github', 'workflows', 'ci.yml')),
   compose: path.join(harnessRoot, 'compose.yaml'),
   dockerfile: path.join(harnessRoot, 'Dockerfile'),
   fixtureProject: path.join(
