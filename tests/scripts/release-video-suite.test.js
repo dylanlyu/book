@@ -59,7 +59,7 @@ function seedRepo(rootDir, overrides = {}, options = {}) {
   const releaseDir = releaseDirFor(release);
   const files = {
     'package.json': JSON.stringify({
-      name: 'ecc-universal',
+      name: 'book-universal',
       version: release,
       files: ['scripts/release-video-suite.js'],
       scripts: {

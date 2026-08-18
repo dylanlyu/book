@@ -18,7 +18,7 @@ const {
   resolveClaudePaths,
 } = require('./install/inventory');
 
-const OFFICIAL_MARKETPLACE_NAME = 'ecc';
+const OFFICIAL_MARKETPLACE_NAME = 'dylanlyu';
 const OFFICIAL_MARKETPLACE_REPO = 'affaan-m/ecc';
 const OFFICIAL_MARKETPLACE_URL = 'https://github.com/affaan-m/ECC';
 const PROVIDER_COMMAND_TIMEOUT_MS = 120 * 1000;

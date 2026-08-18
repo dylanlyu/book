@@ -574,9 +574,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ecc-universal@workspace:.":
+"book-universal@workspace:.":
   version: 0.0.0-use.local
-  resolution: "ecc-universal@workspace:."
+  resolution: "book-universal@workspace:."
   dependencies:
     "@eslint/js": "npm:9.39.2"
     "@iarna/toml": "npm:2.2.5"
@@ -596,7 +596,7 @@ __metadata:
     ecc-install: scripts/install-apply.js
     ecc-memory-mcp: scripts/memory-mcp.mjs
     ecc-plan-canvas: scripts/plan-canvas.js
-    ecc-universal: scripts/ecc.js
+    book-universal: scripts/ecc.js
   languageName: unknown
   linkType: soft
 

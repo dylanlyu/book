@@ -222,12 +222,12 @@ function detectTargetMode(rootDir) {
   return 'consumer';
 }
 
-const ECC_PLUGIN_KEY_PATTERNS = [/^ecc@/i, /^everything-claude-code@/i];
+const ECC_PLUGIN_KEY_PATTERNS = [/^book@/i, /^everything-claude-code@/i];
 
-const ECC_LEGACY_PLUGIN_DIRS = ['ecc', 'ecc@ecc', 'everything-claude-code', 'everything-claude-code@everything-claude-code'];
+const ECC_LEGACY_PLUGIN_DIRS = ['book', 'book@dylanlyu', 'everything-claude-code', 'everything-claude-code@everything-claude-code'];
 
-const ECC_CACHE_MARKETPLACES = ['everything-claude-code', 'ecc'];
-const ECC_CACHE_PLUGIN_NAMES = ['ecc', 'everything-claude-code'];
+const ECC_CACHE_MARKETPLACES = ['everything-claude-code', 'dylanlyu'];
+const ECC_CACHE_PLUGIN_NAMES = ['book', 'everything-claude-code'];
 
 function uniquePaths(paths) {
   return [...new Set(paths.filter(Boolean))];
@@ -794,7 +794,7 @@ function getConsumerChecks(rootDir) {
       category: 'Tool Coverage',
       points: 4,
       scopes: ['repo'],
-      path: '~/.claude/plugins/ecc/ (legacy everything-claude-code paths also supported)',
+      path: '~/.claude/plugins/book/ (legacy everything-claude-code paths also supported)',
       description: 'Everything Claude Code is installed for the active user or project',
       pass: Boolean(pluginInstall),
       fix: 'Install the ECC plugin for this user or project before auditing project-specific harness quality.'

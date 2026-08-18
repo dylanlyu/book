@@ -196,7 +196,7 @@ test('prepares a local npm artifact through the confined public bin contract', (
     fs.writeFileSync(
       path.join(packageRoot, 'package.json'),
       JSON.stringify({
-        name: options.packageName || 'ecc-universal',
+        name: options.packageName || 'book-universal',
         version: '2.1.0',
         bin: options.bin === undefined ? { ecc: 'scripts/ecc.js' } : options.bin,
       })

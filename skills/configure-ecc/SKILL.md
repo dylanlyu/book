@@ -13,7 +13,7 @@ and show the welcome only after success. Never clone ECC into a temporary
 directory or copy plugin components by hand.
 
 For a human-operated terminal, the canonical entry points are `ecc setup` and
-`npx ecc-universal setup`. Inside a harness, use the explicit non-interactive
+`npx book-universal setup`. Inside a harness, use the explicit non-interactive
 commands below instead.
 
 ## Route by the current harness
@@ -39,7 +39,7 @@ claude plugin list --json
 claude plugin marketplace list --json
 ```
 
-Treat a single existing `ecc@ecc` installation as a reconfiguration. Do not
+Treat a single existing `book@dylanlyu` installation as a reconfiguration. Do not
 interpret Claude's provider-owned "Open home page" control as installation
 evidence. Stop and report the recovery returned by setup for multiple ECC
 scopes, a legacy/manual install, malformed settings, or a marketplace collision;
@@ -82,7 +82,7 @@ node "$CLAUDE_PLUGIN_ROOT/scripts/setup.js" --mode claude-plugin \
 If `$CLAUDE_PLUGIN_ROOT` is unavailable, use the published npm package:
 
 ```bash
-npx --yes --package ecc-universal ecc setup --mode claude-plugin \
+npx --yes --package book-universal ecc setup --mode claude-plugin \
   --scope <scope> --hooks <hooks> [--move-scope] --dry-run --json
 ```
 
@@ -104,7 +104,7 @@ node "$CLAUDE_PLUGIN_ROOT/scripts/setup.js" --mode claude-plugin \
 Fallback:
 
 ```bash
-npx --yes --package ecc-universal ecc setup --mode claude-plugin \
+npx --yes --package book-universal ecc setup --mode claude-plugin \
   --scope <scope> --hooks <hooks> [--move-scope] --yes --json
 ```
 
@@ -117,7 +117,7 @@ the selected values. Then independently run:
 claude plugin list --json
 ```
 
-Continue only when exactly one enabled `ecc@ecc` entry exists at the selected
+Continue only when exactly one enabled `book@dylanlyu` entry exists at the selected
 scope. When `$CLAUDE_PLUGIN_ROOT` is available, pass the successful setup
 `action` (`installed`, `updated`, `migrated`, `resumed`, or
 `already-migrated`) to the bundled renderer:
@@ -155,7 +155,7 @@ Ask for one confirmation, then install or idempotently refresh the installed
 cache and verify it:
 
 ```bash
-codex plugin add ecc@ecc --json
+codex plugin add book@dylanlyu --json
 codex plugin list --json
 ```
 

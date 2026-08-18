@@ -261,7 +261,7 @@ function runGuidedPtyFixture(answers) {
       output
     });
     assert.strictEqual(code, 1);
-    assert.match(errorOutput.read(), /Retry with: ecc-universal install --guided --harness codex/);
+    assert.match(errorOutput.read(), /Retry with: book-universal install --guided --harness codex/);
 
     const jsonError = capture();
     assert.strictEqual(
@@ -297,7 +297,7 @@ function runGuidedPtyFixture(answers) {
       output
     });
     assert.strictEqual(code, 1);
-    assert.match(errorOutput.read(), /Retry with: ecc-universal install --guided --harness claude --harness codex --claude-scope local --claude-hooks strict/);
+    assert.match(errorOutput.read(), /Retry with: book-universal install --guided --harness claude --harness codex --claude-scope local --claude-hooks strict/);
   });
 
   await test('human-facing parser errors never echo terminal control bytes', async () => {

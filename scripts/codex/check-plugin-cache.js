@@ -45,8 +45,8 @@ function validateCacheSegment(flag, value) {
 
 function parseArgs(argv) {
   const defaults = {
-    marketplace: 'ecc',
-    plugin: 'ecc',
+    marketplace: 'dylanlyu',
+    plugin: 'book',
     version: PACKAGE_JSON.version,
     codexHome: process.env.CODEX_HOME || path.join(os.homedir(), '.codex'),
     pluginDir: null,
@@ -186,7 +186,7 @@ function checkCache(options) {
       log(`Re-run with --version <version> if you want to inspect a different cache entry.`);
     } else {
       log(`No installed cache entries found for ${options.marketplace}/${options.plugin}.`);
-      if (options.marketplace === 'ecc' && options.plugin === 'ecc') {
+      if (options.marketplace === 'dylanlyu' && options.plugin === 'book') {
         log('Run: codex plugin marketplace add affaan-m/ECC');
       } else {
         log('Install the requested plugin into the Codex plugin cache.');

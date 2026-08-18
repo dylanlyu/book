@@ -43,7 +43,7 @@ If a report is declined, we will explain whether it is not reproducible, out of 
 This policy covers:
 
 - the `affaan-m/ECC` repository
-- the `ecc-universal` npm package
+- the `book-universal` npm package
 - ECC plugin, install, repair, dashboard, hook, rule, skill, MCP, and command surfaces shipped from this repository
 - GitHub Actions workflows and release automation in this repository
 - the ECC Tools GitHub App integration points documented by this repository
@@ -54,9 +54,9 @@ This policy covers:
 Official ECC surfaces are:
 
 - GitHub repo: <https://github.com/affaan-m/ECC>
-- npm package: `ecc-universal`
+- npm package: `book-universal`
 - GitHub App: <https://github.com/apps/ecc-tools>
-- marketplace/plugin slug: `ecc@ecc`
+- marketplace/plugin slug: `book@dylanlyu`
 - website: <https://ecc.tools>
 
 Official AgentShield surface:

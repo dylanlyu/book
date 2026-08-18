@@ -20,21 +20,21 @@ const MARKETPLACE_ADD = [
   'plugin', 'marketplace', 'add', OFFICIAL_MARKETPLACE_REPO, '--json',
 ];
 const MARKETPLACE_UPGRADE = [
-  'plugin', 'marketplace', 'upgrade', 'ecc', '--json',
+  'plugin', 'marketplace', 'upgrade', 'dylanlyu', '--json',
 ];
-const PLUGIN_ADD = ['plugin', 'add', 'ecc@ecc', '--json'];
+const PLUGIN_ADD = ['plugin', 'add', 'book@dylanlyu', '--json'];
 
 function marketplaceInventory(installed = false) {
   return JSON.stringify({
-    marketplaces: installed ? [{ name: 'ecc', root: '/cache/ecc' }] : [],
+    marketplaces: installed ? [{ name: 'dylanlyu', root: '/cache/ecc' }] : [],
   });
 }
 
 function pluginInventory(installed = false, overrides = {}) {
   const ecc = {
-    pluginId: 'ecc@ecc',
-    name: 'ecc',
-    marketplaceName: 'ecc',
+    pluginId: 'book@dylanlyu',
+    name: 'book',
+    marketplaceName: 'dylanlyu',
     version: '2.0.0',
     installed: true,
     enabled: true,
@@ -48,7 +48,7 @@ function pluginInventory(installed = false, overrides = {}) {
 
 function marketplaceUpgradeResult(overrides = {}) {
   return JSON.stringify({
-    selectedMarketplaces: ['ecc'],
+    selectedMarketplaces: ['dylanlyu'],
     upgradedRoots: ['/cache/ecc'],
     errors: [],
     ...overrides,
@@ -109,11 +109,11 @@ async function runTests() {
     ['parses current Codex marketplace and plugin JSON inventory shapes', () => {
       assert.deepStrictEqual(
         parseMarketplaceInventory(marketplaceInventory(true)),
-        [{ name: 'ecc', root: '/cache/ecc' }]
+        [{ name: 'dylanlyu', root: '/cache/ecc' }]
       );
       assert.strictEqual(
         parsePluginInventory(pluginInventory(true)).installed[0].pluginId,
-        'ecc@ecc'
+        'book@dylanlyu'
       );
       assert.strictEqual(
         normalizeGitHubGitOrigin('git@github.com:affaan-m/ECC.git'),
@@ -128,7 +128,7 @@ async function runTests() {
       }]);
 
       const repository = await resolveMarketplaceRepository(
-        { name: 'ecc', root: '/cache/ecc' },
+        { name: 'dylanlyu', root: '/cache/ecc' },
         { cwd: '/workspace with spaces' },
         { execFile: fake.execFile }
       );
@@ -181,7 +181,7 @@ async function runTests() {
       }]);
       await expectSetupError(
         resolveMarketplaceRepository(
-          { name: 'ecc', root: '/cache/ecc' },
+          { name: 'dylanlyu', root: '/cache/ecc' },
           {},
           { execFile: provenance.execFile }
         ),
@@ -203,7 +203,7 @@ async function runTests() {
 
       await expectSetupError(
         resolveMarketplaceRepository(
-          { name: 'ecc', root: '/cache/ecc' },
+          { name: 'dylanlyu', root: '/cache/ecc' },
           {},
           { execFile: fake.execFile }
         ),
@@ -218,7 +218,7 @@ async function runTests() {
         { args: PLUGIN_LIST, stdout: pluginInventory(false) },
         { args: MARKETPLACE_ADD, stdout: '{"alreadyAdded":false}' },
         { args: MARKETPLACE_LIST, stdout: marketplaceInventory(true) },
-        { args: PLUGIN_ADD, stdout: '{"pluginId":"ecc@ecc"}' },
+        { args: PLUGIN_ADD, stdout: '{"pluginId":"book@dylanlyu"}' },
         { args: PLUGIN_LIST, stdout: pluginInventory(true) },
       ]);
 
@@ -230,7 +230,7 @@ async function runTests() {
       assert.deepStrictEqual(result, {
         action: 'installed',
         marketplaceAction: 'added',
-        pluginId: 'ecc@ecc',
+        pluginId: 'book@dylanlyu',
         restartRequired: true,
       });
       assert.deepStrictEqual(fake.calls.map(call => call.args), [
@@ -265,7 +265,7 @@ async function runTests() {
       assert.deepStrictEqual(result, {
         action: 'updated',
         marketplaceAction: 'upgraded',
-        pluginId: 'ecc@ecc',
+        pluginId: 'book@dylanlyu',
         restartRequired: true,
       });
       assert.deepStrictEqual(fake.calls.map(call => call.args), [
@@ -303,19 +303,19 @@ async function runTests() {
         marketplaceUpgradeResult({
           upgradedRoots: ['c:/users/hira/.codex/marketplaces/ecc'],
         }),
-        { name: 'ecc', root: 'C:\\Users\\Hira\\.codex\\marketplaces\\ecc' }
+        { name: 'dylanlyu', root: 'C:\\Users\\Hira\\.codex\\marketplaces\\ecc' }
       );
 
-      assert.deepStrictEqual(result.selectedMarketplaces, ['ecc']);
+      assert.deepStrictEqual(result.selectedMarketplaces, ['dylanlyu']);
     }],
     ['rejects ambiguous native refresh results for a targeted upgrade', () => {
       assert.throws(
         () => parseMarketplaceUpgradeResult(
           marketplaceUpgradeResult({
-            selectedMarketplaces: ['ecc', 'other'],
+            selectedMarketplaces: ['dylanlyu', 'other'],
             upgradedRoots: ['/cache/ecc', '/cache/other'],
           }),
-          { name: 'ecc', root: '/cache/ecc' }
+          { name: 'dylanlyu', root: '/cache/ecc' }
         ),
         error => (
           error.code === 'MARKETPLACE_REFRESH_FAILED'
@@ -325,7 +325,7 @@ async function runTests() {
       assert.throws(
         () => parseMarketplaceUpgradeResult(
           marketplaceUpgradeResult({ errors: [{ message: 'dirty checkout' }] }),
-          { name: 'ecc', root: '/cache/ecc' }
+          { name: 'dylanlyu', root: '/cache/ecc' }
         ),
         error => error.code === 'MARKETPLACE_REFRESH_FAILED'
       );
@@ -388,7 +388,7 @@ async function runTests() {
         action: 'would-install',
         dryRun: true,
         marketplaceAction: 'would-add',
-        pluginId: 'ecc@ecc',
+        pluginId: 'book@dylanlyu',
         restartRequired: true,
       });
       assert.deepStrictEqual(fake.calls.map(call => call.args), [
@@ -411,7 +411,7 @@ async function runTests() {
         action: 'would-update',
         dryRun: true,
         marketplaceAction: 'would-add',
-        pluginId: 'ecc@ecc',
+        pluginId: 'book@dylanlyu',
         restartRequired: true,
       });
       assert.strictEqual(fake.calls.length, 2);
@@ -431,7 +431,7 @@ async function runTests() {
         action: 'unchanged',
         dryRun: true,
         marketplaceAction: 'would-upgrade',
-        pluginId: 'ecc@ecc',
+        pluginId: 'book@dylanlyu',
         restartRequired: false,
       });
       assert.strictEqual(fake.calls.length, 2);
@@ -443,7 +443,7 @@ async function runTests() {
         { args: MARKETPLACE_UPGRADE, stdout: marketplaceUpgradeResult() },
         { args: MARKETPLACE_LIST, stdout: marketplaceInventory(true) },
         { args: PLUGIN_LIST, stdout: pluginInventory(false) },
-        { args: PLUGIN_ADD, stdout: '{"pluginId":"ecc@ecc"}' },
+        { args: PLUGIN_ADD, stdout: '{"pluginId":"book@dylanlyu"}' },
         { args: PLUGIN_LIST, stdout: pluginInventory(true) },
       ]);
 
@@ -527,8 +527,8 @@ async function runTests() {
       assert.throws(
         () => parseMarketplaceInventory(JSON.stringify({
           marketplaces: [
-            { name: 'ecc', root: '/one' },
-            { name: 'ecc', root: '/two' },
+            { name: 'dylanlyu', root: '/one' },
+            { name: 'dylanlyu', root: '/two' },
           ],
         })),
         error => error.code === 'INVALID_MARKETPLACE_INVENTORY'
@@ -544,8 +544,8 @@ async function runTests() {
       assert.throws(
         () => parsePluginInventory(JSON.stringify({
           installed: [
-            { pluginId: 'ecc@ecc', installed: true, enabled: true },
-            { pluginId: 'ecc@ecc', installed: true, enabled: true },
+            { pluginId: 'book@dylanlyu', installed: true, enabled: true },
+            { pluginId: 'book@dylanlyu', installed: true, enabled: true },
           ],
           available: [],
         })),
@@ -587,14 +587,14 @@ async function runTests() {
         { args: PLUGIN_LIST, stdout: pluginInventory(false) },
         { args: MARKETPLACE_ADD, stdout: '{"alreadyAdded":false}' },
         { args: MARKETPLACE_LIST, stdout: marketplaceInventory(true) },
-        { args: PLUGIN_ADD, stdout: '{"pluginId":"ecc@ecc"}' },
+        { args: PLUGIN_ADD, stdout: '{"pluginId":"book@dylanlyu"}' },
         { args: PLUGIN_LIST, stdout: pluginInventory(false) },
       ]);
 
       await expectSetupError(
         reconcileCodexPlugin({}, dependenciesFor(fake)),
         'PLUGIN_VERIFICATION_FAILED',
-        /verify.*ecc@ecc/i
+        /verify.*book@dylanlyu/i
       );
     }],
     ['fails when marketplace verification cannot observe ECC', async () => {

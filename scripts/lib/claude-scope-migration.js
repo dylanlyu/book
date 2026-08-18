@@ -273,7 +273,7 @@ function migrateClaudePluginScope(options = {}, dependencies = {}) {
       { cwd: paths.projectRoot, phase: 'marketplace-inventory' }
     ).stdout
   );
-  const namedMarketplace = marketplaces.find(entry => entry?.name === 'ecc');
+  const namedMarketplace = marketplaces.find(entry => entry?.name === 'dylanlyu');
   if (namedMarketplace && !isOfficialMarketplace(namedMarketplace)) {
     throw migrationError(
       'MARKETPLACE_COLLISION',
@@ -323,7 +323,7 @@ function migrateClaudePluginScope(options = {}, dependencies = {}) {
   let marketplaceAction = null;
   if (migration.mode === 'migrate') {
     marketplaceAction = namedMarketplace
-      ? ['plugin', 'marketplace', 'update', 'ecc']
+      ? ['plugin', 'marketplace', 'update', 'dylanlyu']
       : [
         'plugin', 'marketplace', 'add',
         OFFICIAL_MARKETPLACE_URL,

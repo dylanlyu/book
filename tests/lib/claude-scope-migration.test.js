@@ -31,7 +31,7 @@ function test(name, fn) {
 
 function plugin(scope, overrides = {}) {
   return {
-    id: 'ecc@ecc',
+    id: 'book@dylanlyu',
     scope,
     enabled: true,
     version: '1.9.0',
@@ -41,7 +41,7 @@ function plugin(scope, overrides = {}) {
 
 function marketplace(scope = 'user') {
   return {
-    name: 'ecc',
+    name: 'dylanlyu',
     source: 'github',
     repo: 'affaan-m/ECC',
     scope,
@@ -159,7 +159,7 @@ function installArgv(scope, hooks = 'standard', profileOverride) {
   const enabled = hooks !== 'off';
   const profile = profileOverride || (hooks === 'off' ? 'standard' : hooks);
   return [
-    'plugin', 'install', 'ecc@ecc',
+    'plugin', 'install', 'book@dylanlyu',
     '--scope', scope,
     '--config', `hooks_enabled=${enabled}`,
     '--config', `hook_profile=${profile}`,
@@ -167,14 +167,14 @@ function installArgv(scope, hooks = 'standard', profileOverride) {
 }
 
 function uninstallArgv(scope) {
-  return ['plugin', 'uninstall', 'ecc@ecc', '--scope', scope, '--keep-data'];
+  return ['plugin', 'uninstall', 'book@dylanlyu', '--scope', scope, '--keep-data'];
 }
 
 function expectedMigrationCalls(sourceScope, destinationScope, hooks = 'standard') {
   return [
     ['plugin', 'list', '--json'],
     ['plugin', 'marketplace', 'list', '--json'],
-    ['plugin', 'marketplace', 'update', 'ecc'],
+    ['plugin', 'marketplace', 'update', 'dylanlyu'],
     ['plugin', 'marketplace', 'list', '--json'],
     installArgv(destinationScope, hooks),
     ['plugin', 'list', '--json'],
@@ -200,7 +200,7 @@ test('all six directed scope pairs migrate destination-first with exact verifica
         assert.deepStrictEqual(result, {
           action: 'migrated',
           hooks: 'standard',
-          pluginId: 'ecc@ecc',
+          pluginId: 'book@dylanlyu',
           sourceScope,
           scope: destinationScope,
         });
@@ -298,7 +298,7 @@ test('destination-only migration honors explicit hook preferences and reports dr
   withFixture({ plugins: [plugin('local')] }, fixture => {
     fs.writeFileSync(fixture.settingsPath, JSON.stringify({
       pluginConfigs: {
-        'ecc@ecc': {
+        'book@dylanlyu': {
           options: { hooks_enabled: false, hook_profile: 'minimal' },
         },
       },
@@ -309,8 +309,8 @@ test('destination-only migration honors explicit hook preferences and reports dr
     assert.strictEqual(result.action, 'already-migrated');
     assert.strictEqual(result.preferencesUpdated, true);
     const settings = JSON.parse(fs.readFileSync(fixture.settingsPath, 'utf8'));
-    assert.strictEqual(settings.pluginConfigs['ecc@ecc'].options.hooks_enabled, true);
-    assert.strictEqual(settings.pluginConfigs['ecc@ecc'].options.hook_profile, 'strict');
+    assert.strictEqual(settings.pluginConfigs['book@dylanlyu'].options.hooks_enabled, true);
+    assert.strictEqual(settings.pluginConfigs['book@dylanlyu'].options.hook_profile, 'strict');
   });
 
   withFixture({ plugins: [plugin('local')] }, fixture => {
@@ -367,7 +367,7 @@ test('zero installs, ambiguous non-destination scopes, and invalid inventories f
       code: 'INVALID_PLUGIN_INVENTORY',
     },
     {
-      state: { pluginListResponses: [[{ id: 'ecc@ecc', enabled: true }]] },
+      state: { pluginListResponses: [[{ id: 'book@dylanlyu', enabled: true }]] },
       scope: 'project',
       code: 'INVALID_PLUGIN_INVENTORY',
     },
@@ -393,7 +393,7 @@ test('zero installs, ambiguous non-destination scopes, and invalid inventories f
 
 test('marketplace collisions fail closed in migration dry-run and resume cleanup', () => {
   const collision = {
-    name: 'ecc',
+    name: 'dylanlyu',
     source: 'github',
     repo: 'attacker/ecc',
     scope: 'user',
@@ -446,7 +446,7 @@ test('destination marketplace, install, and verification failures never uninstal
         plugins: [plugin('user')],
         marketplaces: [marketplace('user')],
         failures: [{
-          argv: ['plugin', 'marketplace', 'update', 'ecc'],
+          argv: ['plugin', 'marketplace', 'update', 'dylanlyu'],
           status: 7,
           stderr: 'marketplace failed',
           times: 1,
@@ -520,7 +520,7 @@ test('source uninstall failure reports both scopes and exact forward recovery', 
     assert.strictEqual(error.phase, 'source-uninstall');
     assert.deepStrictEqual([...error.observedScopes].sort(), ['project', 'user']);
     assert.deepStrictEqual(error.recovery, [
-      'claude plugin uninstall ecc@ecc --scope user --keep-data',
+      'claude plugin uninstall book@dylanlyu --scope user --keep-data',
       'ecc setup --mode claude-plugin --scope project --move-scope --yes',
     ]);
     assert.ok(!readCalls(fixture).flat().includes('--prune'));
@@ -566,7 +566,7 @@ test('dry-run returns exact ordered actions and performs no mutation', () => {
     assert.strictEqual(result.action, 'would-migrate');
     assert.strictEqual(result.dryRun, true);
     assert.deepStrictEqual(result.plannedActions, [
-      ['plugin', 'marketplace', 'update', 'ecc'],
+      ['plugin', 'marketplace', 'update', 'dylanlyu'],
       installArgv('project'),
       ['plugin', 'list', '--json'],
       ['plugin', 'list', '--json'],
@@ -605,7 +605,7 @@ test('migration preserves hook preferences unless --hooks is explicit', () => {
       theme: 'dark',
       pluginConfigs: {
         'another@market': { enabled: false },
-        'ecc@ecc': {
+        'book@dylanlyu': {
           futureKey: { keep: true },
           options: {
             hooks_enabled: false,
@@ -637,7 +637,7 @@ test('migration preserves hook preferences unless --hooks is explicit', () => {
     fs.writeFileSync(fixture.settingsPath, JSON.stringify({
       theme: 'dark',
       pluginConfigs: {
-        'ecc@ecc': {
+        'book@dylanlyu': {
           futureKey: true,
           options: { hooks_enabled: false, hook_profile: 'minimal', unknown: 'keep' },
         },
@@ -647,10 +647,10 @@ test('migration preserves hook preferences unless --hooks is explicit', () => {
     const settings = JSON.parse(fs.readFileSync(fixture.settingsPath, 'utf8'));
     assert.strictEqual(settings.theme, 'dark');
     assert.strictEqual(settings.includeCoAuthoredBy, false);
-    assert.strictEqual(settings.pluginConfigs['ecc@ecc'].futureKey, true);
-    assert.strictEqual(settings.pluginConfigs['ecc@ecc'].options.unknown, 'keep');
-    assert.strictEqual(settings.pluginConfigs['ecc@ecc'].options.hooks_enabled, true);
-    assert.strictEqual(settings.pluginConfigs['ecc@ecc'].options.hook_profile, 'strict');
+    assert.strictEqual(settings.pluginConfigs['book@dylanlyu'].futureKey, true);
+    assert.strictEqual(settings.pluginConfigs['book@dylanlyu'].options.unknown, 'keep');
+    assert.strictEqual(settings.pluginConfigs['book@dylanlyu'].options.hooks_enabled, true);
+    assert.strictEqual(settings.pluginConfigs['book@dylanlyu'].options.hook_profile, 'strict');
   });
 });
 
@@ -662,7 +662,7 @@ test('migration preserves an explicit includeCoAuthoredBy opt-in', () => {
     fs.writeFileSync(fixture.settingsPath, `${JSON.stringify({
       includeCoAuthoredBy: true,
       pluginConfigs: {
-        'ecc@ecc': {
+        'book@dylanlyu': {
           options: { hooks_enabled: true, hook_profile: 'minimal' },
         },
       },
@@ -671,7 +671,7 @@ test('migration preserves an explicit includeCoAuthoredBy opt-in', () => {
     migrateClaudePluginScope(migrationOptions(fixture, 'project', { hooks: 'strict' }));
     const settings = JSON.parse(fs.readFileSync(fixture.settingsPath, 'utf8'));
     assert.strictEqual(settings.includeCoAuthoredBy, true);
-    assert.strictEqual(settings.pluginConfigs['ecc@ecc'].options.hook_profile, 'strict');
+    assert.strictEqual(settings.pluginConfigs['book@dylanlyu'].options.hook_profile, 'strict');
   });
 });
 

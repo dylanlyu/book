@@ -69,7 +69,7 @@ test('resolveEccRoot module covers current and legacy marketplace plugin roots',
 
   const legacyHomeDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ecc-marketplace-legacy-'));
   try {
-    const legacyRoot = path.join(legacyHomeDir, '.claude', 'plugins', 'marketplaces', 'ecc');
+    const legacyRoot = path.join(legacyHomeDir, '.claude', 'plugins', 'marketplaces', 'dylanlyu');
     fs.mkdirSync(path.join(legacyRoot, 'scripts', 'lib'), { recursive: true });
     fs.writeFileSync(path.join(legacyRoot, 'scripts', 'lib', 'utils.js'), '// stub');
     fs.mkdirSync(path.join(legacyRoot, ECC_SKILL_SENTINEL), { recursive: true });
@@ -80,7 +80,7 @@ test('resolveEccRoot module covers current and legacy marketplace plugin roots',
 
   const cacheHomeDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ecc-marketplace-cache-'));
   try {
-    const cacheRoot = path.join(cacheHomeDir, '.claude', 'plugins', 'cache', 'ecc', 'affaan-m', '1.0.0');
+    const cacheRoot = path.join(cacheHomeDir, '.claude', 'plugins', 'cache', 'book', 'affaan-m', '1.0.0');
     fs.mkdirSync(path.join(cacheRoot, 'scripts', 'lib'), { recursive: true });
     fs.writeFileSync(path.join(cacheRoot, 'scripts', 'lib', 'utils.js'), '// stub');
     fs.mkdirSync(path.join(cacheRoot, ECC_SKILL_SENTINEL), { recursive: true });

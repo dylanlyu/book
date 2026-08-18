@@ -117,7 +117,7 @@ function getPackedFixture() {
     return packedFixture;
   }
 
-  const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'ecc-universal-bin-'));
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'book-universal-bin-'));
   const packResult = run(
     'npm',
     ['pack', '--json', '--ignore-scripts', '--pack-destination', directory]
@@ -145,7 +145,7 @@ function prepareLocalPackedProject(packageManager) {
   const projectDirectory = path.join(fixture.directory, 'local-project');
   const modulesDirectory = path.join(projectDirectory, 'node_modules');
   const extractedDirectory = path.join(modulesDirectory, 'package');
-  const packageDirectory = path.join(modulesDirectory, 'ecc-universal');
+  const packageDirectory = path.join(modulesDirectory, 'book-universal');
   const binDirectory = path.join(modulesDirectory, '.bin');
 
   fs.mkdirSync(projectDirectory, { recursive: true });
@@ -173,7 +173,7 @@ function prepareLocalPackedProject(packageManager) {
   fs.renameSync(extractedDirectory, packageDirectory);
   fs.mkdirSync(binDirectory, { recursive: true });
 
-  for (const executable of ['ecc', 'ecc-universal']) {
+  for (const executable of ['ecc', 'book-universal']) {
     const scriptPath = path.join(packageDirectory, packageJson.bin[executable]);
     fs.chmodSync(scriptPath, 0o755);
     if (process.platform === 'win32') {
@@ -181,11 +181,11 @@ function prepareLocalPackedProject(packageManager) {
       const target = packageJson.bin[executable].replace(/\//g, '\\');
       fs.writeFileSync(
         cmdPath,
-        `@ECHO off\r\nnode "%~dp0\\..\\ecc-universal\\${target}" %*\r\n`
+        `@ECHO off\r\nnode "%~dp0\\..\\book-universal\\${target}" %*\r\n`
       );
     } else {
       fs.symlinkSync(
-        path.join('..', 'ecc-universal', packageJson.bin[executable]),
+        path.join('..', 'book-universal', packageJson.bin[executable]),
         path.join(binDirectory, executable)
       );
     }
@@ -210,7 +210,7 @@ function getRunnerInvocation(packageManager, executable, args) {
           args: [
             'exec',
             '--offline',
-            '--package=./node_modules/ecc-universal',
+            '--package=./node_modules/book-universal',
             '--',
             executable,
             ...args,
@@ -304,9 +304,9 @@ test('Windows package shims use one safely quoted command line', () => {
   );
 });
 
-test('published package exposes ecc and ecc-universal through scripts/ecc.js', () => {
+test('published package exposes ecc and book-universal through scripts/ecc.js', () => {
   assert.strictEqual(packageJson.bin.ecc, 'scripts/ecc.js');
-  assert.strictEqual(packageJson.bin['ecc-universal'], 'scripts/ecc.js');
+  assert.strictEqual(packageJson.bin['book-universal'], 'scripts/ecc.js');
   assert.deepStrictEqual(packageLock.packages[''].bin, packageJson.bin);
 
   const fixture = getPackedFixture();
@@ -316,14 +316,14 @@ test('published package exposes ecc and ecc-universal through scripts/ecc.js', (
   );
 });
 
-test('packed ecc-universal launches the guided Claude setup help', () => {
-  const result = launchPackedBinary('ecc-universal', ['setup', '--help']);
+test('packed book-universal launches the guided Claude setup help', () => {
+  const result = launchPackedBinary('book-universal', ['setup', '--help']);
   assert.match(result.stdout, /ECC guided setup/);
 });
 
-test('packed ecc-universal launches the guided multi-harness help', () => {
+test('packed book-universal launches the guided multi-harness help', () => {
   const result = launchPackedBinary(
-    'ecc-universal',
+    'book-universal',
     ['install', '--guided', '--help']
   );
   assert.match(result.stdout, /ECC guided multi-harness install/);

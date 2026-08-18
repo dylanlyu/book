@@ -275,7 +275,7 @@ claude --version
 
 # Manual install (if marketplace fails)
 git clone https://github.com/affaan-m/everything-claude-code.git
-cp -r everything-claude-code ~/.claude/plugins/ecc
+cp -r everything-claude-code ~/.claude/plugins/book
 ```
 
 ### Package Manager Detection Fails
@@ -384,7 +384,7 @@ cd ~/.claude/plugins/cache/ecc
 npm install
 
 # Or for manual install
-cd ~/.claude/plugins/ecc
+cd ~/.claude/plugins/book
 npm install
 ```
 

@@ -1,46 +1,27 @@
 {
-  "name": "ecc",
+  "name": "dylanlyu",
   "owner": {
-    "name": "Affaan Mustafa",
-    "email": "me@affaanmustafa.com"
+    "name": "Dylan Lyu",
+    "email": "mingzong.lyu@gmail.com"
   },
   "metadata": {
-    "description": "Harness-native ECC skills, hooks, rules, MCP conventions, and operator workflows"
+    "description": "Harness-native skills, hooks, rules, MCP conventions, and operator workflows"
   },
   "plugins": [
     {
-      "name": "ecc",
+      "name": "book",
       "source": "./",
-      "description": "Harness-native ECC operator layer - 68 agents, 283 skills, 94 legacy command shims, reusable hooks, rules, selective install profiles, and production-ready workflows for Claude Code, Codex, and related agent harnesses",
+      "description": "Harness-native operator layer - 68 agents, 283 skills, 94 legacy command shims, reusable hooks, rules, selective install profiles, and production-ready workflows for Claude Code, Codex, and related agent harnesses",
       "version": "2.2.0",
       "author": {
-        "name": "Affaan Mustafa",
-        "email": "me@affaanmustafa.com"
+        "name": "Dylan Lyu",
+        "email": "mingzong.lyu@gmail.com"
       },
-      "homepage": "https://ecc.tools",
-      "repository": "https://github.com/affaan-m/ECC",
+      "repository": "https://github.com/dylanlyu/book",
       "license": "MIT",
-      "keywords": [
-        "agents",
-        "skills",
-        "hooks",
-        "commands",
-        "tdd",
-        "code-review",
-        "security",
-        "best-practices"
-      ],
+      "keywords": ["agents", "skills", "hooks", "commands", "tdd", "code-review", "security", "best-practices"],
       "category": "workflow",
-      "tags": [
-        "agents",
-        "skills",
-        "hooks",
-        "commands",
-        "tdd",
-        "code-review",
-        "security",
-        "best-practices"
-      ],
+      "tags": ["agents", "skills", "hooks", "commands", "tdd", "code-review", "security", "best-practices"],
       "strict": false
     }
   ]

@@ -91,7 +91,7 @@ function writeJson(filePath, value) {
 }
 
 function seedPluginCache(codexDir, manifest, files = []) {
-  const cacheDir = path.join(codexDir, 'plugins', 'cache', 'ecc', 'ecc', packageVersion);
+  const cacheDir = path.join(codexDir, 'plugins', 'cache', 'dylanlyu', 'book', packageVersion);
   writeJson(path.join(cacheDir, '.codex-plugin', 'plugin.json'), manifest);
   fs.writeFileSync(path.join(cacheDir, 'README.md'), '# cached plugin\n');
   for (const [relativePath, content] of files) {
@@ -103,7 +103,7 @@ function seedPluginCache(codexDir, manifest, files = []) {
 }
 
 const cacheManifestWithLocalRefs = {
-  name: 'ecc',
+  name: 'book',
   version: packageVersion,
   skills: './skills/',
   mcpServers: './.mcp.json',
@@ -146,7 +146,7 @@ if (
 
     try {
       seedPluginCache(codexDir, {
-        name: 'ecc',
+        name: 'book',
         version: packageVersion,
         skills: '../../../../../etc/passwd',
         mcpServers: '../../.mcp.json',

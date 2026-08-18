@@ -13,11 +13,11 @@ harness-specific transcripts or inboxes.
 
 This skill is guidance, not the Memory Vault executable. Skill-only, minimal,
 manual, and Claude plugin installs do not create the required commands on
-`PATH`. Install the `ecc-universal` npm runtime separately before using the CLI
+`PATH`. Install the `book-universal` npm runtime separately before using the CLI
 or MCP examples:
 
 ```bash
-npm install -g ecc-universal
+npm install -g book-universal
 ecc memory --help
 command -v ecc-memory-mcp
 ```

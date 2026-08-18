@@ -122,10 +122,10 @@ function runTests() {
     }
   })) passed++; else failed++;
 
-  if (test('finds current plugin install at ~/.claude/plugins/ecc', () => {
+  if (test('finds current plugin install at ~/.claude/plugins/book', () => {
     const homeDir = createTempDir();
     try {
-      const expected = setupLegacyPluginInstall(homeDir, ['ecc']);
+      const expected = setupLegacyPluginInstall(homeDir, ['book']);
       const result = resolveEccRoot({ envRoot: '', homeDir });
       assert.strictEqual(result, expected);
     } finally {
@@ -133,10 +133,10 @@ function runTests() {
     }
   })) passed++; else failed++;
 
-  if (test('finds current plugin install at ~/.claude/plugins/ecc@ecc', () => {
+  if (test('finds current plugin install at ~/.claude/plugins/book@dylanlyu', () => {
     const homeDir = createTempDir();
     try {
-      const expected = setupLegacyPluginInstall(homeDir, ['ecc@ecc']);
+      const expected = setupLegacyPluginInstall(homeDir, ['book@dylanlyu']);
       const result = resolveEccRoot({ envRoot: '', homeDir });
       assert.strictEqual(result, expected);
     } finally {
@@ -166,10 +166,10 @@ function runTests() {
     }
   })) passed++; else failed++;
 
-  if (test('finds marketplace current plugin install at ~/.claude/plugins/marketplaces/ecc', () => {
+  if (test('finds marketplace current plugin install at ~/.claude/plugins/marketplaces/dylanlyu', () => {
     const homeDir = createTempDir();
     try {
-      const expected = setupLegacyPluginInstall(homeDir, ['marketplaces', 'ecc']);
+      const expected = setupLegacyPluginInstall(homeDir, ['marketplaces', 'dylanlyu']);
       const result = resolveEccRoot({ envRoot: '', homeDir });
       assert.strictEqual(result, expected);
     } finally {
@@ -191,8 +191,8 @@ function runTests() {
   if (test('prefers exact legacy plugin install over plugin cache', () => {
     const homeDir = createTempDir();
     try {
-      const expected = setupLegacyPluginInstall(homeDir, ['marketplaces', 'ecc']);
-      setupPluginCache(homeDir, 'ecc', 'affaan-m', CURRENT_PACKAGE_VERSION);
+      const expected = setupLegacyPluginInstall(homeDir, ['marketplaces', 'dylanlyu']);
+      setupPluginCache(homeDir, 'book', 'affaan-m', CURRENT_PACKAGE_VERSION);
       const result = resolveEccRoot({ envRoot: '', homeDir });
       assert.strictEqual(result, expected);
     } finally {
@@ -204,7 +204,7 @@ function runTests() {
   if (test('discovers plugin root from cache directory', () => {
     const homeDir = createTempDir();
     try {
-      const expected = setupPluginCache(homeDir, 'ecc', 'affaan-m', CURRENT_PACKAGE_VERSION);
+      const expected = setupPluginCache(homeDir, 'book', 'affaan-m', CURRENT_PACKAGE_VERSION);
       const result = resolveEccRoot({ envRoot: '', homeDir });
       assert.strictEqual(result, expected);
     } finally {
@@ -216,7 +216,7 @@ function runTests() {
     const homeDir = createTempDir();
     try {
       const claudeDir = setupStandardInstall(homeDir);
-      setupPluginCache(homeDir, 'ecc', 'affaan-m', CURRENT_PACKAGE_VERSION);
+      setupPluginCache(homeDir, 'book', 'affaan-m', CURRENT_PACKAGE_VERSION);
       const result = resolveEccRoot({ envRoot: '', homeDir });
       assert.strictEqual(result, claudeDir,
         'Standard install should take precedence over plugin cache');
@@ -229,7 +229,7 @@ function runTests() {
     const homeDir = createTempDir();
     try {
       setupPluginCache(homeDir, 'everything-claude-code', 'legacy-org', '1.7.0');
-      const expected = setupPluginCache(homeDir, 'ecc', 'affaan-m', CURRENT_PACKAGE_VERSION);
+      const expected = setupPluginCache(homeDir, 'book', 'affaan-m', CURRENT_PACKAGE_VERSION);
       const result = resolveEccRoot({ envRoot: '', homeDir });
       // Should find one of them (either is valid)
       assert.ok(
@@ -298,7 +298,7 @@ function runTests() {
       fs.writeFileSync(path.join(scriptDir, 'utils.js'), '// stub');
       fs.mkdirSync(path.join(claudeDir, 'skills', 'my-own-skill'), { recursive: true });
       // A COMPLETE ECC root exists in the plugin cache (scripts + ECC skill).
-      const expected = setupPluginCache(homeDir, 'ecc', 'affaan-m', CURRENT_PACKAGE_VERSION);
+      const expected = setupPluginCache(homeDir, 'book', 'affaan-m', CURRENT_PACKAGE_VERSION);
       const result = resolveEccRoot({ envRoot: '', homeDir });
       assert.strictEqual(result, expected,
         'a scripts-only ~/.claude must not shadow a complete plugin-cache root');
@@ -327,14 +327,14 @@ function runTests() {
   if (test('rejects a partial exact plugin root (scripts, no ECC skill) and prefers a complete root (#2544)', () => {
     const homeDir = createTempDir();
     try {
-      // An exact plugin root under ~/.claude/plugins/ecc ships ECC's scripts but
+      // An exact plugin root under ~/.claude/plugins/book ships ECC's scripts but
       // not ECC's skills. The stricter predicate must reject it on the
       // exact-plugin branch too, not only for ~/.claude.
-      const partialScripts = path.join(homeDir, '.claude', 'plugins', 'ecc', 'scripts', 'lib');
+      const partialScripts = path.join(homeDir, '.claude', 'plugins', 'book', 'scripts', 'lib');
       fs.mkdirSync(partialScripts, { recursive: true });
       fs.writeFileSync(path.join(partialScripts, 'utils.js'), '// stub');
       // A COMPLETE ECC root exists in the plugin cache (scripts + ECC skill).
-      const expected = setupPluginCache(homeDir, 'ecc', 'affaan-m', CURRENT_PACKAGE_VERSION);
+      const expected = setupPluginCache(homeDir, 'book', 'affaan-m', CURRENT_PACKAGE_VERSION);
       const result = resolveEccRoot({ envRoot: '', homeDir });
       assert.strictEqual(result, expected,
         'a scripts-only exact plugin root must not shadow a complete plugin-cache root');
@@ -350,7 +350,7 @@ function runTests() {
       // The stricter predicate must reject it on the cache branch, so the
       // resolver returns the last-resort ~/.claude rather than the partial root.
       const cacheScripts = path.join(
-        homeDir, '.claude', 'plugins', 'cache', 'ecc', 'affaan-m', CURRENT_PACKAGE_VERSION,
+        homeDir, '.claude', 'plugins', 'cache', 'book', 'affaan-m', CURRENT_PACKAGE_VERSION,
         'scripts', 'lib'
       );
       fs.mkdirSync(cacheScripts, { recursive: true });
@@ -372,7 +372,7 @@ function runTests() {
     const homeDir = createTempDir();
     try {
       const claudeDir = setupStandardInstall(homeDir);
-      const marketplaceRoot = setupLegacyPluginInstall(homeDir, ['marketplaces', 'ecc']);
+      const marketplaceRoot = setupLegacyPluginInstall(homeDir, ['marketplaces', 'dylanlyu']);
       fs.writeFileSync(path.join(marketplaceRoot, 'scripts', 'auto-update.js'), '// stub');
 
       assert.strictEqual(
@@ -465,7 +465,7 @@ module.exports = { resolveEccRoot() { assert.strictEqual(process.env.HOME, ${JSO
   if (test('INLINE_RESOLVE bootstraps module from an exact plugin root when env unset', () => {
     const homeDir = createTempDir();
     try {
-      const resolverDir = path.join(homeDir, '.claude', 'plugins', 'ecc', 'scripts', 'lib');
+      const resolverDir = path.join(homeDir, '.claude', 'plugins', 'book', 'scripts', 'lib');
       fs.mkdirSync(resolverDir, { recursive: true });
       fs.writeFileSync(path.join(resolverDir, 'resolve-ecc-root.js'), `module.exports = { resolveEccRoot() { return 'plugin-root'; } };`);
       const { execFileSync } = require('child_process');
@@ -485,7 +485,7 @@ module.exports = { resolveEccRoot() { assert.strictEqual(process.env.HOME, ${JSO
     const homeDir = createTempDir();
     try {
       const resolverDir = path.join(
-        homeDir, '.claude', 'plugins', 'cache', 'ecc', 'affaan-m', CURRENT_PACKAGE_VERSION,
+        homeDir, '.claude', 'plugins', 'cache', 'book', 'affaan-m', CURRENT_PACKAGE_VERSION,
         'scripts', 'lib'
       );
       fs.mkdirSync(resolverDir, { recursive: true });

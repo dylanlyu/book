@@ -190,7 +190,7 @@ test('fresh non-interactive plugin setup requires an explicit scope', () => {
 
 test('an existing install without --scope updates its detected scope', () => {
   withFixture({
-    plugins: [{ id: 'ecc@ecc', scope: 'project', enabled: true, version: '1.9.0' }],
+    plugins: [{ id: 'book@dylanlyu', scope: 'project', enabled: true, version: '1.9.0' }],
     marketplaces: [{
       name: 'ecc',
       source: 'github',
@@ -211,7 +211,7 @@ test('an existing install without --scope updates its detected scope', () => {
     assertNoSetupSpinner(`${result.stdout}${result.stderr}`);
     assert.ok(readCalls(fixture).some(argv => (
       JSON.stringify(argv) === JSON.stringify([
-        'plugin', 'update', 'ecc@ecc', '--scope', 'project',
+        'plugin', 'update', 'book@dylanlyu', '--scope', 'project',
       ])
     )));
   });
@@ -269,7 +269,7 @@ test('dry-run JSON emits JSON only and reads inventory without mutation', () => 
 
 test('setup automatically migrates an existing install to the selected scope and hooks', () => {
   withFixture({
-    plugins: [{ id: 'ecc@ecc', scope: 'local', enabled: true, version: '1.9.0' }],
+    plugins: [{ id: 'book@dylanlyu', scope: 'local', enabled: true, version: '1.9.0' }],
     marketplaces: [{
       name: 'ecc',
       source: 'github',
@@ -292,16 +292,16 @@ test('setup automatically migrates an existing install to the selected scope and
     assert.strictEqual(payload.hooks, 'minimal');
     const calls = readCalls(fixture);
     assert.ok(calls.some(argv => (
-      argv.join(' ') === 'plugin install ecc@ecc --scope user'
+      argv.join(' ') === 'plugin install book@dylanlyu --scope user'
         + ' --config hooks_enabled=true --config hook_profile=minimal'
     )));
     assert.ok(calls.some(argv => (
-      argv.join(' ') === 'plugin uninstall ecc@ecc --scope local --keep-data'
+      argv.join(' ') === 'plugin uninstall book@dylanlyu --scope local --keep-data'
     )));
     assert.ok(!calls.flat().includes('--prune'));
     const state = JSON.parse(fs.readFileSync(fixture.statePath, 'utf8'));
     assert.deepStrictEqual(state.plugins, [{
-      id: 'ecc@ecc',
+      id: 'book@dylanlyu',
       scope: 'user',
       enabled: true,
       version: '2.0.0',
@@ -309,16 +309,16 @@ test('setup automatically migrates an existing install to the selected scope and
     const settings = JSON.parse(
       fs.readFileSync(path.join(fixture.configDir, 'settings.json'), 'utf8')
     );
-    assert.strictEqual(settings.pluginConfigs['ecc@ecc'].options.hooks_enabled, true);
-    assert.strictEqual(settings.pluginConfigs['ecc@ecc'].options.hook_profile, 'minimal');
+    assert.strictEqual(settings.pluginConfigs['book@dylanlyu'].options.hooks_enabled, true);
+    assert.strictEqual(settings.pluginConfigs['book@dylanlyu'].options.hook_profile, 'minimal');
   });
 });
 
 test('setup resumes a safe two-scope migration without requiring --move-scope', () => {
   withFixture({
     plugins: [
-      { id: 'ecc@ecc', scope: 'local', enabled: true, version: '1.9.0' },
-      { id: 'ecc@ecc', scope: 'user', enabled: true, version: '2.0.0' },
+      { id: 'book@dylanlyu', scope: 'local', enabled: true, version: '1.9.0' },
+      { id: 'book@dylanlyu', scope: 'user', enabled: true, version: '2.0.0' },
     ],
     marketplaces: [{
       name: 'ecc',
@@ -340,7 +340,7 @@ test('setup resumes a safe two-scope migration without requiring --move-scope', 
     assert.strictEqual(payload.sourceScope, 'local');
     assert.strictEqual(payload.scope, 'user');
     assert.ok(readCalls(fixture).some(argv => (
-      argv.join(' ') === 'plugin uninstall ecc@ecc --scope local --keep-data'
+      argv.join(' ') === 'plugin uninstall book@dylanlyu --scope local --keep-data'
     )));
   });
 });
@@ -353,8 +353,8 @@ test('all interrupted migration and hook combinations resume without reinstallin
       for (const hookMode of hooks) {
         withFixture({
           plugins: [
-            { id: 'ecc@ecc', scope: sourceScope, enabled: true, version: '1.9.0' },
-            { id: 'ecc@ecc', scope: destinationScope, enabled: true, version: '2.0.0' },
+            { id: 'book@dylanlyu', scope: sourceScope, enabled: true, version: '1.9.0' },
+            { id: 'book@dylanlyu', scope: destinationScope, enabled: true, version: '2.0.0' },
           ],
           marketplaces: [{
             name: 'ecc',
@@ -380,11 +380,11 @@ test('all interrupted migration and hook combinations resume without reinstallin
           const calls = readCalls(fixture);
           assert.ok(!calls.some(argv => argv[1] === 'install'));
           assert.ok(calls.some(argv => (
-            argv.join(' ') === `plugin uninstall ecc@ecc --scope ${sourceScope} --keep-data`
+            argv.join(' ') === `plugin uninstall book@dylanlyu --scope ${sourceScope} --keep-data`
           )));
           const state = JSON.parse(fs.readFileSync(fixture.statePath, 'utf8'));
           assert.deepStrictEqual(state.plugins, [{
-            id: 'ecc@ecc',
+            id: 'book@dylanlyu',
             scope: destinationScope,
             enabled: true,
             version: '2.0.0',
@@ -392,7 +392,7 @@ test('all interrupted migration and hook combinations resume without reinstallin
           const settings = JSON.parse(
             fs.readFileSync(path.join(fixture.configDir, 'settings.json'), 'utf8')
           );
-          const stored = settings.pluginConfigs['ecc@ecc'].options;
+          const stored = settings.pluginConfigs['book@dylanlyu'].options;
           assert.strictEqual(stored.hooks_enabled, hookMode !== 'off');
           assert.strictEqual(
             stored.hook_profile,
@@ -406,7 +406,7 @@ test('all interrupted migration and hook combinations resume without reinstallin
 
 test('--move-scope remains explicit about its destination', () => {
   withFixture({
-    plugins: [{ id: 'ecc@ecc', scope: 'user', enabled: true, version: '1.9.0' }],
+    plugins: [{ id: 'book@dylanlyu', scope: 'user', enabled: true, version: '1.9.0' }],
   }, fixture => {
     const result = runSetup(fixture, [
       '--mode', 'claude-plugin',
@@ -422,7 +422,7 @@ test('--move-scope remains explicit about its destination', () => {
 
 test('destination-only --move-scope is an idempotent first call', () => {
   withFixture({
-    plugins: [{ id: 'ecc@ecc', scope: 'local', enabled: true, version: '2.0.0' }],
+    plugins: [{ id: 'book@dylanlyu', scope: 'local', enabled: true, version: '2.0.0' }],
   }, fixture => {
     const result = runSetup(fixture, [
       '--mode', 'claude-plugin',
@@ -441,7 +441,7 @@ test('destination-only --move-scope is an idempotent first call', () => {
 
 test('destination-only --move-scope applies explicit hook preferences', () => {
   withFixture({
-    plugins: [{ id: 'ecc@ecc', scope: 'local', enabled: true, version: '2.0.0' }],
+    plugins: [{ id: 'book@dylanlyu', scope: 'local', enabled: true, version: '2.0.0' }],
   }, fixture => {
     const result = runSetup(fixture, [
       '--mode', 'claude-plugin',
@@ -458,14 +458,14 @@ test('destination-only --move-scope applies explicit hook preferences', () => {
     const settings = JSON.parse(
       fs.readFileSync(path.join(fixture.configDir, 'settings.json'), 'utf8')
     );
-    assert.strictEqual(settings.pluginConfigs['ecc@ecc'].options.hooks_enabled, true);
-    assert.strictEqual(settings.pluginConfigs['ecc@ecc'].options.hook_profile, 'strict');
+    assert.strictEqual(settings.pluginConfigs['book@dylanlyu'].options.hooks_enabled, true);
+    assert.strictEqual(settings.pluginConfigs['book@dylanlyu'].options.hook_profile, 'strict');
   });
 });
 
 test('migration dry-run JSON exposes ordered actions without mutation', () => {
   withFixture({
-    plugins: [{ id: 'ecc@ecc', scope: 'user', enabled: true, version: '1.9.0' }],
+    plugins: [{ id: 'book@dylanlyu', scope: 'user', enabled: true, version: '1.9.0' }],
     marketplaces: [{
       name: 'ecc',
       source: 'github',
@@ -486,7 +486,7 @@ test('migration dry-run JSON exposes ordered actions without mutation', () => {
     assert.deepStrictEqual(payload.plannedActions.slice(-4), [
       ['plugin', 'list', '--json'],
       ['plugin', 'list', '--json'],
-      ['plugin', 'uninstall', 'ecc@ecc', '--scope', 'user', '--keep-data'],
+      ['plugin', 'uninstall', 'book@dylanlyu', '--scope', 'user', '--keep-data'],
       ['plugin', 'list', '--json'],
     ]);
     assert.strictEqual(hasMutation(fixture), false);
@@ -495,7 +495,7 @@ test('migration dry-run JSON exposes ordered actions without mutation', () => {
 
 test('migration JSON failures retain phase, scopes, and exact recovery', () => {
   withFixture({
-    plugins: [{ id: 'ecc@ecc', scope: 'user', enabled: true, version: '1.9.0' }],
+    plugins: [{ id: 'book@dylanlyu', scope: 'user', enabled: true, version: '1.9.0' }],
     marketplaces: [{
       name: 'ecc',
       source: 'github',
@@ -503,7 +503,7 @@ test('migration JSON failures retain phase, scopes, and exact recovery', () => {
       scope: 'user',
     }],
     failures: [{
-      argv: ['plugin', 'uninstall', 'ecc@ecc', '--scope', 'user', '--keep-data'],
+      argv: ['plugin', 'uninstall', 'book@dylanlyu', '--scope', 'user', '--keep-data'],
       status: 9,
       stderr: 'uninstall failed',
       times: 1,
@@ -522,7 +522,7 @@ test('migration JSON failures retain phase, scopes, and exact recovery', () => {
     assert.strictEqual(payload.error.phase, 'source-uninstall');
     assert.deepStrictEqual([...payload.error.observedScopes].sort(), ['project', 'user']);
     assert.deepStrictEqual(payload.error.recovery, [
-      'claude plugin uninstall ecc@ecc --scope user --keep-data',
+      'claude plugin uninstall book@dylanlyu --scope user --keep-data',
       'ecc setup --mode claude-plugin --scope project --move-scope --yes',
     ]);
   });
@@ -559,7 +559,7 @@ test('ecc setup preserves a real terminal for the interactive wizard', () => {
     const result = runInteractiveEccSetup(fixture);
     assert.strictEqual(result.status, 0, `${result.stdout}\n${result.stderr}`);
     assert.ifError(result.error);
-    assert.match(result.stdout, /Where should Claude enable ecc@ecc\?/);
+    assert.match(result.stdout, /Where should Claude enable book@dylanlyu\?/);
     assert.match(result.stdout, /How should ECC hooks run\?/);
     assert.doesNotMatch(result.stdout, /Interactive setup requires a terminal/);
     assertNoSetupSpinner(`${result.stdout}${result.stderr}`);
@@ -578,7 +578,7 @@ test('confirmed interactive apply starts immediately and clears the spinner on s
     assert.strictEqual(result.status, 0, `${result.stdout}\n${result.stderr}`);
     assertSetupSpinnerLifecycle(
       `${result.stdout}${result.stderr}`,
-      /ECC installed ecc@ecc at project scope/
+      /ECC installed book@dylanlyu at project scope/
     );
   });
 });
@@ -625,12 +625,12 @@ test('all interactive scope and hook choices install and persist the selected co
         });
         assert.ifError(result.error);
         assert.strictEqual(result.status, 0, `${result.stdout}\n${result.stderr}`);
-        assert.match(result.stdout, new RegExp(`ECC installed ecc@ecc at ${scope} scope`));
+        assert.match(result.stdout, new RegExp(`ECC installed book@dylanlyu at ${scope} scope`));
         assert.match(result.stdout, new RegExp(`Hook preference: ${hookMode}`));
 
         const state = JSON.parse(fs.readFileSync(fixture.statePath, 'utf8'));
         assert.deepStrictEqual(state.plugins, [{
-          id: 'ecc@ecc',
+          id: 'book@dylanlyu',
           scope,
           enabled: true,
           version: '2.0.0',
@@ -638,7 +638,7 @@ test('all interactive scope and hook choices install and persist the selected co
         const settings = JSON.parse(
           fs.readFileSync(path.join(fixture.configDir, 'settings.json'), 'utf8')
         );
-        const stored = settings.pluginConfigs['ecc@ecc'].options;
+        const stored = settings.pluginConfigs['book@dylanlyu'].options;
         assert.strictEqual(stored.hooks_enabled, hookMode !== 'off');
         assert.strictEqual(stored.hook_profile, hookMode === 'off' ? 'standard' : hookMode);
       });
@@ -655,7 +655,7 @@ test('all interactive choices from an existing install update or migrate to the 
     for (const [selectedIndex, selectedScope] of scopes.entries()) {
       for (const [hookIndex, hookMode] of hooks.entries()) {
         withFixture({
-          plugins: [{ id: 'ecc@ecc', scope: sourceScope, enabled: true, version: '1.9.0' }],
+          plugins: [{ id: 'book@dylanlyu', scope: sourceScope, enabled: true, version: '1.9.0' }],
           marketplaces: [{
             name: 'ecc',
             source: 'github',
@@ -678,13 +678,13 @@ test('all interactive choices from an existing install update or migrate to the 
           );
           assert.match(
             result.stdout,
-            new RegExp(`ECC ${expectedAction} ecc@ecc at ${selectedScope} scope`)
+            new RegExp(`ECC ${expectedAction} book@dylanlyu at ${selectedScope} scope`)
           );
           assert.match(result.stdout, new RegExp(`Hook preference: ${hookMode}`));
 
           const state = JSON.parse(fs.readFileSync(fixture.statePath, 'utf8'));
           assert.deepStrictEqual(state.plugins, [{
-            id: 'ecc@ecc',
+            id: 'book@dylanlyu',
             scope: selectedScope,
             enabled: true,
             version: '2.0.0',
@@ -692,7 +692,7 @@ test('all interactive choices from an existing install update or migrate to the 
           const settings = JSON.parse(
             fs.readFileSync(path.join(fixture.configDir, 'settings.json'), 'utf8')
           );
-          const stored = settings.pluginConfigs['ecc@ecc'].options;
+          const stored = settings.pluginConfigs['book@dylanlyu'].options;
           assert.strictEqual(stored.hooks_enabled, hookMode !== 'off');
           assert.strictEqual(stored.hook_profile, hookMode === 'off' ? 'standard' : hookMode);
         });
@@ -711,12 +711,12 @@ test('interactive named choices install and persist the selected configuration',
     });
     assert.ifError(result.error);
     assert.strictEqual(result.status, 0, `${result.stdout}\n${result.stderr}`);
-    assert.match(result.stdout, /ECC installed ecc@ecc at project scope/);
+    assert.match(result.stdout, /ECC installed book@dylanlyu at project scope/);
     assert.match(result.stdout, /Hook preference: strict/);
 
     const state = JSON.parse(fs.readFileSync(fixture.statePath, 'utf8'));
     assert.deepStrictEqual(state.plugins, [{
-      id: 'ecc@ecc',
+      id: 'book@dylanlyu',
       scope: 'project',
       enabled: true,
       version: '2.0.0',
@@ -724,7 +724,7 @@ test('interactive named choices install and persist the selected configuration',
     const settings = JSON.parse(
       fs.readFileSync(path.join(fixture.configDir, 'settings.json'), 'utf8')
     );
-    const stored = settings.pluginConfigs['ecc@ecc'].options;
+    const stored = settings.pluginConfigs['book@dylanlyu'].options;
     assert.strictEqual(stored.hooks_enabled, true);
     assert.strictEqual(stored.hook_profile, 'strict');
   });
@@ -742,7 +742,7 @@ test('invalid interactive choices explain the problem and allow a retry', () => 
     assert.strictEqual(result.status, 0, `${result.stdout}\n${result.stderr}`);
     assert.match(result.stdout, /Please choose 1, 2, or 3/);
     assert.match(result.stdout, /Please choose 1, 2, 3, or 4/);
-    assert.match(result.stdout, /ECC would-install ecc@ecc at project scope/);
+    assert.match(result.stdout, /ECC would-install book@dylanlyu at project scope/);
     assert.match(result.stdout, /Hook preference: minimal/);
     assert.strictEqual(hasMutation(fixture), false);
   });
@@ -758,7 +758,7 @@ test('interactive cancellation after non-default choices performs no mutation', 
     });
     assert.ifError(result.error);
     assert.strictEqual(result.status, 0, `${result.stdout}\n${result.stderr}`);
-    assert.match(result.stdout, /ECC cancelled ecc@ecc at project scope/);
+    assert.match(result.stdout, /ECC cancelled book@dylanlyu at project scope/);
     assertNoSetupSpinner(`${result.stdout}${result.stderr}`);
     assert.strictEqual(hasMutation(fixture), false);
     assert.ok(!fs.existsSync(path.join(fixture.configDir, 'settings.json')));
@@ -792,9 +792,9 @@ test('interactive mode flag still prompts for missing scope and hook choices', (
     });
     assert.ifError(result.error);
     assert.strictEqual(result.status, 0, `${result.stdout}\n${result.stderr}`);
-    assert.match(result.stdout, /Where should Claude enable ecc@ecc\?/);
+    assert.match(result.stdout, /Where should Claude enable book@dylanlyu\?/);
     assert.match(result.stdout, /How should ECC hooks run\?/);
-    assert.match(result.stdout, /ECC would-install ecc@ecc at local scope/);
+    assert.match(result.stdout, /ECC would-install book@dylanlyu at local scope/);
     assert.match(result.stdout, /Hook preference: strict/);
   });
 });
@@ -803,7 +803,7 @@ test('interactive defaults preserve an existing install scope and hook preferenc
   if (process.platform === 'win32') return;
 
   withFixture({
-    plugins: [{ id: 'ecc@ecc', scope: 'local', enabled: true, version: '1.9.0' }],
+    plugins: [{ id: 'book@dylanlyu', scope: 'local', enabled: true, version: '1.9.0' }],
     marketplaces: [{
       name: 'ecc',
       source: 'github',
@@ -813,7 +813,7 @@ test('interactive defaults preserve an existing install scope and hook preferenc
   }, fixture => {
     fs.writeFileSync(path.join(fixture.configDir, 'settings.json'), JSON.stringify({
       pluginConfigs: {
-        'ecc@ecc': {
+        'book@dylanlyu': {
           options: { hooks_enabled: true, hook_profile: 'minimal' },
         },
       },
@@ -826,7 +826,7 @@ test('interactive defaults preserve an existing install scope and hook preferenc
     assert.strictEqual(result.status, 0, `${result.stdout}\n${result.stderr}`);
     assert.match(result.stdout, /Choose \[3\]:/);
     assert.match(result.stdout, /Choose \[2\]:/);
-    assert.match(result.stdout, /ECC would-update ecc@ecc at local scope/);
+    assert.match(result.stdout, /ECC would-update book@dylanlyu at local scope/);
     assert.match(result.stdout, /Hook preference: minimal/);
     assert.strictEqual(hasMutation(fixture), false);
   });
@@ -837,8 +837,8 @@ test('partial migration requires an explicit destination and preserves stored ho
 
   withFixture({
     plugins: [
-      { id: 'ecc@ecc', scope: 'user', enabled: true, version: '1.9.0' },
-      { id: 'ecc@ecc', scope: 'project', enabled: true, version: '2.0.0' },
+      { id: 'book@dylanlyu', scope: 'user', enabled: true, version: '1.9.0' },
+      { id: 'book@dylanlyu', scope: 'project', enabled: true, version: '2.0.0' },
     ],
     marketplaces: [{
       name: 'ecc',
@@ -849,7 +849,7 @@ test('partial migration requires an explicit destination and preserves stored ho
   }, fixture => {
     fs.writeFileSync(path.join(fixture.configDir, 'settings.json'), JSON.stringify({
       pluginConfigs: {
-        'ecc@ecc': {
+        'book@dylanlyu': {
           options: { hooks_enabled: true, hook_profile: 'minimal' },
         },
       },
@@ -863,7 +863,7 @@ test('partial migration requires an explicit destination and preserves stored ho
     assert.match(result.stdout, /Choose: /);
     assert.match(result.stdout, /Please choose 1, 2, or 3/);
     assert.match(result.stdout, /Choose \[2\]:/);
-    assert.match(result.stdout, /ECC would-resume ecc@ecc at project scope/);
+    assert.match(result.stdout, /ECC would-resume book@dylanlyu at project scope/);
     assert.match(result.stdout, /Previous scope: user/);
     assert.match(result.stdout, /Hook preference: minimal/);
     assert.strictEqual(hasMutation(fixture), false);

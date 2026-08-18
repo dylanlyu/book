@@ -50,7 +50,7 @@ for (const relativePath of configureEccDocs) {
     const content = readConfigureEccDoc(relativePath);
 
     assert.ok(content.includes('ecc setup'));
-    assert.ok(content.includes('npx ecc-universal setup'));
+    assert.ok(content.includes('npx book-universal setup'));
     assert.ok(content.includes('--mode claude-plugin'));
     assert.ok(content.includes('--scope <scope>'));
     assert.ok(content.includes('--hooks <hooks>'));
@@ -90,7 +90,7 @@ for (const relativePath of configureEccDocs) {
   test(`${relativePath} keeps provider capabilities truthful`, () => {
     const content = readConfigureEccDoc(relativePath);
 
-    assert.ok(content.includes('codex plugin add ecc@ecc --json'));
+    assert.ok(content.includes('codex plugin add book@dylanlyu --json'));
     assert.ok(content.includes('Codex'));
   });
 

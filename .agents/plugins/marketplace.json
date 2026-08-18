@@ -1,11 +1,11 @@
 {
-  "name": "ecc",
+  "name": "dylanlyu",
   "interface": {
     "displayName": "ECC"
   },
   "plugins": [
     {
-      "name": "ecc",
+      "name": "book",
       "version": "2.2.0",
       "source": {
         "source": "local",

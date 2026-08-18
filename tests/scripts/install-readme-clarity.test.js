@@ -51,11 +51,11 @@ function runTests() {
 
   if (test('README leads with the idempotent guided plugin setup path', () => {
     assert.ok(
-      readme.includes('npx ecc-universal setup'),
+      readme.includes('npx book-universal setup'),
       'README should lead new users to the package-name setup command'
     );
     assert.ok(
-      readme.includes('installs, updates, or safely moves `ecc@ecc`'),
+      readme.includes('installs, updates, or safely moves `book@dylanlyu`'),
       'README should explain that rerunning guided setup reconciles existing installs'
     );
     assert.ok(
@@ -77,9 +77,9 @@ function runTests() {
   })) passed++; else failed++;
 
   if (test('README documents modern package-runner alternatives', () => {
-    assert.ok(readme.includes('pnpm dlx ecc-universal setup'));
-    assert.ok(readme.includes('yarn dlx ecc-universal setup'));
-    assert.ok(readme.includes('bunx ecc-universal setup'));
+    assert.ok(readme.includes('pnpm dlx book-universal setup'));
+    assert.ok(readme.includes('yarn dlx book-universal setup'));
+    assert.ok(readme.includes('bunx book-universal setup'));
     assert.ok(
       readme.includes('Yarn Classic 1 does not provide `yarn dlx`'),
       'README should not advertise the modern Yarn command to Yarn Classic users'
@@ -138,7 +138,7 @@ function runTests() {
       'README should surface component discovery before install steps'
     );
     assert.ok(
-      readme.includes('npx ecc-universal consult "security reviews" --target claude'),
+      readme.includes('npx book-universal consult "security reviews" --target claude'),
       'README should document the packaged consult command'
     );
     assert.ok(
@@ -150,7 +150,7 @@ function runTests() {
   if (test('README never invokes the unrelated ecc npm package', () => {
     assert.ok(
       !/\bnpx ecc\s/.test(readme),
-      'README one-shot commands should use the published ecc-universal package name'
+      'README one-shot commands should use the published book-universal package name'
     );
   })) passed++; else failed++;
   if (test('README explains plugin-path cleanup and rules scoping', () => {

@@ -4,8 +4,8 @@ const { execFile: nodeExecFile } = require('child_process');
 const path = require('path');
 const { normalizeGitHubGitOrigin } = require('./github-origin');
 
-const CODEX_PLUGIN_ID = 'ecc@ecc';
-const OFFICIAL_MARKETPLACE_NAME = 'ecc';
+const CODEX_PLUGIN_ID = 'book@dylanlyu';
+const OFFICIAL_MARKETPLACE_NAME = 'dylanlyu';
 const OFFICIAL_MARKETPLACE_REPO = 'affaan-m/ECC';
 const NORMALIZED_OFFICIAL_MARKETPLACE_REPO = OFFICIAL_MARKETPLACE_REPO.toLowerCase();
 const MAX_OUTPUT_BYTES = 10 * 1024 * 1024;

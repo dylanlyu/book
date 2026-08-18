@@ -53,7 +53,7 @@ const REQUIRED_URL_SURFACES = [
   {
     id: 'npm-rc-package-url',
     label: 'npm rc package URL',
-    exampleUrl: 'https://www.npmjs.com/package/ecc-universal/v/2.0.0-rc.1',
+    exampleUrl: 'https://www.npmjs.com/package/book-universal/v/2.0.0-rc.1',
   },
   {
     id: 'claude-plugin-tag-url',

@@ -143,7 +143,7 @@ the next dependent lane begins.
   `ECC-Tools/ECC-website`.
 - The new #2015 setup-location Q&A was answered and marked accepted. The
   answer keeps install guidance conservative: do not install into `C:\`; use a
-  normal workspace, install the `ecc@ecc` Claude plugin once, copy only needed
+  normal workspace, install the `book@dylanlyu` Claude plugin once, copy only needed
   rule folders when using manual rules, and avoid stacking plugin plus full
   manual install.
 - ECC-Tools PRs #80-#88 landed the next hosted-platform batch: runtime
@@ -685,7 +685,7 @@ As of 2026-05-20:
   announcement publication on fresh evidence fields.
 - `docs/releases/2.0.0-rc.1/naming-and-publication-matrix.md` records the
   rc.1 naming decision: ship as Everything Claude Code (ECC), keep
-  `ecc-universal` for npm, keep `ecc` for Claude/Codex plugin slugs, and defer
+  `book-universal` for npm, keep `ecc` for Claude/Codex plugin slugs, and defer
   any broader repo/package rename until after the release pipeline is proven.
 - `docs/releases/2.0.0-rc.1/publication-evidence-2026-05-12.md` records the
   dry-run publication evidence pass: npm pack/publish dry-runs, temp install
@@ -704,7 +704,7 @@ As of 2026-05-20:
 - A detached clean worktree at
   `bfacf37715b39655cbc2c48f12f2a35c67cb0253` verified Claude plugin tag
   dry-run without `--force`, local marketplace discovery, temp-home local
-  install, enabled plugin listing, and clean uninstall for `ecc@ecc`
+  install, enabled plugin listing, and clean uninstall for `book@dylanlyu`
   `2.0.0-rc.1`.
 - `docs/architecture/evaluator-rag-prototype.md` and
   `examples/evaluator-rag-prototype/` define the first read-only

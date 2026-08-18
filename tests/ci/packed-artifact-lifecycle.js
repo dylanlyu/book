@@ -9,9 +9,9 @@ const path = require('path');
 const { pathToFileURL } = require('url');
 const { spawnSync } = require('child_process');
 
-const PACKAGE_NAME = 'ecc-universal';
+const PACKAGE_NAME = 'book-universal';
 const HASH_PATTERN = /^[a-f0-9]{64}$/i;
-const PACKAGE_PATH_PATTERN = /^release-artifacts\/ecc-universal-[0-9A-Za-z.+-]+\.tgz$/;
+const PACKAGE_PATH_PATTERN = /^release-artifacts\/book-universal-[0-9A-Za-z.+-]+\.tgz$/;
 
 function parseEnvironment(environment = process.env, cwd = process.cwd()) {
   const packageValue = environment.ECC_RELEASE_PACKAGE;
@@ -288,7 +288,7 @@ function runLifecycle(options) {
       commandOptions
     );
 
-    const setupHelp = runPublicCli(['ecc-universal', 'setup', '--help']);
+    const setupHelp = runPublicCli(['book-universal', 'setup', '--help']);
     assert.match(setupHelp.stdout, /ECC guided setup/);
     assert.match(setupHelp.stdout, /ecc setup --mode claude-plugin/);
 
@@ -456,7 +456,7 @@ function runLifecycle(options) {
       node: process.version,
       lifecycle: [
         'npm-install',
-        'public-ecc-universal-setup',
+        'public-book-universal-setup',
         'cursor-ito-install',
         'public-ecc-ito-fail-closed',
         'cursor-repeat-install',

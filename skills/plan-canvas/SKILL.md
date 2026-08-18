@@ -30,7 +30,7 @@ remote URLs. The canvas serves local artifact files only.
 
 ## How It Works
 
-Invoke the CLI as `ecc-plan-canvas` — the bin shipped by the `ecc-universal`
+Invoke the CLI as `ecc-plan-canvas` — the bin shipped by the `book-universal`
 package (on PATH after a global/plugin install; `node "$CLAUDE_PLUGIN_ROOT/scripts/plan-canvas.js"`
 also works for plugin installs). Run it from the project you are reviewing in;
 it works from any working directory. It manages a detached loopback server

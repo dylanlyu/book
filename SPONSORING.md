@@ -26,7 +26,7 @@ No public tier includes seats, support SLA, custom development, a dedicated chan
 
 Metrics shared monthly can include:
 
-- npm downloads (`ecc-universal`, `ecc-agentshield`)
+- npm downloads (`book-universal`, `ecc-agentshield`)
 - Repository adoption (stars, forks, contributors)
 - GitHub App install trend
 - Release cadence and reliability milestones

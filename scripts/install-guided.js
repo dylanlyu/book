@@ -131,7 +131,7 @@ async function collectInteractiveOptions(options, dependencies = {}) {
   if (harnesses.length === 0) harnesses = await askHarnesses(terminal, output);
   const normalizedHarnesses = normalizeHarnessSelection(harnesses);
   const includesClaude = normalizedHarnesses.includes('claude');
-  const claudeScope = includesClaude && !options.claudeScope ? await askChoice(terminal, output, 'Where should Claude enable ecc@ecc?', [...VALID_CLAUDE_SCOPES], 'user') : options.claudeScope;
+  const claudeScope = includesClaude && !options.claudeScope ? await askChoice(terminal, output, 'Where should Claude enable book@dylanlyu?', [...VALID_CLAUDE_SCOPES], 'user') : options.claudeScope;
   const claudeHooks = includesClaude && !options.claudeHooks ? await askChoice(terminal, output, 'How should ECC hooks run in Claude?', [...VALID_CLAUDE_HOOKS], 'standard') : options.claudeHooks;
   return {
     ...options,
@@ -253,7 +253,7 @@ async function main(argv = process.argv.slice(2), injected = {}) {
       renderWelcome({ action: 'installed', interactive, json: false, output });
     } else {
       const retry = buildRetryArguments(plan, result.retryHarnesses);
-      errorOutput.write(`ECC stopped at ${sanitizeTerminalText(result.failure.id)}: ` + `${sanitizeTerminalText(result.failure.message)}\n` + `Retry with: ecc-universal install --guided ${retry}\n`);
+      errorOutput.write(`ECC stopped at ${sanitizeTerminalText(result.failure.id)}: ` + `${sanitizeTerminalText(result.failure.message)}\n` + `Retry with: book-universal install --guided ${retry}\n`);
     }
     return result.status === 'complete' ? 0 : 1;
   } catch (error) {

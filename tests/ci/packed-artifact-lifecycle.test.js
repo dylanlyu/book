@@ -27,13 +27,13 @@ console.log('\n=== Testing packed-artifact lifecycle runner ===\n');
 
 test('resolves package and hash from explicit environment variables', () => {
   const options = lifecycle.parseEnvironment({
-    ECC_RELEASE_PACKAGE: 'release-artifacts/ecc-universal-2.2.0.tgz',
+    ECC_RELEASE_PACKAGE: 'release-artifacts/book-universal-2.2.0.tgz',
     ECC_RELEASE_SHA256: 'a'.repeat(64),
   }, '/workspace');
 
   assert.strictEqual(
     options.packagePath,
-    path.resolve('/workspace', 'release-artifacts/ecc-universal-2.2.0.tgz')
+    path.resolve('/workspace', 'release-artifacts/book-universal-2.2.0.tgz')
   );
   assert.strictEqual(options.expectedSha256, 'a'.repeat(64));
 });
@@ -45,15 +45,15 @@ test('rejects missing, malformed, and non-tgz release inputs', () => {
     ECC_RELEASE_SHA256: 'a'.repeat(64),
   }, '/workspace'), /\.tgz/);
   assert.throws(() => lifecycle.parseEnvironment({
-    ECC_RELEASE_PACKAGE: 'release-artifacts/ecc-universal-2.2.0.tgz',
+    ECC_RELEASE_PACKAGE: 'release-artifacts/book-universal-2.2.0.tgz',
     ECC_RELEASE_SHA256: 'not-a-hash',
   }, '/workspace'), /SHA-256/);
   assert.throws(() => lifecycle.parseEnvironment({
-    ECC_RELEASE_PACKAGE: '../release-artifacts/ecc-universal-2.2.0.tgz',
+    ECC_RELEASE_PACKAGE: '../release-artifacts/book-universal-2.2.0.tgz',
     ECC_RELEASE_SHA256: 'a'.repeat(64),
   }, '/workspace'), /release-artifacts/);
   assert.throws(() => lifecycle.parseEnvironment({
-    ECC_RELEASE_PACKAGE: '/tmp/ecc-universal-2.2.0.tgz',
+    ECC_RELEASE_PACKAGE: '/tmp/book-universal-2.2.0.tgz',
     ECC_RELEASE_SHA256: 'a'.repeat(64),
   }, '/workspace'), /release-artifacts/);
 });
@@ -98,7 +98,7 @@ test('lifecycle child processes receive no inherited credentials', () => {
 
 test('public CLI invocations use npm exec instead of internal package paths', () => {
   const invocation = lifecycle.getNpmExecInvocation(
-    ['ecc-universal', 'setup', '--help'],
+    ['book-universal', 'setup', '--help'],
     { ComSpec: 'C:\\Windows\\System32\\cmd.exe' },
     'win32'
   );
@@ -108,7 +108,7 @@ test('public CLI invocations use npm exec instead of internal package paths', ()
     '/d',
     '/s',
     '/c',
-    'npm exec --offline --yes=false -- ecc-universal setup --help',
+    'npm exec --offline --yes=false -- book-universal setup --help',
   ]);
 
   const unixInvocation = lifecycle.getNpmExecInvocation(

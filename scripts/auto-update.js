@@ -125,7 +125,7 @@ function determineInstallCwd(record, repoRoot) {
 // install-apply.js if its package.json identifies it as ECC — otherwise a
 // cloned project that ships a nested `evil/{package.json,scripts/install-apply.js}`
 // could drive auto-update into executing attacker code (GHSA-hfpv-w6mp-5g95).
-const ECC_PACKAGE_NAMES = new Set(['ecc-universal', 'everything-claude-code']);
+const ECC_PACKAGE_NAMES = new Set(['book-universal', 'everything-claude-code']);
 
 function validateRepoRoot(repoRoot) {
   const normalized = path.resolve(repoRoot);

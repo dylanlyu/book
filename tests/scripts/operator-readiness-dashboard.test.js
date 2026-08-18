@@ -94,7 +94,7 @@ function seedRepo(rootDir, overrides = {}) {
     'docs/releases/2.0.0-rc.1/release-name-plugin-publication-checklist-2026-05-18.md': [
       'Ship `v2.0.0-rc.1` as **ECC**',
       'affaan-m/ECC',
-      'ecc-universal',
+      'book-universal',
       'claude plugin tag .claude-plugin --dry-run',
       'codex plugin marketplace add',
       'Do not rename the npm package until rc.1 is published'

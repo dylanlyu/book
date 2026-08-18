@@ -167,7 +167,7 @@ test('claude plugin.json version matches package.json', () => {
 });
 
 test('claude plugin.json uses short plugin slug', () => {
-  assert.strictEqual(claudePlugin.name, 'ecc');
+  assert.strictEqual(claudePlugin.name, 'book');
 });
 
 test('claude plugin.json does NOT have agents field (unsupported by Claude Code validator)', () => {
@@ -240,8 +240,8 @@ test('claude marketplace.json keeps only Claude-supported top-level keys', () =>
 
 test('claude marketplace.json has plugins array with the published plugin entry', () => {
   assert.ok(Array.isArray(claudeMarketplace.plugins) && claudeMarketplace.plugins.length > 0, 'Expected plugins array');
-  assert.strictEqual(claudeMarketplace.name, 'ecc');
-  assert.strictEqual(claudeMarketplace.plugins[0].name, 'ecc');
+  assert.strictEqual(claudeMarketplace.name, 'dylanlyu');
+  assert.strictEqual(claudeMarketplace.plugins[0].name, 'book');
 });
 
 test('claude marketplace.json plugin version matches package.json', () => {
@@ -268,7 +268,7 @@ test('codex plugin.json has name field', () => {
 });
 
 test('codex plugin.json uses short plugin slug', () => {
-  assert.strictEqual(codexPlugin.name, 'ecc');
+  assert.strictEqual(codexPlugin.name, 'book');
 });
 
 test('codex plugin.json has version field', () => {
@@ -441,7 +441,7 @@ test('marketplace.json has name field', () => {
 });
 
 test('marketplace.json uses short marketplace slug', () => {
-  assert.strictEqual(marketplace.name, 'ecc');
+  assert.strictEqual(marketplace.name, 'dylanlyu');
 });
 
 test('marketplace.json has plugins array with at least one entry', () => {
@@ -459,7 +459,7 @@ test('marketplace.json plugin entries have required fields', () => {
 });
 
 test('marketplace.json plugin entry uses short plugin slug', () => {
-  assert.strictEqual(marketplace.plugins[0].name, 'ecc');
+  assert.strictEqual(marketplace.plugins[0].name, 'book');
 });
 
 test('marketplace.json plugin version matches package.json', () => {
@@ -493,29 +493,29 @@ test('marketplace local plugin source is a self-contained native Codex bundle', 
   }
 });
 
-// ── plugins/ecc marketplace plugin folder ─────────────────────────────────────
+// ── plugins/book marketplace plugin folder ─────────────────────────────────────
 // Thin Codex plugin target for the repo marketplace. Content is single-sourced
 // at the repo root (no vendored skills/MCP copies) per the maintainer direction
 // on #2097; these tests pin the manifest sync and the parent-relative refs.
-console.log('\n=== plugins/ecc Codex marketplace plugin folder ===\n');
+console.log('\n=== plugins/book Codex marketplace plugin folder ===\n');
 
-const marketplacePluginManifestPath = path.join(repoRoot, 'plugins', 'ecc', '.codex-plugin', 'plugin.json');
-const marketplacePluginManifest = loadJsonObject(marketplacePluginManifestPath, 'plugins/ecc/.codex-plugin/plugin.json');
+const marketplacePluginManifestPath = path.join(repoRoot, 'plugins', 'book', '.codex-plugin', 'plugin.json');
+const marketplacePluginManifest = loadJsonObject(marketplacePluginManifestPath, 'plugins/book/.codex-plugin/plugin.json');
 const rootCodexManifest = loadJsonObject(path.join(repoRoot, '.codex-plugin', 'plugin.json'), '.codex-plugin/plugin.json');
 
-test('plugins/ecc manifest name matches the root Codex manifest', () => {
+test('plugins/book manifest name matches the root Codex manifest', () => {
   assert.strictEqual(marketplacePluginManifest.name, rootCodexManifest.name);
 });
 
-test('plugins/ecc manifest version matches package.json', () => {
+test('plugins/book manifest version matches package.json', () => {
   assert.strictEqual(marketplacePluginManifest.version, expectedVersion);
 });
 
-test('plugins/ecc manifest version matches the root Codex manifest', () => {
+test('plugins/book manifest version matches the root Codex manifest', () => {
   assert.strictEqual(marketplacePluginManifest.version, rootCodexManifest.version);
 });
 
-test('plugins/ecc manifest reuses root skills and MCP config without vendoring', () => {
+test('plugins/book manifest reuses root skills and MCP config without vendoring', () => {
   const pluginDir = path.dirname(path.dirname(marketplacePluginManifestPath));
 
   const skillsTarget = path.resolve(pluginDir, marketplacePluginManifest.skills);
@@ -526,11 +526,11 @@ test('plugins/ecc manifest reuses root skills and MCP config without vendoring',
   assert.strictEqual(mcpTarget, path.join(repoRoot, '.mcp.json'), `mcpServers ref must resolve to the root .mcp.json, got: ${marketplacePluginManifest.mcpServers}`);
   assert.ok(fs.existsSync(mcpTarget), 'Root .mcp.json missing');
 
-  assert.ok(!fs.existsSync(path.join(pluginDir, 'skills')), 'plugins/ecc must not vendor a second skills/ copy (see #2097 review)');
-  assert.ok(!fs.existsSync(path.join(pluginDir, '.mcp.json')), 'plugins/ecc must not vendor a second .mcp.json (see #2097 review)');
+  assert.ok(!fs.existsSync(path.join(pluginDir, 'skills')), 'plugins/book must not vendor a second skills/ copy (see #2097 review)');
+  assert.ok(!fs.existsSync(path.join(pluginDir, '.mcp.json')), 'plugins/book must not vendor a second .mcp.json (see #2097 review)');
 });
 
-test('plugins/ecc manifest interface assets resolve to root assets', () => {
+test('plugins/book manifest interface assets resolve to root assets', () => {
   const pluginDir = path.dirname(path.dirname(marketplacePluginManifestPath));
 
   for (const ref of [marketplacePluginManifest.interface.composerIcon, marketplacePluginManifest.interface.logo]) {
@@ -540,13 +540,13 @@ test('plugins/ecc manifest interface assets resolve to root assets', () => {
   }
 });
 
-test('plugins/ecc README marks the thin folder as a legacy compatibility artifact', () => {
-  const readmePath = path.join(repoRoot, 'plugins', 'ecc', 'README.md');
-  assert.ok(fs.existsSync(readmePath), 'Expected plugins/ecc/README.md');
+test('plugins/book README marks the thin folder as a legacy compatibility artifact', () => {
+  const readmePath = path.join(repoRoot, 'plugins', 'book', 'README.md');
+  assert.ok(fs.existsSync(readmePath), 'Expected plugins/book/README.md');
   const source = fs.readFileSync(readmePath, 'utf8');
   assert.ok(source.includes('legacy compatibility artifact'));
   assert.ok(source.includes('repository root'));
-  assert.ok(source.includes('check-plugin-cache.js'), 'plugins/ecc README must point at the cache health check');
+  assert.ok(source.includes('check-plugin-cache.js'), 'plugins/book README must point at the cache health check');
   assert.ok(!source.includes('points at this directory'));
 });
 
@@ -593,7 +593,7 @@ test('.codex-plugin README uses current marketplace add flow', () => {
   const readme = fs.readFileSync(path.join(repoRoot, '.codex-plugin', 'README.md'), 'utf8');
   assert.ok(readme.includes('codex plugin marketplace add'), 'Expected .codex-plugin README to document codex plugin marketplace add');
   assert.ok(readme.includes('codex plugin marketplace add affaan-m/ECC'), 'Expected .codex-plugin README to document the canonical ECC repo marketplace source');
-  assert.ok(readme.includes('codex plugin add ecc@ecc'), 'Expected .codex-plugin README to document the current Codex install command');
+  assert.ok(readme.includes('codex plugin add book@dylanlyu'), 'Expected .codex-plugin README to document the current Codex install command');
   assert.ok(readme.includes('codex plugin list --json'), 'Expected .codex-plugin README to document a machine-checkable verification command');
   assert.ok(readme.includes('safe to run again'), 'Expected .codex-plugin README to explain idempotent marketplace and plugin registration');
   assert.ok(/does not\s+use Claude's `user`, `project`, or `local` install scopes/.test(readme), 'Expected .codex-plugin README to distinguish Codex plugin state from Claude scopes');

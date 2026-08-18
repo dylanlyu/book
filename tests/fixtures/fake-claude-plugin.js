@@ -97,9 +97,9 @@ if (args[0] === 'plugin' && args[1] === 'marketplace' && args[2] === 'add') {
   const scopeIndex = args.indexOf('--scope');
   const scope = scopeIndex >= 0 ? args[scopeIndex + 1] : 'user';
   const marketplaces = [
-    ...(state.marketplaces || []).filter(entry => entry.name !== 'ecc'),
+    ...(state.marketplaces || []).filter(entry => entry.name !== 'dylanlyu'),
     {
-      name: 'ecc',
+      name: 'dylanlyu',
       source: 'github',
       repo: 'affaan-m/ECC',
       url: source,
@@ -114,24 +114,24 @@ if (args[0] === 'plugin' && args[1] === 'marketplace' && args[2] === 'update') {
   process.exit(0);
 }
 
-if (args[0] === 'plugin' && args[1] === 'install' && args[2] === 'ecc@ecc') {
+if (args[0] === 'plugin' && args[1] === 'install' && args[2] === 'book@dylanlyu') {
   const scopeIndex = args.indexOf('--scope');
   const scope = scopeIndex >= 0 ? args[scopeIndex + 1] : 'user';
   const plugins = [
     ...(state.plugins || []).filter(plugin => (
-      plugin.id !== 'ecc@ecc' || plugin.scope !== scope
+      plugin.id !== 'book@dylanlyu' || plugin.scope !== scope
     )),
-    { id: 'ecc@ecc', scope, enabled: true, version: '2.0.0' },
+    { id: 'book@dylanlyu', scope, enabled: true, version: '2.0.0' },
   ];
   writeState({ ...state, plugins });
   process.exit(0);
 }
 
-if (args[0] === 'plugin' && args[1] === 'update' && args[2] === 'ecc@ecc') {
+if (args[0] === 'plugin' && args[1] === 'update' && args[2] === 'book@dylanlyu') {
   const scopeIndex = args.indexOf('--scope');
   const scope = scopeIndex >= 0 ? args[scopeIndex + 1] : 'user';
   const plugins = (state.plugins || []).map(plugin => (
-    plugin.id === 'ecc@ecc' && plugin.scope === scope
+    plugin.id === 'book@dylanlyu' && plugin.scope === scope
       ? { ...plugin, enabled: true, version: '2.0.0' }
       : plugin
   ));

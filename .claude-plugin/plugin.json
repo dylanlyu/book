@@ -1,46 +1,28 @@
 {
-  "name": "ecc",
+  "name": "book",
   "version": "2.2.0",
-  "description": "Harness-native ECC plugin for engineering teams - 68 agents, 283 skills, 94 legacy command shims, reusable hooks, rules, MCP conventions, and operator workflows for Claude Code plus adjacent agent harnesses",
+  "description": "Harness-native plugin for engineering teams - 68 agents, 283 skills, 94 legacy command shims, reusable hooks, rules, MCP conventions, and operator workflows for Claude Code plus adjacent agent harnesses",
   "author": {
-    "name": "Affaan Mustafa",
-    "url": "https://x.com/affaanmustafa"
+    "name": "Dylan Lyu"
   },
-  "homepage": "https://ecc.tools",
-  "repository": "https://github.com/affaan-m/ECC",
+  "repository": "https://github.com/dylanlyu/book",
   "license": "MIT",
-  "keywords": [
-    "claude-code",
-    "agents",
-    "skills",
-    "hooks",
-    "rules",
-    "tdd",
-    "code-review",
-    "security",
-    "workflow",
-    "automation",
-    "best-practices"
-  ],
+  "keywords": ["claude-code", "agents", "skills", "hooks", "rules", "tdd", "code-review", "security", "workflow", "automation", "best-practices"],
   "userConfig": {
     "hooks_enabled": {
       "type": "boolean",
-      "title": "Enable ECC hooks",
-      "description": "Run ECC's local lifecycle, quality, and safety automation. Disable this to keep skills and commands without local hook automation.",
+      "title": "Enable hooks",
+      "description": "Run local lifecycle, quality, and safety automation. Disable this to keep skills and commands without local hook automation.",
       "default": true
     },
     "hook_profile": {
       "type": "string",
-      "title": "ECC hook profile",
+      "title": "hook profile",
       "description": "Choose minimal, standard, or strict. Invalid values safely fall back to standard.",
       "default": "standard"
     }
   },
   "mcpServers": {},
-  "skills": [
-    "./skills/"
-  ],
-  "commands": [
-    "./commands/"
-  ]
+  "skills": ["./skills/"],
+  "commands": ["./commands/"]
 }

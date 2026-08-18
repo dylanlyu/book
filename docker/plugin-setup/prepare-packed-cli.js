@@ -6,7 +6,7 @@ const { spawnSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
-const EXPECTED_NAME = 'ecc-universal';
+const EXPECTED_NAME = 'book-universal';
 const EXPECTED_BIN = 'scripts/ecc.js';
 const CHILD_PROCESS_TIMEOUT_MS = 5 * 60 * 1000;
 const REQUIRED_FILES = Object.freeze([

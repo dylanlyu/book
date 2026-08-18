@@ -1,4 +1,4 @@
-# plugins/ecc — Legacy Codex Thin-Plugin Artifact
+# plugins/book — Legacy Codex Thin-Plugin Artifact
 
 This directory is retained as a legacy compatibility artifact. The current
 `.agents/plugins/marketplace.json` points at the self-contained repository root,

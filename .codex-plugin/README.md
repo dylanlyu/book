@@ -26,7 +26,7 @@ repository marketplace, install the native plugin, and verify the registration:
 
 ```bash
 codex plugin marketplace add affaan-m/ECC
-codex plugin add ecc@ecc
+codex plugin add book@dylanlyu
 codex plugin list --json
 ```
 
@@ -37,14 +37,14 @@ release, run:
 
 ```bash
 codex plugin marketplace upgrade ecc
-codex plugin add ecc@ecc
+codex plugin add book@dylanlyu
 ```
 
 For local development, the same native journey accepts a checkout path:
 
 ```bash
 codex plugin marketplace add /absolute/path/to/ECC
-codex plugin add ecc@ecc
+codex plugin add book@dylanlyu
 ```
 
 ECC's marketplace entry points at the repository root. Codex copies the selected

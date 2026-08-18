@@ -348,7 +348,7 @@ ecc install --profile core --target claude-project --dry-run --json
 
 Before that command runs, the container creates a locally packed npm artifact
 from the read-only checkout with `npm pack --ignore-scripts`. It extracts the
-self-created tarball under `/tmp`, validates the `ecc-universal` package name,
+self-created tarball under `/tmp`, validates the `book-universal` package name,
 required install manifests, and the confined `package.json` `bin.ecc` mapping,
 then invokes the extracted `ecc` executable. The runtime stays on
 `network_mode: none`, does not execute package lifecycle scripts, and does not

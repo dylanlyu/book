@@ -1,5 +1,5 @@
 {
-  "name": "ecc-universal",
+  "name": "book-universal",
   "version": "2.2.0",
   "description": "Harness-native agent operating system for Codex, Claude Code, and terminal workflows - skills, hooks, rules, MCP conventions, and operator control-plane patterns",
   "publishConfig": {
@@ -62,7 +62,7 @@
     "install.sh",
     "manifests/",
     "mcp-configs/",
-    "plugins/ecc/",
+    "plugins/book/",
     "rules/",
     "schemas/",
     "scripts/catalog.js",
@@ -411,10 +411,10 @@
     "ecc-install": "scripts/install-apply.js",
     "ecc-memory-mcp": "scripts/memory-mcp.mjs",
     "ecc-plan-canvas": "scripts/plan-canvas.js",
-    "ecc-universal": "scripts/ecc.js"
+    "book-universal": "scripts/ecc.js"
   },
   "scripts": {
-    "welcome": "echo '\\n  ecc-universal installed!\\n  Run: ecc typescript\\n  Compat: ecc-install typescript\\n  Docs: https://github.com/affaan-m/ECC\\n  Run or self-host any open-source model.\\n  Compute: Itô is the preferred compute sponsor — https://compute.itomarkets.com\\n  Any GPU provider works. This sponsorship link is passive: it does not invoke an RFQ, reserve capacity, provision compute, or configure serving.\\n  Separately, the opt-in ecc ito find bridge invokes the explicitly configured canonical Itô CLI and submits a live authenticated RFQ; it does not reserve capacity.\\n  Managed inference through Itô is not live yet.\\n'",
+    "welcome": "echo '\\n  book-universal installed!\\n  Run: ecc typescript\\n  Compat: ecc-install typescript\\n  Docs: https://github.com/affaan-m/ECC\\n  Run or self-host any open-source model.\\n  Compute: Itô is the preferred compute sponsor — https://compute.itomarkets.com\\n  Any GPU provider works. This sponsorship link is passive: it does not invoke an RFQ, reserve capacity, provision compute, or configure serving.\\n  Separately, the opt-in ecc ito find bridge invokes the explicitly configured canonical Itô CLI and submits a live authenticated RFQ; it does not reserve capacity.\\n  Managed inference through Itô is not live yet.\\n'",
     "catalog:check": "node scripts/ci/catalog.js --text",
     "catalog:sync": "node scripts/ci/catalog.js --write --text",
     "command-registry:generate": "node scripts/ci/generate-command-registry.js",

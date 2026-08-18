@@ -5,7 +5,7 @@ const os = require('os');
 const path = require('path');
 const { isWithinRoot, realpathNearestExisting } = require('../path-safety');
 
-const CURRENT_PLUGIN_ID = 'ecc@ecc';
+const CURRENT_PLUGIN_ID = 'book@dylanlyu';
 const LEGACY_PLUGIN_IDS = new Set([
   'everything-claude-code@everything-claude-code',
   'everything-claude-code@ecc',
@@ -45,10 +45,10 @@ function findManualClaudePlugin(options = {}) {
   const { configDir } = resolveClaudePaths(options);
   const pluginsDir = path.join(configDir, 'plugins');
   const candidates = [
-    ['ecc', '.claude-plugin', 'plugin.json'],
-    ['ecc', 'plugin.json'],
-    ['ecc@ecc', '.claude-plugin', 'plugin.json'],
-    ['ecc@ecc', 'plugin.json'],
+    ['book', '.claude-plugin', 'plugin.json'],
+    ['book', 'plugin.json'],
+    ['book@dylanlyu', '.claude-plugin', 'plugin.json'],
+    ['book@dylanlyu', 'plugin.json'],
     ['everything-claude-code', '.claude-plugin', 'plugin.json'],
     ['everything-claude-code', 'plugin.json'],
   ];
