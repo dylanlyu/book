@@ -41,4 +41,3 @@ The installed hook graph is still `hooks/hooks.json`. This directory is the stab
 - `scripts/hooks/session-end.js`
 - `scripts/hooks/observe-runner.js`
 - `scripts/hooks/session-activity-tracker.js`
-- `docs/architecture/observability-readiness.md`

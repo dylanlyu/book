@@ -24,7 +24,7 @@
 | `465cd72f` | ecc2 實驗性 Rust runtime、control pane、agent proximity、observability readiness |
 | `01f5ba4b` | Pi harness 與 Antigravity 安裝目標（含 legacy `.agent` 遷移路徑） |
 | `6bb0edaa` | JoyCode 安裝目標（`.joycode/` adapter、扁平化 rules 佈局、guided wizard 的 advanced 提示） |
-| _本次_ | 全部翻譯文件（12 個語言目錄）、release 文件（`docs/releases/`、`docs/drafts/`）、`docs/stale-pr-salvage-ledger.md`，以及 `locale:*` 安裝元件家族 |
+| _本次_ | 全部翻譯文件（12 個語言目錄）、release 文件（`docs/releases/`、`docs/drafts/`）、`docs/stale-pr-salvage-ledger.md`、`locale:*` 安裝元件家族，以及 8 份一次性工作日誌與 2 份孤兒設計文件 |
 
 ---
 
@@ -119,12 +119,18 @@ scripts/lib/agent-proximity/       （distance, graph, index）
 scripts/proximity-tick.js
 scripts/observability-readiness.js
 docs/architecture/observability-readiness.md
+docs/design/agent-proximity.md
 tests/docs/ecc2-release-surface.test.js
 tests/lib/agent-proximity.test.js
 tests/lib/control-pane-*.test.js
 tests/scripts/control-pane.test.js
 tests/scripts/observability-readiness.test.js
 ```
+
+> 2026-08-18 補記：`docs/architecture/observability-readiness.md` 當初列在本節卻沒真的刪掉，
+> 已於本次補刪；`docs/design/agent-proximity.md` 是同批的孤兒文件，一併加入清單。
+> **尚未清乾淨**：`scripts/lib/control-pane/work-item-mutations.js` 仍在倉庫中，
+> 是本節唯一的殘留項，處理前請先確認沒有現存消費者。
 
 ---
 
@@ -307,6 +313,28 @@ tests/docs/stale-pr-salvage-ledger.test.js   整檔
 
 **注意**：`tests/ci/catalog.test.js` 與 `tests/ci/validators.test.js` 的「缺少文件時要報錯」測試，
 刪除目標已從 `docs/zh-CN/AGENTS.md` 改為英文 `AGENTS.md`。測試意圖不變，別在合併時改回去。
+
+### 8.6 一次性工作日誌
+
+帶日期戳記的單次產物，任務結束後就是死文件。上游若補回，一律不併入：
+
+```
+docs/MEGA-PLAN-REPO-PROMPTS-2026-03-12.md
+docs/PHASE1-ISSUE-BUNDLE-2026-03-12.md
+docs/PR-399-REVIEW-2026-03-12.md
+docs/PR-QUEUE-TRIAGE-2026-03-13.md
+docs/fixes/HOOK-FIX-20260421.md
+docs/fixes/HOOK-FIX-20260421-ADDENDUM.md
+docs/fixes/INSTALL-HOOK-WRAPPER-FIX-20260422.md
+docs/fixes/PATCH-SETTINGS-SIMPLE-FIX-20260422.md
+```
+
+`scripts/preview-pack-smoke.js` 的 `REQUIRED_ARTIFACTS` 已同步移除
+`docs/architecture/observability-readiness.md`。
+
+> **未處理**：`docs/fixes/` 仍留有 3 個配套腳本（`apply-hook-fix.sh`、
+> `install_hook_wrapper.ps1`、`patch_settings_cl_v2_simple.ps1`）。
+> 它們的說明文件已刪，形同孤兒，但屬本次授權範圍之外，保留待決。
 
 ---
 

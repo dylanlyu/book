@@ -101,8 +101,9 @@ Adopt from Claude HUD and the Claude Code source review:
 
 Repo work:
 
-- Keep `docs/architecture/observability-readiness.md` as the operator-facing
-  readiness gate.
+- Define an operator-facing readiness gate. (The previous
+  `docs/architecture/observability-readiness.md` was removed in this fork
+  along with the observability-readiness tooling; see MERGE-EXCLUSIONS.md.)
 - Define a versioned HUD/status JSON contract that both ECC2 and ECC Tools can
   consume.
 - Add sample exports from `loop-status`, `session-inspect`, harness audit, and

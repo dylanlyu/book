@@ -13,7 +13,6 @@ const REQUIRED_ARTIFACTS = [
   'README.md',
   'docs/architecture/cross-harness.md',
   'docs/architecture/harness-adapter-compliance.md',
-  'docs/architecture/observability-readiness.md',
   'docs/architecture/progress-sync-contract.md',
   'scripts/preview-pack-smoke.js',
   'scripts/release-approval-gate.js',
