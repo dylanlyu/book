@@ -27,7 +27,7 @@ const agentYamlPath = path.join(repoRoot, 'agent.yaml');
 const versionFilePath = path.join(repoRoot, 'VERSION');
 const selectiveInstallArchitecturePath = path.join(repoRoot, 'docs', 'SELECTIVE-INSTALL-ARCHITECTURE.md');
 const semverPattern = '[0-9]+\\.[0-9]+\\.[0-9]+(?:-[0-9A-Za-z.-]+)?';
-const installPrPublishedBaseline = '2.1.0';
+const installPrPublishedBaseline = '0.0.0';
 
 let passed = 0;
 let failed = 0;

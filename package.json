@@ -1,6 +1,6 @@
 {
   "name": "book-universal",
-  "version": "2.2.0",
+  "version": "1.0.0",
   "description": "Harness-native agent operating system for Codex, Claude Code, and terminal workflows - skills, hooks, rules, MCP conventions, and operator control-plane patterns",
   "publishConfig": {
     "access": "public"

@@ -809,6 +809,10 @@ It's harness- and model-agnostic: a plain CLI (`ecc-plan-canvas`) speaking JSON,
 <details>
 <summary><strong>Release history in detail</strong></summary>
 
+### v1.0.0: First Fork Release (Aug 2026)
+
+First release of this fork. Renamed to plugin `book`, marketplace `dylanlyu`, npm package `book-universal`.
+
 ### v2.0.0: The Agent Harness Operating System (Jun 2026)
 
 Stable graduation of the 2.0 line: the control-pane substrate (session adapters + MCP inventory), the worktree-lifecycle service, the `orch-*` orchestrator family, and the launch of the [ECC Discord community](https://discord.gg/36yGMHGFbR). Full notes: [v2.0.0 release notes](https://github.com/affaan-m/ECC/blob/main/docs/releases/2.0.0/release-notes.md).
@@ -1557,7 +1561,7 @@ See [affaan-m/ECC#2065](https://github.com/affaan-m/ECC/issues/2065).
 
 | Surface | Claude Code | Codex | GitHub Copilot | Current |
 |---|---|---|---|---|
-| **Version** | Plugin | Reference config | Instruction layer | 2.2.0 |
+| **Version** | Plugin | Reference config | Instruction layer | 1.0.0 |
 
 **Key architectural decisions:**
 - **AGENTS.md** at root is the universal cross-tool file (read by Claude Code and Codex; GitHub Copilot uses `.github/copilot-instructions.md` instead)
