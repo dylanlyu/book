@@ -23,7 +23,6 @@ function test(name, fn) {
 
 const publicInstallDocs = [
   'README.md',
-  'README.zh-CN.md',
 ];
 
 console.log('\n=== Testing public install identifiers ===\n');
@@ -42,12 +41,10 @@ for (const relativePath of publicInstallDocs) {
 
 const pluginAndManualInstallDocs = [
   'README.md',
-  'README.zh-CN.md',
 ];
 
 const publicCommandNamespaceDocs = [
   'README.md',
-  'README.zh-CN.md',
 ];
 
 const manualClaudeSkillInstallDocs = [

@@ -264,8 +264,6 @@ docs/stale-pr-salvage-ledger.md
 
 | 保留 | 原因 |
 |------|------|
-| 倉庫根目錄 `README.zh-CN.md` | 唯一保留的非英文文件，`scripts/ci/catalog.js` 仍對它做數量驗證 |
-| `README.md` 與 `README.zh-CN.md` 的語言選擇器 | 已縮減為 English／简体中文兩項，上游會把 10 個死連結加回來 |
 | `CHANGELOG.md`、`WORKING-CONTEXT.md` 裡提到 `docs/releases/` 的行 | 歷史紀錄，照既有慣例保留原文 |
 | `skills/eval-harness/SKILL.md` 的 `docs/releases/<version>/eval-summary.md` | 那是**輸出路徑模板**，不是既有檔案 |
 | README 中指向 `github.com/affaan-m/ECC/.../docs/releases/...` 的絕對 URL | 指向上游倉庫，仍可連通 |
@@ -304,10 +302,12 @@ tests/docs/stale-pr-salvage-ledger.test.js   整檔
 
 | 檔案 | 排除項 |
 |------|--------|
-| `scripts/ci/catalog.js` | `DOCS_ZH_CN_README_PATH`、`DOCS_ZH_CN_AGENTS_PATH` 常數；`parseZhDocsReadmeExpectations`、`parseZhAgentsDocExpectations`、`syncZhDocsReadme`、`syncZhAgents` 四個函式；`createDocumentSpecs` 的 `zhDocsReadmePath` / `zhDocsAgentsPath` 參數與對應 spec。**保留** `parseZhRootReadmeExpectations` / `syncZhRootReadme`（服務根目錄 `README.zh-CN.md`） |
-| `tests/ci/validators.test.js` | 所有 `zhDocs*` / `zhAgents*` fixture 與斷言。**保留** `zhRoot*` |
-| `tests/ci/catalog.test.js` | `writeZhDocsReadme` / `writeZhAgents` fixture 產生器與對應斷言 |
-| `tests/plugin-manifest.test.js` | 7 個針對 `docs/tr`、`docs/zh-CN`、`docs/pt-BR` 的 test 區塊與路徑變數 |
+| `scripts/ci/catalog.js` | 所有 `Zh*` 常數、parse/sync 函式與 `createDocumentSpecs` 的對應 spec，包含 `README_ZH_CN_PATH`、`parseZhRootReadmeExpectations`、`syncZhRootReadme` |
+| `tests/ci/validators.test.js` | 所有 `zhDocs*` / `zhAgents*` / `zhRoot*` fixture 與斷言 |
+| `tests/ci/catalog.test.js` | `writeZhDocsReadme` / `writeZhAgents` / `writeZhRootReadme` fixture 產生器與對應斷言 |
+| `tests/plugin-manifest.test.js` | 針對 `docs/tr`、`docs/zh-CN`、`docs/pt-BR` 與根目錄 `README.zh-CN.md` 的 test 區塊與路徑變數 |
+| `scripts/release.sh` | `ROOT_ZH_CN_README_FILE`、`TR_*`、`PT_BR_*`、`ZH_CN_*` 變數與其存在檢查、版號／heading 更新呼叫、`git add` 項目 |
+| `README.md` | 頁首語言選擇器區塊（現在只剩英文，整塊移除） |
 | `tests/docs/install-identifiers.test.js`、`tests/docs/configure-ecc-install-paths.test.js`、`tests/docs/continuous-learning-v2-docs.test.js`、`tests/skills/repo-scan-install.test.js`、`tests/lib/command-plugin-root.test.js`、`tests/ci/secret-curl-flags.test.js`、`tests/ci/unified-memory-surface.test.js` | 陣列中指向翻譯文件的路徑項 |
 | `tests/docs/platform-value-loop.test.js` | `release docs link the platform value loop into the rc surface` 整個 test |
 

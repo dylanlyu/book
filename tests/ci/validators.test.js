@@ -189,7 +189,6 @@ function runCatalogValidator(overrides = {}) {
     ROOT: repoRoot,
     README_PATH: path.join(repoRoot, 'README.md'),
     AGENTS_PATH: path.join(repoRoot, 'AGENTS.md'),
-    README_ZH_CN_PATH: path.join(repoRoot, 'README.zh-CN.md'),
     PLUGIN_JSON_PATH: path.join(repoRoot, '.claude-plugin', 'plugin.json'),
     MARKETPLACE_JSON_PATH: path.join(repoRoot, '.claude-plugin', 'marketplace.json'),
     ...overrides,
@@ -258,21 +257,18 @@ function writeCatalogFixture(testDir, options = {}) {
       'skills/          — 1 workflow skills and domain knowledge',
       'commands/        — 1 slash commands',
     ],
-    zhRootReadmeCounts = { agents: 1, skills: 1, commands: 1 },
     pluginCounts = { agents: 1, skills: 1, commands: 1 },
     marketplaceCounts = { agents: 1, skills: 1, commands: 1 },
   } = options;
 
   const readmePath = path.join(testDir, 'README.md');
   const agentsPath = path.join(testDir, 'AGENTS.md');
-  const zhRootReadmePath = path.join(testDir, 'README.zh-CN.md');
   const pluginJsonPath = path.join(testDir, '.claude-plugin', 'plugin.json');
   const marketplaceJsonPath = path.join(testDir, '.claude-plugin', 'marketplace.json');
 
   fs.mkdirSync(path.join(testDir, 'agents'), { recursive: true });
   fs.mkdirSync(path.join(testDir, 'commands'), { recursive: true });
   fs.mkdirSync(path.join(testDir, 'skills', 'demo-skill'), { recursive: true });
-  fs.mkdirSync(path.join(testDir, 'docs', 'zh-CN'), { recursive: true });
   fs.mkdirSync(path.join(testDir, '.claude-plugin'), { recursive: true });
 
   fs.writeFileSync(path.join(testDir, 'agents', 'planner.md'), '---\nmodel: sonnet\ntools: Read\n---\n# Planner');
@@ -281,7 +277,6 @@ function writeCatalogFixture(testDir, options = {}) {
 
   fs.writeFileSync(readmePath, `Access to ${readmeCounts.agents} agents, ${readmeCounts.skills} skills, and ${readmeCounts.commands} commands.\n- **Public surface synced to the live repo** - metadata, catalog counts, plugin manifests, and install-facing docs now match the actual OSS surface: ${readmeCounts.agents} agents, ${readmeCounts.skills} skills, and ${readmeCounts.commands} legacy command shims.\n|-- agents/           # ${readmeProjectTreeAgents} specialized subagents for delegation\n| Feature | Claude Code | Codex CLI |\n|---------|------------|-----------|\n| Agents | PASS: ${readmeTableCounts.agents} agents | Shared | 1 |\n| Commands | PASS: ${readmeTableCounts.commands} commands | Shared | 1 |\n| Skills | PASS: ${readmeTableCounts.skills} skills | Shared | 1 |\n\n| Feature | Count | Format |\n|-----------|-------|---------|\n| Skills | ${readmeUnrelatedSkillsCount} | .agents/skills/ |\n\n## Cross-Tool Feature Parity\n\n| Feature | Claude Code | Codex CLI |\n|---------|------------|-----------|\n| **Agents** | ${readmeParityCounts.agents} | Shared (AGENTS.md) |\n| **Commands** | ${readmeParityCounts.commands} | Instruction-based |\n| **Skills** | ${readmeParityCounts.skills} | 10 (native format) |\n`);
   fs.writeFileSync(agentsPath, `This is a **production-ready AI coding plugin** providing ${summaryCounts.agents} specialized agents, ${summaryCounts.skills} skills, ${summaryCounts.commands} commands, and automated hook workflows for software development.\n\n\`\`\`\n${structureLines.join('\n')}\n\`\`\`\n`);
-  fs.writeFileSync(zhRootReadmePath, `**完成！** 你现在可以使用 ${zhRootReadmeCounts.agents} 个代理、${zhRootReadmeCounts.skills} 个技能和 ${zhRootReadmeCounts.commands} 个命令。\n`);
   fs.writeFileSync(pluginJsonPath, JSON.stringify({
     name: 'ecc',
     description: `Battle-tested plugin — ${pluginCounts.agents} agents, ${pluginCounts.skills} skills, ${pluginCounts.commands} legacy command shims`,
@@ -293,7 +288,7 @@ function writeCatalogFixture(testDir, options = {}) {
     }],
   }, null, 2));
 
-  return { readmePath, agentsPath, zhRootReadmePath, pluginJsonPath, marketplaceJsonPath };
+  return { readmePath, agentsPath, pluginJsonPath, marketplaceJsonPath };
 }
 
 function runTests() {
@@ -439,7 +434,6 @@ function runTests() {
     const {
       readmePath,
       agentsPath,
-      zhRootReadmePath,
       pluginJsonPath,
       marketplaceJsonPath,
     } = writeCatalogFixture(testDir, {
@@ -452,14 +446,12 @@ function runTests() {
         'skills/          — 99 workflow skills and domain knowledge',
         'commands/        — 99 slash commands',
       ],
-      zhRootReadmeCounts: { agents: 99, skills: 99, commands: 99 },
     });
 
     const result = runCatalogValidator({
       ROOT: testDir,
       README_PATH: readmePath,
       AGENTS_PATH: agentsPath,
-      README_ZH_CN_PATH: zhRootReadmePath,
       PLUGIN_JSON_PATH: pluginJsonPath,
       MARKETPLACE_JSON_PATH: marketplaceJsonPath,
     });
@@ -474,7 +466,6 @@ function runTests() {
     const {
       readmePath,
       agentsPath,
-      zhRootReadmePath,
       pluginJsonPath,
       marketplaceJsonPath,
     } = writeCatalogFixture(testDir, {
@@ -488,7 +479,6 @@ function runTests() {
       ROOT: testDir,
       README_PATH: readmePath,
       AGENTS_PATH: agentsPath,
-      README_ZH_CN_PATH: zhRootReadmePath,
       PLUGIN_JSON_PATH: pluginJsonPath,
       MARKETPLACE_JSON_PATH: marketplaceJsonPath,
     });
@@ -502,7 +492,6 @@ function runTests() {
     const {
       readmePath,
       agentsPath,
-      zhRootReadmePath,
       pluginJsonPath,
       marketplaceJsonPath,
     } = writeCatalogFixture(testDir);
@@ -512,7 +501,6 @@ function runTests() {
       ROOT: testDir,
       README_PATH: readmePath,
       AGENTS_PATH: agentsPath,
-      README_ZH_CN_PATH: zhRootReadmePath,
       PLUGIN_JSON_PATH: pluginJsonPath,
       MARKETPLACE_JSON_PATH: marketplaceJsonPath,
     });
@@ -530,7 +518,6 @@ function runTests() {
     const {
       readmePath,
       agentsPath,
-      zhRootReadmePath,
       pluginJsonPath,
       marketplaceJsonPath,
     } = writeCatalogFixture(testDir, {
@@ -538,7 +525,6 @@ function runTests() {
       readmeTableCounts: { agents: 8, skills: 8, commands: 8 },
       readmeParityCounts: { agents: 7, skills: 7, commands: 7 },
       summaryCounts: { agents: 6, skills: 6, commands: 6 },
-      zhRootReadmeCounts: { agents: 10, skills: 10, commands: 10 },
       pluginCounts: { agents: 18, skills: 18, commands: 18 },
       marketplaceCounts: { agents: 19, skills: 19, commands: 19 },
     });
@@ -548,7 +534,6 @@ function runTests() {
       ROOT: testDir,
       README_PATH: readmePath,
       AGENTS_PATH: agentsPath,
-      README_ZH_CN_PATH: zhRootReadmePath,
       PLUGIN_JSON_PATH: pluginJsonPath,
       MARKETPLACE_JSON_PATH: marketplaceJsonPath,
     });
@@ -557,7 +542,6 @@ function runTests() {
 
     const readme = fs.readFileSync(readmePath, 'utf8');
     const agentsDoc = fs.readFileSync(agentsPath, 'utf8');
-    const zhRootReadme = fs.readFileSync(zhRootReadmePath, 'utf8');
     const pluginJson = fs.readFileSync(pluginJsonPath, 'utf8');
     const marketplaceJson = fs.readFileSync(marketplaceJsonPath, 'utf8');
 
@@ -569,7 +553,6 @@ function runTests() {
     assert.ok(readme.includes('| **Agents** | 7 | Shared (AGENTS.md) |'), 'Should leave obsolete parity prose untouched');
     assert.ok(agentsDoc.includes('providing 1 specialized agents, 1 skills, 1 commands'), 'Should sync AGENTS summary');
     assert.ok(agentsDoc.includes('skills/          — 1 workflow skills and domain knowledge'), 'Should sync AGENTS structure');
-    assert.ok(zhRootReadme.includes('你现在可以使用 1 个代理、1 个技能和 1 个命令'), 'Should sync README.zh-CN quick-start summary');
     assert.ok(pluginJson.includes('1 agents, 1 skills, 1 legacy command shims'), 'Should sync plugin manifest catalog description');
     assert.ok(marketplaceJson.includes('1 agents, 1 skills, 1 legacy command shims'), 'Should sync marketplace plugin catalog description');
 
@@ -581,7 +564,6 @@ function runTests() {
     const {
       readmePath,
       agentsPath,
-      zhRootReadmePath,
       pluginJsonPath,
       marketplaceJsonPath,
     } = writeCatalogFixture(testDir, {
@@ -596,7 +578,6 @@ function runTests() {
       ROOT: testDir,
       README_PATH: readmePath,
       AGENTS_PATH: agentsPath,
-      README_ZH_CN_PATH: zhRootReadmePath,
       PLUGIN_JSON_PATH: pluginJsonPath,
       MARKETPLACE_JSON_PATH: marketplaceJsonPath,
     });

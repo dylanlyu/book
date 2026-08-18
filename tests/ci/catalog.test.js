@@ -95,10 +95,6 @@ commands/ - ${counts.commands} slash commands
 `);
 }
 
-function writeZhRootReadme(root, counts) {
-  fs.writeFileSync(path.join(root, 'README.zh-CN.md'), `你现在可以使用 ${counts.agents} 个代理、${counts.skills} 个技能和 ${counts.commands} 个命令。\n`);
-}
-
 function writeCatalogFixture(root, options = {}) {
   const actualCounts = options.actualCounts || { agents: 1, skills: 1, commands: 1 };
   const documentedCounts = options.documentedCounts || actualCounts;
@@ -115,7 +111,6 @@ function writeCatalogFixture(root, options = {}) {
 
   writeEnglishReadme(root, documentedCounts, { unrelatedSkillsCount });
   writeEnglishAgents(root, documentedCounts, { skillsMinimum });
-  writeZhRootReadme(root, documentedCounts);
   writePluginMetadata(root, documentedCounts);
 }
 
@@ -181,7 +176,6 @@ function runTests() {
       assert.ok(formatted.includes('AGENTS.md summary'));
       assert.ok(formatted.includes('.claude-plugin/plugin.json description'));
       assert.ok(formatted.includes('.claude-plugin/marketplace.json plugin description'));
-      assert.ok(formatted.includes('README.zh-CN.md quick-start summary'));
     } finally {
       cleanupTestDir(testDir);
     }

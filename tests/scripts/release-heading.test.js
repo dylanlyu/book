@@ -129,17 +129,11 @@ function runTests() {
     assert.strictEqual(result.contents, before, 'nothing should be written on failure');
   })) passed++; else failed++;
 
-  if (test('every localized README with a release heading is bumped by release.sh', () => {
-    // docs/zh-CN/README.md regressed once because it got a version-row bump
-    // without a heading bump. Pin all five call sites so a dropped one fails
+  if (test('every shipped README with a release heading is bumped by release.sh', () => {
+    // A README regressed once because it got a version-row bump without a
+    // heading bump. Pin every shipped README call site so a dropped one fails
     // here instead of during a release.
-    const requiredFileVariables = [
-      'README_FILE',
-      'ROOT_ZH_CN_README_FILE',
-      'TR_README_FILE',
-      'PT_BR_README_FILE',
-      'ZH_CN_README_FILE',
-    ];
+    const requiredFileVariables = ['README_FILE'];
 
     for (const variable of requiredFileVariables) {
       assert.ok(

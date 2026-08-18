@@ -8,8 +8,6 @@ VERSION="${1:-}"
 ROOT_PACKAGE_JSON="package.json"
 PACKAGE_LOCK_JSON="package-lock.json"
 ROOT_AGENTS_MD="AGENTS.md"
-TR_AGENTS_MD="docs/tr/AGENTS.md"
-ZH_CN_AGENTS_MD="docs/zh-CN/AGENTS.md"
 AGENT_YAML="agent.yaml"
 VERSION_FILE="VERSION"
 PLUGIN_JSON=".claude-plugin/plugin.json"
@@ -18,10 +16,6 @@ CODEX_MARKETPLACE_JSON=".agents/plugins/marketplace.json"
 CODEX_PLUGIN_JSON=".codex-plugin/plugin.json"
 CODEX_MARKETPLACE_PLUGIN_JSON="plugins/ecc/.codex-plugin/plugin.json"
 README_FILE="README.md"
-ROOT_ZH_CN_README_FILE="README.zh-CN.md"
-TR_README_FILE="docs/tr/README.md"
-PT_BR_README_FILE="docs/pt-BR/README.md"
-ZH_CN_README_FILE="docs/zh-CN/README.md"
 SELECTIVE_INSTALL_ARCHITECTURE_DOC="docs/SELECTIVE-INSTALL-ARCHITECTURE.md"
 
 # Function to show usage
@@ -57,7 +51,7 @@ if [[ -n "$(git status --porcelain --untracked-files=all)" ]]; then
 fi
 
 # Verify versioned manifests exist
-for FILE in "$ROOT_PACKAGE_JSON" "$PACKAGE_LOCK_JSON" "$ROOT_AGENTS_MD" "$TR_AGENTS_MD" "$ZH_CN_AGENTS_MD" "$AGENT_YAML" "$VERSION_FILE" "$PLUGIN_JSON" "$MARKETPLACE_JSON" "$CODEX_MARKETPLACE_JSON" "$CODEX_PLUGIN_JSON" "$README_FILE" "$ROOT_ZH_CN_README_FILE" "$TR_README_FILE" "$PT_BR_README_FILE" "$ZH_CN_README_FILE" "$SELECTIVE_INSTALL_ARCHITECTURE_DOC"; do
+for FILE in "$ROOT_PACKAGE_JSON" "$PACKAGE_LOCK_JSON" "$ROOT_AGENTS_MD" "$AGENT_YAML" "$VERSION_FILE" "$PLUGIN_JSON" "$MARKETPLACE_JSON" "$CODEX_MARKETPLACE_JSON" "$CODEX_PLUGIN_JSON" "$README_FILE" "$SELECTIVE_INSTALL_ARCHITECTURE_DOC"; do
   if [[ ! -f "$FILE" ]]; then
     echo "Error: $FILE not found"
     exit 1
@@ -116,9 +110,8 @@ update_package_lock_version() {
 }
 
 # Usage: update_readme_version_row <file> <label> <col>...
-# Parity tables differ in width per locale (English carries a GitHub Copilot
-# column, zh-CN does not), so the leading cells are variadic and the semver
-# cell is always the one right after them.
+# Parity tables differ in width per README, so the leading cells are variadic
+# and the semver cell is always the one right after them.
 update_readme_version_row() {
   local file="$1"
   local label="$2"
@@ -278,8 +271,6 @@ update_codex_marketplace_version() {
 update_version "$ROOT_PACKAGE_JSON" "s|\"version\": *\"[^\"]*\"|\"version\": \"$VERSION\"|"
 update_package_lock_version "$PACKAGE_LOCK_JSON"
 update_agents_version "$ROOT_AGENTS_MD" "Version"
-update_agents_version "$TR_AGENTS_MD" "Sürüm"
-update_agents_version "$ZH_CN_AGENTS_MD" "版本"
 update_agent_yaml_version
 update_version_file
 update_version "$PLUGIN_JSON" "s|\"version\": *\"[^\"]*\"|\"version\": \"$VERSION\"|"
@@ -288,14 +279,7 @@ update_codex_marketplace_version
 update_version "$CODEX_PLUGIN_JSON" "s|\"version\": *\"[^\"]*\"|\"version\": \"$VERSION\"|"
 update_version "$CODEX_MARKETPLACE_PLUGIN_JSON" "s|\"version\": *\"[^\"]*\"|\"version\": \"$VERSION\"|"
 update_readme_version_row "$README_FILE" "Version" "Plugin" "Reference config" "Instruction layer"
-update_readme_version_row "$ZH_CN_README_FILE" "版本" "插件" "参考配置"
 update_latest_release_heading "$README_FILE" "$OLD_VERSION"
-update_latest_release_heading "$ROOT_ZH_CN_README_FILE" "$OLD_VERSION"
-update_latest_release_heading "$TR_README_FILE" "$OLD_VERSION"
-update_latest_release_heading "$PT_BR_README_FILE" "$OLD_VERSION"
-# docs/zh-CN/README.md got its version row bumped but never its release
-# heading, so plugin-manifest.test.js failed on it every time.
-update_latest_release_heading "$ZH_CN_README_FILE" "$OLD_VERSION"
 update_selective_install_repo_version "$SELECTIVE_INSTALL_ARCHITECTURE_DOC"
 
 # Verify the bumped release surface is still internally consistent before
@@ -304,7 +288,7 @@ echo "Verifying npm pack payload..."
 node tests/plugin-manifest.test.js
 
 # Stage, commit, tag, and push
-git add "$ROOT_PACKAGE_JSON" "$PACKAGE_LOCK_JSON" "$ROOT_AGENTS_MD" "$TR_AGENTS_MD" "$ZH_CN_AGENTS_MD" "$AGENT_YAML" "$VERSION_FILE" "$PLUGIN_JSON" "$MARKETPLACE_JSON" "$CODEX_MARKETPLACE_JSON" "$CODEX_PLUGIN_JSON" "$CODEX_MARKETPLACE_PLUGIN_JSON" "$README_FILE" "$ROOT_ZH_CN_README_FILE" "$TR_README_FILE" "$PT_BR_README_FILE" "$ZH_CN_README_FILE" "$SELECTIVE_INSTALL_ARCHITECTURE_DOC"
+git add "$ROOT_PACKAGE_JSON" "$PACKAGE_LOCK_JSON" "$ROOT_AGENTS_MD" "$AGENT_YAML" "$VERSION_FILE" "$PLUGIN_JSON" "$MARKETPLACE_JSON" "$CODEX_MARKETPLACE_JSON" "$CODEX_PLUGIN_JSON" "$CODEX_MARKETPLACE_PLUGIN_JSON" "$README_FILE" "$SELECTIVE_INSTALL_ARCHITECTURE_DOC"
 git commit -m "chore: bump plugin version to $VERSION"
 git tag "v$VERSION"
 git push origin main "v$VERSION"
