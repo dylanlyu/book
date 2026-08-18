@@ -534,7 +534,7 @@ async function runTests() {
         error => error.code === 'INVALID_MARKETPLACE_INVENTORY'
       );
       assert.throws(
-        () => parseMarketplaceInventory('{"marketplaces":[{"name":"ecc","root":""}]}'),
+        () => parseMarketplaceInventory('{"marketplaces":[{"name":"dylanlyu","root":""}]}'),
         error => error.code === 'INVALID_MARKETPLACE_INVENTORY'
       );
       assert.throws(

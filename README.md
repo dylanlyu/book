@@ -255,7 +255,7 @@ Add directly to your `~/.claude/settings.json`:
 ```json
 {
   "extraKnownMarketplaces": {
-    "ecc": {
+    "dylanlyu": {
       "source": {
         "source": "github",
         "repo": "affaan-m/ECC"
