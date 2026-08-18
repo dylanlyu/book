@@ -12,7 +12,7 @@
       "name": "book",
       "source": "./",
       "description": "Harness-native operator layer - 68 agents, 283 skills, 94 legacy command shims, reusable hooks, rules, selective install profiles, and production-ready workflows for Claude Code, Codex, and related agent harnesses",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "author": {
         "name": "Dylan Lyu",
         "email": "mingzong.lyu@gmail.com"
