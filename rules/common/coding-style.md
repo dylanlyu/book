@@ -14,6 +14,12 @@ Rationale: Immutable data prevents hidden side effects, makes debugging easier, 
 
 ## Core Principles
 
+### Data First
+
+- Design data structures before writing logic
+- Get the shape of the data right first; control flow follows from it
+- If the logic feels convoluted, suspect the data model before rewriting the logic
+
 ### KISS (Keep It Simple)
 
 - Prefer the simplest solution that actually works
