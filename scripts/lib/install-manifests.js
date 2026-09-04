@@ -11,31 +11,8 @@ const COMPONENT_FAMILY_PREFIXES = {
   framework: 'framework:',
   capability: 'capability:',
   agent: 'agent:',
-  skill: 'skill:',
-  locale: 'locale:'
+  skill: 'skill:'
 };
-const SUPPORTED_LOCALES = Object.freeze(['ja', 'zh-CN', 'ko-KR', 'pt-BR', 'ru', 'tr', 'vi-VN', 'zh-TW', 'de-DE']);
-const LOCALE_ALIAS_TO_COMPONENT_ID = Object.freeze({
-  ja: 'locale:ja',
-  'ja-JP': 'locale:ja',
-  'zh-CN': 'locale:zh-cn',
-  zh: 'locale:zh-cn',
-  'ko-KR': 'locale:ko-kr',
-  ko: 'locale:ko-kr',
-  'pt-BR': 'locale:pt-br',
-  pt: 'locale:pt-br',
-  ru: 'locale:ru',
-  tr: 'locale:tr',
-  'vi-VN': 'locale:vi-vn',
-  vi: 'locale:vi-vn',
-  'zh-TW': 'locale:zh-tw',
-  'de-DE': 'locale:de-de',
-  de: 'locale:de-de'
-});
-
-function listSupportedLocales() {
-  return [...SUPPORTED_LOCALES];
-}
 const LEGACY_COMPAT_BASE_MODULE_IDS_BY_TARGET = Object.freeze({
   claude: ['rules-core', 'agents-core', 'commands-core', 'hooks-runtime', 'platform-configs', 'workflow-quality'],
   'claude-project': ['rules-core', 'agents-core', 'commands-core', 'hooks-runtime', 'platform-configs', 'workflow-quality']
@@ -560,14 +537,11 @@ function resolveInstallPlan(options = {}) {
 module.exports = {
   DEFAULT_REPO_ROOT,
   SUPPORTED_INSTALL_TARGETS,
-  SUPPORTED_LOCALES,
-  LOCALE_ALIAS_TO_COMPONENT_ID,
   getManifestPaths,
   loadInstallManifests,
   getInstallComponent,
   listInstallComponents,
   listLegacyCompatibilityLanguages,
-  listSupportedLocales,
   listInstallModules,
   listInstallProfiles,
   resolveInstallPlan,

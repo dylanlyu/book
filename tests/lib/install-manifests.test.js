@@ -913,6 +913,22 @@ function runTests() {
     passed++;
   else failed++;
 
+  if (
+    test('keeps the removed locale component family out of the manifests', () => {
+      const strayComponents = listInstallComponents().filter(
+        component => component.family === 'locale' || component.id.startsWith('locale:')
+      );
+
+      assert.deepStrictEqual(
+        strayComponents.map(component => component.id),
+        [],
+        'locale:* components were removed from this fork and must not come back (docs/MERGE-EXCLUSIONS.md section 8.3)'
+      );
+    })
+  )
+    passed++;
+  else failed++;
+
   console.log(`\nResults: Passed: ${passed}, Failed: ${failed}`);
   process.exit(failed > 0 ? 1 : 0);
 }

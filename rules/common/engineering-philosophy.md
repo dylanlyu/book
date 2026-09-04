@@ -44,6 +44,11 @@ Precedence when rules disagree (highest → lowest):
 2. **Project-level rules** — `.claude/rules/*.md` and project `CLAUDE.md` / `AGENTS.md`. Override anything else in `rules/common/`, but **not §1–§4**: a project rule that asks for softened wording or for skipping verification loses, and the conflict gets surfaced rather than silently obeyed.
 3. **Common rules** — the rest of this folder.
 
+`rules/language/*.md` sits **outside** this ladder: it constrains the output language
+only, never engineering judgement. This fork ships exactly one such pack (`zh-tw.md`,
+installed with the rest of `rules/`), and it is the tie-breaker for "which language do I
+write this in", nothing else.
+
 Additional principles:
 
 - Never substitute the project's tech stack with a personal preference unless explicitly asked.

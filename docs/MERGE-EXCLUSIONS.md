@@ -281,6 +281,27 @@ tests/lib/locale-install.test.js    整檔（--locale 安裝測試）
 
 上游若帶回 `locale:` 開頭的元件或 `docs-` 開頭的模組，一律刪除。
 
+2026-09-04 補完當時遺留的殘骸（元件刪了、旗標沒刪，`--locale` 任何值都會在
+`resolveInstallPlan` 拋 `Unknown install component`）：
+
+```
+scripts/lib/install-manifests.js       SUPPORTED_LOCALES、LOCALE_ALIAS_TO_COMPONENT_ID、
+                                       listSupportedLocales、COMPONENT_FAMILY_PREFIXES.locale
+scripts/lib/install/request.js         --locale 解析與正規化（含 hasNonLocaleManifestSelection，
+                                       移除 locale 後與 usingManifestMode 等價，已併回一個變數）
+scripts/install-apply.js               --locale 說明與 "Available locales" 區塊
+scripts/ci/validate-install-manifests.js  locale family prefix
+schemas/install-components.schema.json    id pattern 與 family enum 的 locale
+tests/lib/install-request.test.js      5 個 locale 測試
+```
+
+`--locale` 現在會以 `Unknown argument: --locale` 被拒絕，並有兩道回歸測試守著
+（`tests/lib/install-request.test.js` 的旗標守衛、`tests/lib/install-manifests.test.js`
+的 `locale:*` 元件家族守衛），等同把第 7 項檢查搬進測試套件。
+
+繁體中文輸出規則本身保留在 `rules/language/zh-tw.md`，隨 `rules-core` 預設安裝——
+本 fork 只支援 zh-TW，沒有語系可選，所以不需要旗標。
+
 ### 8.4 連帶移除的 release 驗證面
 
 `docs/releases/` 不只是存檔，它是下列腳本的**輸入資料**。這些腳本在本 fork 已無資料可讀：

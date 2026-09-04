@@ -26,7 +26,6 @@ const COMPONENT_FAMILY_PREFIXES = {
   language: 'lang:',
   framework: 'framework:',
   capability: 'capability:',
-  locale: 'locale:',
 };
 
 function readJson(filePath, label) {
@@ -167,6 +166,30 @@ function validateInstallManifests() {
         console.error(
           `ERROR: curated skill skills/${entry.name} is not referenced by any install module`
         );
+        hasErrors = true;
+      }
+    }
+  }
+
+  // Every rules/ entry must be claimed by some module, so a new rule pack can
+  // never be added to the repo and silently skipped by every install profile.
+  const RULES_DIR = path.join(REPO_ROOT, 'rules');
+  if (fs.existsSync(RULES_DIR)) {
+    for (const entry of fs.readdirSync(RULES_DIR)) {
+      if (entry.startsWith('.')) {
+        continue;
+      }
+
+      const rulePath = `rules/${entry}`;
+      const isClaimed = [...claimedPaths.keys()].some(
+        claimed =>
+          claimed === rulePath
+          || rulePath.startsWith(`${claimed}/`)
+          || claimed.startsWith(`${rulePath}/`)
+      );
+
+      if (!isClaimed) {
+        console.error(`ERROR: ${rulePath} is not referenced by any install module`);
         hasErrors = true;
       }
     }
