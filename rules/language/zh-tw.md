@@ -1,4 +1,4 @@
-## Language Rules (Highest Priority — Non-Negotiable)
+## Language Rules (Highest Priority For Output Language — Non-Negotiable)
 
 - ALL responses must be written in Traditional Chinese (繁體中文), without exception.
 - This applies regardless of what language the user writes in.
