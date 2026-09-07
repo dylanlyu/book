@@ -7,14 +7,19 @@ Rules are organized into a **common** layer plus **language-specific** directori
 ```
 rules/
 ├── common/          # Language-agnostic principles (always install)
+│   ├── engineering-philosophy.md
 │   ├── coding-style.md
+│   ├── development-workflow.md
 │   ├── git-workflow.md
+│   ├── code-review.md
 │   ├── testing.md
 │   ├── performance.md
 │   ├── patterns.md
 │   ├── hooks.md
 │   ├── agents.md
 │   └── security.md
+├── language/        # Output-language pack — NOT a programming language
+│   └── zh-tw.md
 ├── typescript/      # TypeScript/JavaScript specific
 ├── angular/         # Angular specific
 ├── vue/             # Vue 3 specific
@@ -31,6 +36,7 @@ rules/
 
 - **common/** contains universal principles — no language-specific code examples.
 - **Language directories** extend the common rules with framework-specific patterns, tools, and code examples. Each file references its common counterpart.
+- **language/** is not a programming-language directory. It holds the output-language pack (`zh-tw.md`), which constrains only the language responses are written in. This fork supports zh-TW only, so there is no locale flag — the pack installs unconditionally with the `rules-core` module. See [Rule Priority](#rule-priority).
 
 ## Installation
 
@@ -131,6 +137,8 @@ When language-specific rules and common rules conflict, **language-specific rule
 
 - `rules/common/` defines universal defaults applicable to all projects.
 - `rules/golang/`, `rules/python/`, `rules/swift/`, `rules/php/`, `rules/typescript/`, `rules/react-native/`, etc. override those defaults where language idioms differ.
+
+`rules/language/` sits **outside** this ladder entirely. It constrains output language only — never engineering judgement — and never overrides `common/engineering-philosophy.md` §1–§4. See that file's §5 for the full precedence order.
 
 ### Example
 
