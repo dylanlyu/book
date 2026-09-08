@@ -41,9 +41,9 @@ count as mixing:
 
 ## Repository Artifacts Keep Their Existing Convention
 
-Commit messages, branch names, and PR titles follow the repo's established
-convention (this repo uses English conventional commits — see
-`../common/git-workflow.md`). This file does not change that.
+Commit messages, branch names, and PR titles are governed by
+`rules/common/git-workflow.md`, not by this file. This file does not change
+that.
 
 ## Exceptions
 
