@@ -37,6 +37,7 @@
 - **Types**: feat, fix, refactor, docs, test, chore, perf, ci, build
 - **Scope** _(optional)_: module / package / area touched
 - **Subject**: imperative mood, ≤72 chars, no trailing period
+- **Language**: English, regardless of the language used in conversation
 
 Note: ECC-managed installs set `"includeCoAuthoredBy": false` in `~/.claude/settings.json`, so commits carry no `Co-Authored-By` trailer by default. To keep Claude attribution, set `"includeCoAuthoredBy": true` or configure `attribution`; ECC never overwrites an explicit choice.
 
