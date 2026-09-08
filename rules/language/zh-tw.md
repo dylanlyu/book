@@ -1,8 +1,13 @@
 # Language Rules
 
-> Scope: output language only. Per `../common/engineering-philosophy.md` §5, this
-> file sits outside the precedence ladder — it never overrides engineering
+> Scope: output language only. Per `rules/common/engineering-philosophy.md` §5,
+> this file sits outside the precedence ladder — it never overrides engineering
 > judgement and never relaxes §1–§4.
+>
+> Installs at **user scope** (`~/.claude/rules/`), not per project — output
+> language follows the person, not the tech stack. The reference above is
+> repo-relative on purpose: this file is read from two different directory
+> depths, so a `../common/` path would be correct in only one of them.
 
 ## Default
 

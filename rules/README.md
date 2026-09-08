@@ -38,7 +38,7 @@ rules/
 
 - **common/** contains universal principles — no language-specific code examples.
 - **Language directories** extend the common rules with framework-specific patterns, tools, and code examples. Each file references its common counterpart.
-- **language/** is not a programming-language directory. It holds the output-language pack (`zh-tw.md`), which constrains only the language responses are written in. This fork supports zh-TW only, so there is no locale flag — the pack installs unconditionally with the `rules-core` module. See [Rule Priority](#rule-priority).
+- **language/** is not a programming-language directory. It holds the output-language pack (`zh-tw.md`), which constrains only the language responses are written in. This fork supports zh-TW only, so there is no locale flag. Install it at **user scope** only — output language follows the person, not the project. See [Rule Priority](#rule-priority).
 - **platform/** is not a programming-language directory either. Each file supplies the execution-environment mechanism for one host — which exit signal to use, which budget applies, which `common/` rules that host cannot honour. Install **at most one**, matching where the agent actually runs, and only there; these files are not global rules. See [Rule Priority](#rule-priority).
 
 ## Installation
@@ -83,6 +83,9 @@ mkdir -p ~/.claude/rules/ecc
 # Install common rules (required for all projects)
 cp -r rules/common ~/.claude/rules/ecc/
 
+# Install the output-language pack (user scope only — it follows you, not the project)
+cp -r rules/language ~/.claude/rules/ecc/
+
 # Install language-specific rules based on your project's tech stack
 cp -r rules/typescript ~/.claude/rules/ecc/
 cp -r rules/angular ~/.claude/rules/ecc/
@@ -106,6 +109,8 @@ For project-local rules, use the same namespace under the project root:
 mkdir -p .claude/rules/ecc
 cp -r rules/common .claude/rules/ecc/
 cp -r rules/typescript .claude/rules/ecc/
+
+# Do not copy rules/language/ here — it is user-scope only (see Structure above).
 ```
 
 ## Rules vs Skills

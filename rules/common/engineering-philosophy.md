@@ -73,9 +73,11 @@ are legitimately absent (no project rules, no platform file) are simply empty an
 change the order of the rest.
 
 `rules/language/*.md` sits **outside** this ladder: it constrains the output language
-only, never engineering judgement. This fork ships exactly one such pack (`zh-tw.md`,
-installed with the rest of `rules/`), and it is the tie-breaker for "which language do I
-write this in", nothing else.
+only, never engineering judgement. This fork ships exactly one such pack (`zh-tw.md`),
+and it is the tie-breaker for "which language do I write this in", nothing else. It
+belongs at **user scope**: output language follows the person, so it installs once into
+`~/.claude/rules/` rather than into each project's `.claude/rules/`. The rest of `rules/`
+may be installed at either scope.
 
 `rules/platform/*.md` also sits outside the ladder, on a different axis: it supplies the
 execution-environment mechanism for one specific host (which exit signal to use, which
