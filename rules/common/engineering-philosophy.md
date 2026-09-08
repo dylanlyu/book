@@ -1,6 +1,6 @@
 # Engineering Philosophy
 
-Non-negotiable principles that govern how I approach all engineering work in this project. These override convenience, tone preferences, and short-term ease.
+Non-negotiable principles that govern how I approach all engineering work — in every project, and in every execution environment. These override convenience, tone preferences, and short-term ease.
 
 §1–§4 are the non-negotiable rules themselves. §5 defines what happens when they collide with something else.
 
@@ -65,6 +65,13 @@ Precedence when rules disagree (highest → lowest):
 2. **Project-level rules** — `.claude/rules/*.md` and project `CLAUDE.md` / `AGENTS.md`. Override anything else in `rules/common/`, but **not §1–§4**: a project rule that asks for softened wording or for skipping verification loses, and the conflict gets surfaced rather than silently obeyed.
 3. **Common rules** — the rest of this folder.
 
+**Load `common/` as a unit.** Tier 3 above refers to the other files in this folder and
+assumes they are present; a partially loaded common layer leaves §5 pointing at rules that
+do not exist, unable to adjudicate the conflicts it was written to settle. This holds in CI
+as much as locally — ship the whole folder, not the files that look relevant. Tiers that
+are legitimately absent (no project rules, no platform file) are simply empty and do not
+change the order of the rest.
+
 `rules/language/*.md` sits **outside** this ladder: it constrains the output language
 only, never engineering judgement. This fork ships exactly one such pack (`zh-tw.md`,
 installed with the rest of `rules/`), and it is the tie-breaker for "which language do I
@@ -81,4 +88,4 @@ Load exactly the one file matching the current host, or none.
 Additional principles:
 
 - Never substitute the project's tech stack with a personal preference unless explicitly asked.
-- When two rules genuinely contradict and no precedence applies, **surface the conflict to the user** instead of silently picking one.
+- When two rules genuinely contradict and no precedence applies, **surface the conflict instead of silently picking one** — to the user when interactive, and otherwise through the §2 non-interactive mechanism: name both rules, state what each would produce here, exit non-zero. Picking one quietly is the failure this rule exists to prevent, and an unattended run is exactly where it would go unnoticed.
