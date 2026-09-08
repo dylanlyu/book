@@ -290,6 +290,78 @@ function runTests() {
     }
   })) passed++; else failed++;
 
+  if (test('carves rules/language out of rules-core and installs it only via rules-language', () => {
+    const sourceRoot = createTempDir('install-executor-source-');
+    const homeDir = createTempDir('install-executor-home-');
+    try {
+      writeJson(sourceRoot, 'package.json', { version: '1.0.0' });
+      writeJson(sourceRoot, path.join('manifests', 'install-modules.json'), {
+        version: 1,
+        modules: [
+          {
+            id: 'rules-core',
+            kind: 'rules',
+            description: 'Rules tree without the output-language pack',
+            paths: ['rules'],
+            targets: ['claude'],
+            dependencies: [],
+            defaultInstall: true,
+            cost: 'light',
+            stability: 'stable',
+          },
+          {
+            id: 'rules-language',
+            kind: 'rules',
+            description: 'Output-language pack',
+            paths: ['rules/language'],
+            targets: ['claude'],
+            dependencies: [],
+            defaultInstall: false,
+            cost: 'light',
+            stability: 'stable',
+          },
+        ],
+      });
+      writeJson(sourceRoot, path.join('manifests', 'install-profiles.json'), {
+        version: 1,
+        profiles: { minimal: { description: 'Rules only', modules: ['rules-core'] } },
+      });
+      writeFile(sourceRoot, path.join('rules', 'common', 'coding-style.md'), '# Common\n');
+      writeFile(sourceRoot, path.join('rules', 'language', 'zh-tw.md'), '# zh-TW\n');
+      writeFile(sourceRoot, path.join('rules', 'language', 'ja.md'), '# ja\n');
+
+      const normalizeSources = plan => plan.operations.map(operation => (
+        operation.sourceRelativePath.split(path.sep).join('/')
+      ));
+
+      // rules-core declares the whole `rules` tree, but must not sweep up a pack
+      // it does not own - two active packs contradict each other.
+      const defaultSources = normalizeSources(createManifestInstallPlan({
+        sourceRoot,
+        homeDir,
+        target: 'claude',
+        profileId: 'minimal',
+      }));
+      assert.ok(defaultSources.includes('rules/common/coding-style.md'));
+      assert.ok(!defaultSources.some(source => source.startsWith('rules/language/')));
+
+      // The owning module still copies the pack directory. Selecting *which* pack
+      // when several ship is a separate mechanism that does not exist yet.
+      const optInSources = normalizeSources(createManifestInstallPlan({
+        sourceRoot,
+        homeDir,
+        target: 'claude',
+        moduleIds: ['rules-language'],
+      }));
+      assert.ok(optInSources.includes('rules/language/zh-tw.md'));
+      assert.ok(optInSources.includes('rules/language/ja.md'));
+      assert.ok(!optInSources.includes('rules/common/coding-style.md'));
+    } finally {
+      cleanup(sourceRoot);
+      cleanup(homeDir);
+    }
+  })) passed++; else failed++;
+
   if (test('creates legacy compatibility manifest plans from language selections', () => {
     const projectRoot = createTempDir('install-executor-project-');
     const homeDir = createTempDir('install-executor-home-');

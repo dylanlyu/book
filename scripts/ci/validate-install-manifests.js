@@ -21,6 +21,13 @@ const CURATED_SKILLS_DIR = path.join(REPO_ROOT, 'skills');
 const INTENTIONALLY_UNSHIPPED_SKILL_IDS = new Set([
   'skill-comply', // meta/measurement dev-skill; ships committed .pyc artifacts and a nested .gitignore, revisit after packaging cleanup
 ]);
+// Modules that are mutually exclusive alternatives rather than additive features.
+// `full` means every additive module, so it cannot meaningfully carry one of these:
+// installing two output-language packs at once gives the agent contradictory
+// instructions about which language to write in. Opt in via capability:output-language.
+const FULL_PROFILE_OPTIONAL_MODULE_IDS = new Set([
+  'rules-language',
+]);
 const COMPONENT_FAMILY_PREFIXES = {
   baseline: 'baseline:',
   language: 'lang:',
@@ -230,6 +237,9 @@ function validateInstallManifests() {
     const fullModules = new Set(profiles.full.modules);
     for (const module of modules) {
       if (module.kind === 'docs' && module.defaultInstall === false) {
+        continue;
+      }
+      if (FULL_PROFILE_OPTIONAL_MODULE_IDS.has(module.id)) {
         continue;
       }
       if (!fullModules.has(module.id)) {

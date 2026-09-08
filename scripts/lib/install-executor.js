@@ -10,6 +10,15 @@ const { getInstallTargetAdapter } = require('./install-targets/registry');
 const LANGUAGE_NAME_PATTERN = /^[a-zA-Z0-9_-]+$/;
 const CLAUDE_ECC_NAMESPACE = 'ecc';
 const EXCLUDED_GENERATED_SOURCE_SUFFIXES = ['/ecc-install-state.json', '/ecc/install-state.json'];
+// Subpaths carved out of a broader module's tree because a dedicated module owns them.
+// `rules-core` ships `rules/` wholesale, but the output-language packs under
+// `rules/language/` are mutually exclusive alternatives: copying every pack at once
+// leaves the agent with contradictory instructions about which language to write in,
+// and rules/common/engineering-philosophy.md §5 has no tier that would rank them.
+// Only the owning module may copy them.
+const MODULE_OWNED_SUBPATHS = Object.freeze({
+  'rules/language': 'rules-language'
+});
 
 function getSourceRoot() {
   return path.join(__dirname, '../..');
@@ -114,6 +123,18 @@ function listFilesRecursive(dirPath) {
 function isGeneratedRuntimeSourcePath(sourceRelativePath) {
   const normalizedPath = String(sourceRelativePath || '').replace(/\\/g, '/');
   return EXCLUDED_GENERATED_SOURCE_SUFFIXES.some(suffix => normalizedPath.endsWith(suffix));
+}
+
+function isForeignModuleSubpath(sourceRelativePath, moduleId) {
+  const normalizedPath = String(sourceRelativePath || '').replace(/\\/g, '/');
+
+  for (const [subpath, ownerModuleId] of Object.entries(MODULE_OWNED_SUBPATHS)) {
+    if (normalizedPath === subpath || normalizedPath.startsWith(`${subpath}/`)) {
+      return ownerModuleId !== moduleId;
+    }
+  }
+
+  return false;
 }
 
 function createStatePreview(options) {
@@ -393,6 +414,10 @@ function materializeScaffoldOperation(sourceRoot, operation) {
     return [];
   }
 
+  if (isForeignModuleSubpath(operation.sourceRelativePath, operation.moduleId)) {
+    return [];
+  }
+
   const stat = fs.statSync(sourcePath);
   if (stat.isFile()) {
     return [
@@ -409,7 +434,8 @@ function materializeScaffoldOperation(sourceRoot, operation) {
 
   const relativeFiles = listFilesRecursive(sourcePath).filter(relativeFile => {
     const sourceRelativePath = path.join(operation.sourceRelativePath, relativeFile);
-    return !isGeneratedRuntimeSourcePath(sourceRelativePath);
+    return !isGeneratedRuntimeSourcePath(sourceRelativePath)
+      && !isForeignModuleSubpath(sourceRelativePath, operation.moduleId);
   });
   return relativeFiles.map(relativeFile => {
     const sourceRelativePath = path.join(operation.sourceRelativePath, relativeFile);

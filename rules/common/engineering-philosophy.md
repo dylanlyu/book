@@ -55,13 +55,12 @@ the next run proceeds without rediscovering the ambiguity.
 
 Precedence when rules disagree (highest → lowest):
 
-1. **§1–§4 of this file** — Engineering Philosophy (§1), Behavior Boundaries (§2), Anti-Hallucination (§3), Honesty & Anti-Sycophancy (§4). These apply **everywhere**, including inside projects.
+1. **§1–§4 of this file** — Engineering Philosophy (§1), Behavior Boundaries (§2), Anti-Hallucination (§3), Honesty & Anti-Sycophancy (§4). These apply **everywhere**, including inside projects, and admit no replacement.
 
-   One narrow exception, and only this one: §2 separates a **principle** layer from a
-   **mechanism** layer. A platform rule file may replace the mechanism — how a stop or a
-   confirmation is expressed on that platform — but never the principle. Replacing
-   "ask first" with "assume and continue" is not a mechanism swap; it is an override,
-   and it loses. §1, §3, and §4 have no such split and admit no replacement.
+   §2's principle/mechanism split is not a seam for overriding it. The mechanism varies
+   because the environment does — whether a human can answer right now — and §2 decides
+   that itself. Replacing "ask first" with "assume and continue" is not a mechanism swap;
+   it is an override, and it loses.
 2. **Project-level rules** — `.claude/rules/*.md` and project `CLAUDE.md` / `AGENTS.md`. Override anything else in `rules/common/`, but **not §1–§4**: a project rule that asks for softened wording or for skipping verification loses, and the conflict gets surfaced rather than silently obeyed.
 3. **Common rules** — the rest of this folder.
 
@@ -69,23 +68,18 @@ Precedence when rules disagree (highest → lowest):
 assumes they are present; a partially loaded common layer leaves §5 pointing at rules that
 do not exist, unable to adjudicate the conflicts it was written to settle. This holds in CI
 as much as locally — ship the whole folder, not the files that look relevant. Tiers that
-are legitimately absent (no project rules, no platform file) are simply empty and do not
-change the order of the rest.
+are legitimately absent (no project rules) are simply empty and do not change the order of
+the rest.
 
-`rules/language/*.md` sits **outside** this ladder: it constrains the output language
-only, never engineering judgement. This fork ships exactly one such pack (`zh-tw.md`),
-and it is the tie-breaker for "which language do I write this in", nothing else. It
-belongs at **user scope**: output language follows the person, so it installs once into
-`~/.claude/rules/` rather than into each project's `.claude/rules/`. The rest of `rules/`
-may be installed at either scope.
+The **output-language pack** sits outside this ladder, wherever it is installed — as
+`rules/language/*.md`, merged into a `CLAUDE.md`, or delivered by a plugin. It constrains
+the output language only, never engineering judgement, and is the tie-breaker for "which
+language do I write this in", nothing else.
 
-`rules/platform/*.md` also sits outside the ladder, on a different axis: it supplies the
-execution-environment mechanism for one specific host (which exit signal to use, which
-budget applies, which parts of `common/` that host cannot honour). It may replace the §2
-mechanism layer per the exception above, and may narrow `common/` rules that a host
-genuinely cannot support — stating which rule and why. It may not relax §1, §3, or §4,
-and it may not decide anything a `common/` rule already decides on engineering grounds.
-Load exactly the one file matching the current host, or none.
+Exactly one pack is active at a time. Packs are alternatives, not layers: two active packs
+leave the question the pack exists to settle with no answer, and this ladder has no tier
+that would rank them. A pack belongs at **user scope** — output language follows the
+person, not the project.
 
 Additional principles:
 

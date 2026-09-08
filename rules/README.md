@@ -20,8 +20,6 @@ rules/
 │   └── security.md
 ├── language/        # Output-language pack — NOT a programming language
 │   └── zh-tw.md
-├── platform/        # Execution-host mechanism — NOT a programming language
-│   └── claude-code-action.md
 ├── typescript/      # TypeScript/JavaScript specific
 ├── angular/         # Angular specific
 ├── vue/             # Vue 3 specific
@@ -38,8 +36,7 @@ rules/
 
 - **common/** contains universal principles — no language-specific code examples.
 - **Language directories** extend the common rules with framework-specific patterns, tools, and code examples. Each file references its common counterpart.
-- **language/** is not a programming-language directory. It holds the output-language pack (`zh-tw.md`), which constrains only the language responses are written in. This fork supports zh-TW only, so there is no locale flag. Install it at **user scope** only — output language follows the person, not the project. See [Rule Priority](#rule-priority).
-- **platform/** is not a programming-language directory either. Each file supplies the execution-environment mechanism for one host — which exit signal to use, which budget applies, which `common/` rules that host cannot honour. Install **at most one**, matching where the agent actually runs, and only there; these files are not global rules. See [Rule Priority](#rule-priority).
+- **language/** is not a programming-language directory. It holds the output-language packs, which constrain only the language responses are written in; this fork currently ships one (`zh-tw.md`). Install **at most one**, at **user scope** — output language follows the person, not the project. The packs are opt-in: `rules-core` carves this directory out, so select it with `--with capability:output-language`. See [Rule Priority](#rule-priority).
 
 ## Installation
 
@@ -147,8 +144,6 @@ When language-specific rules and common rules conflict, **language-specific rule
 - `rules/golang/`, `rules/python/`, `rules/swift/`, `rules/php/`, `rules/typescript/`, `rules/react-native/`, etc. override those defaults where language idioms differ.
 
 `rules/language/` sits **outside** this ladder entirely. It constrains output language only — never engineering judgement — and never overrides `common/engineering-philosophy.md` §1–§4. See that file's §5 for the full precedence order.
-
-`rules/platform/` sits outside the ladder on a different axis: it carries execution-host mechanism, not engineering judgement. Under the single exception in §5, a platform file may replace the §2 *mechanism* layer (how a stop or a confirmation is expressed on that host) and may narrow `common/` rules the host genuinely cannot support, stating which and why. It may not relax §1, §3, or §4, and may not re-decide anything a `common/` rule already settles on engineering grounds.
 
 ### Example
 

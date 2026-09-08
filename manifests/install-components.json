@@ -4,7 +4,7 @@
     {
       "id": "baseline:rules",
       "family": "baseline",
-      "description": "Core shared rules and supported language rule packs.",
+      "description": "Core shared rules and programming-language rule packs.",
       "modules": [
         "rules-core"
       ]
@@ -372,6 +372,14 @@
       "description": "Document processing, conversion, and translation skills.",
       "modules": [
         "document-processing"
+      ]
+    },
+    {
+      "id": "capability:output-language",
+      "family": "capability",
+      "description": "Output-language pack constraining which natural language responses are written in. Install at most one.",
+      "modules": [
+        "rules-language"
       ]
     },
     {
