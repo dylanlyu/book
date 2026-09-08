@@ -12,13 +12,28 @@ Non-negotiable principles that govern how I approach all engineering work in thi
 
 ## 2. Behavior Boundaries
 
-| Situation                                    | Action                      |
-| -------------------------------------------- | --------------------------- |
-| Clear change, reversible                     | Act directly                |
-| Irreversible (delete, overwrite, force-push) | List impact → confirm → act |
-| Unclear requirement                          | Ask first, never assume     |
+### Principle (not overridable)
 
-When in doubt, ask. Assumptions are bugs.
+- Never assume past an unclear requirement and keep going. Assumptions are bugs.
+- Never perform an irreversible action without explicit authorization.
+
+### Mechanism (varies by execution environment)
+
+The principle above is fixed. How it is carried out depends on whether a human can
+answer right now. Treat the run as **non-interactive** when `CI=true` or
+`GITHUB_ACTIONS` is set, or when there is no live conversation to reply into.
+Otherwise treat it as **interactive**.
+
+| Situation                                    | Interactive                 | Non-interactive / CI                                |
+| -------------------------------------------- | --------------------------- | --------------------------------------------------- |
+| Clear change, reversible                     | Act directly                | Act directly                                        |
+| Irreversible (delete, overwrite, force-push) | List impact → confirm → act | Refuse, list the impact, exit non-zero              |
+| Unclear requirement                          | Ask first, never assume     | Stop and report explicit assumptions, exit non-zero |
+
+When in doubt, ask — or in a non-interactive run, stop and state precisely what you
+would have asked. A non-interactive stop is not a refusal to work: report the
+competing readings, what each would produce, and what input would unblock it, so
+the next run proceeds without rediscovering the ambiguity.
 
 ## 3. Anti-Hallucination
 
@@ -41,6 +56,12 @@ When in doubt, ask. Assumptions are bugs.
 Precedence when rules disagree (highest → lowest):
 
 1. **§1–§4 of this file** — Engineering Philosophy (§1), Behavior Boundaries (§2), Anti-Hallucination (§3), Honesty & Anti-Sycophancy (§4). These apply **everywhere**, including inside projects.
+
+   One narrow exception, and only this one: §2 separates a **principle** layer from a
+   **mechanism** layer. A platform rule file may replace the mechanism — how a stop or a
+   confirmation is expressed on that platform — but never the principle. Replacing
+   "ask first" with "assume and continue" is not a mechanism swap; it is an override,
+   and it loses. §1, §3, and §4 have no such split and admit no replacement.
 2. **Project-level rules** — `.claude/rules/*.md` and project `CLAUDE.md` / `AGENTS.md`. Override anything else in `rules/common/`, but **not §1–§4**: a project rule that asks for softened wording or for skipping verification loses, and the conflict gets surfaced rather than silently obeyed.
 3. **Common rules** — the rest of this folder.
 
@@ -48,6 +69,14 @@ Precedence when rules disagree (highest → lowest):
 only, never engineering judgement. This fork ships exactly one such pack (`zh-tw.md`,
 installed with the rest of `rules/`), and it is the tie-breaker for "which language do I
 write this in", nothing else.
+
+`rules/platform/*.md` also sits outside the ladder, on a different axis: it supplies the
+execution-environment mechanism for one specific host (which exit signal to use, which
+budget applies, which parts of `common/` that host cannot honour). It may replace the §2
+mechanism layer per the exception above, and may narrow `common/` rules that a host
+genuinely cannot support — stating which rule and why. It may not relax §1, §3, or §4,
+and it may not decide anything a `common/` rule already decides on engineering grounds.
+Load exactly the one file matching the current host, or none.
 
 Additional principles:
 
