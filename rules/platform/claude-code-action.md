@@ -1,9 +1,7 @@
 # Platform Rules — claude-code-action
 
 > Scope: execution mechanism for [`anthropics/claude-code-action`][action] only.
-> Per `../common/engineering-philosophy.md` §5, this file sits outside the precedence
-> ladder. It supplies the §2 mechanism layer for this host and narrows `common/` rules
-> the host cannot honour. It never relaxes §1, §3, or §4.
+> Per `../common/engineering-philosophy.md` §5, this file sits outside the precedence ladder.
 >
 > Load this file only when running inside the action. Do not install it as a global rule.
 
