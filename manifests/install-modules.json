@@ -4,7 +4,7 @@
     {
       "id": "rules-core",
       "kind": "rules",
-      "description": "Shared and language rules for supported harness targets.",
+      "description": "Shared and programming-language rules for supported harness targets. Excludes rules/language/, owned by rules-language.",
       "paths": [
         "rules"
       ],
@@ -14,6 +14,22 @@
       ],
       "dependencies": [],
       "defaultInstall": true,
+      "cost": "light",
+      "stability": "stable"
+    },
+    {
+      "id": "rules-language",
+      "kind": "rules",
+      "description": "Output-language pack (rules/language/). Opt-in: packs are alternatives, not layers.",
+      "paths": [
+        "rules/language"
+      ],
+      "targets": [
+        "claude",
+        "claude-project"
+      ],
+      "dependencies": [],
+      "defaultInstall": false,
       "cost": "light",
       "stability": "stable"
     },
@@ -478,7 +494,7 @@
     {
       "id": "ito-compute",
       "kind": "skills",
-      "description": "Authenticated It\u00f4 GPU inventory, RFQ, status, device revocation, and explicitly gated node-qualification workflows through the separately installed canonical CLI.",
+      "description": "Authenticated It\\u00f4 GPU inventory, RFQ, status, device revocation, and explicitly gated node-qualification workflows through the separately installed canonical CLI.",
       "paths": [
         "skills/ito-compute",
         "skills/ito-inference",

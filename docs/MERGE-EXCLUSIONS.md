@@ -299,8 +299,14 @@ tests/lib/install-request.test.js      5 個 locale 測試
 （`tests/lib/install-request.test.js` 的旗標守衛、`tests/lib/install-manifests.test.js`
 的 `locale:*` 元件家族守衛），等同把第 7 項檢查搬進測試套件。
 
-繁體中文輸出規則本身保留在 `rules/language/zh-tw.md`，隨 `rules-core` 預設安裝——
-本 fork 只支援 zh-TW，沒有語系可選，所以不需要旗標。
+繁體中文輸出規則本身保留在 `rules/language/zh-tw.md`，但**不再隨 `rules-core` 預設安裝**。
+2026-09-08 起 `rules/language/` 改由獨立的 `rules-language` 模組持有（`defaultInstall: false`，
+opt-in 元件 `capability:output-language`），`rules-core` 宣告的 `rules` 路徑會跳過它——輸出
+語言包彼此互斥，整包複製會讓多個語言包同時生效而互相矛盾。
+
+這不是復活 `locale:*`：`rules-language` 只決定「要不要裝語言包」，不決定「裝哪一個」。本
+fork 目前仍只有 zh-TW，所以還不需要選擇機制。一旦新增第二個語言包，就必須先決定選擇機制，
+屆時第 7 項的刪除政策也要一併重新評估。
 
 ### 8.4 連帶移除的 release 驗證面
 
