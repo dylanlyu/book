@@ -112,7 +112,7 @@ test('public CLI invocations use npm exec instead of internal package paths', ()
   ]);
 
   const unixInvocation = lifecycle.getNpmExecInvocation(
-    ['ecc', 'doctor', '--target', 'cursor', '--json'],
+    ['ecc', 'doctor', '--target', 'claude-project', '--json'],
     {},
     'linux'
   );
@@ -131,7 +131,7 @@ test('Windows public CLI invocation accepts the exact Itô capability selection'
       'ecc', 'install', '--profile', 'core',
       '--with', 'capability:ito-compute',
       '--with', 'capability:prediction-markets',
-      '--target', 'cursor', '--enable-hooks', '--json',
+      '--target', 'claude-project', '--enable-hooks', '--json',
     ],
     { ComSpec: 'C:\\Windows\\System32\\cmd.exe' },
     'win32'
@@ -140,7 +140,7 @@ test('Windows public CLI invocation accepts the exact Itô capability selection'
   assert.strictEqual(invocation.command, 'C:\\Windows\\System32\\cmd.exe');
   assert.strictEqual(
     invocation.args[3],
-    'npm exec --offline --yes=false -- ecc install --profile core --with capability:ito-compute --with capability:prediction-markets --target cursor --enable-hooks --json'
+    'npm exec --offline --yes=false -- ecc install --profile core --with capability:ito-compute --with capability:prediction-markets --target claude-project --enable-hooks --json'
   );
 });
 

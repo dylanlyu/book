@@ -105,7 +105,7 @@ tests/scripts/trae-install.test.js
 | `skills/angular-developer/references/mcp.md` 的 `.antigravity/mcp.json` | 那是 Antigravity IDE 自己的 MCP 設定教學，不是 ECC adapter |
 | 倉庫根目錄 `.agents/` | Codex 的 skill metadata 佈局 |
 | `scripts/lib/install/link-rewrite.js` | 與 antigravity 同批引入但為共用模組，`install-lifecycle` 仍在用 |
-| `CHANGELOG.md`、`docs/SELECTIVE-INSTALL-DESIGN.md`、`docs/stale-pr-salvage-ledger.md` 裡的 JoyCode/Antigravity | 歷史發布紀錄、設計文件敘事與 PR 打撈帳本，照既有慣例保留原文 |
+| `CHANGELOG.md`、`docs/stale-pr-salvage-ledger.md` 裡的 JoyCode/Antigravity | 歷史發布紀錄與 PR 打撈帳本，照既有慣例保留原文。`docs/SELECTIVE-INSTALL-DESIGN.md` 已於 2026-09-21 跟隨上游 `f8640355` 一併刪除 |
 | `tests/lib/harness-capabilities.test.js` 的 `joycode` | 「不得再宣傳已移除 harness」的迴歸守門斷言，必須保留 |
 | `applyMultiHarnessPlan` 的 managed 分派分支與 `guidedReady` / `availability` 欄位 | JoyCode 是最後一個 managed/advanced harness，目前無實例但保留擴充點以降低上游合併衝突 |
 
@@ -155,8 +155,10 @@ tests/scripts/observability-readiness.test.js
 >
 > 2026-08-18 補記：`docs/architecture/observability-readiness.md` 當初列在本節卻沒真的刪掉，
 > 已於本次補刪；`docs/design/agent-proximity.md` 是同批的孤兒文件，一併加入清單。
-> **尚未清乾淨**：`scripts/lib/control-pane/work-item-mutations.js` 仍在倉庫中，
-> 是本節唯一的殘留項，處理前請先確認沒有現存消費者。
+> **已釐清（2026-09-21）**：`scripts/lib/control-pane/work-item-mutations.js` 不是殘留項，
+> 要保留。`scripts/work-items.js` 仍 require 它，而那是保留的 `ecc work-items` 指令
+> （列於 `package.json` 的 `files`、`scripts/ecc.js` 的指令表，並有 `tests/scripts/work-items.test.js`
+> 守著）。它只是與 control-pane 同目錄，不屬於 control-pane 功能本身。
 
 ---
 
@@ -386,7 +388,11 @@ docs/fixes/HOOK-FIX-20260421.md
 docs/fixes/HOOK-FIX-20260421-ADDENDUM.md
 docs/fixes/INSTALL-HOOK-WRAPPER-FIX-20260422.md
 docs/fixes/PATCH-SETTINGS-SIMPLE-FIX-20260422.md
+.pr/security-evidence-3171.md
 ```
+
+> 2026-09-21 補記：`.pr/security-evidence-3171.md` 是上游單次 PR 的安全佐證文件，
+> 同屬帶編號的一次性產物。上游若再帶回 `.pr/` 目錄，整個丟掉。
 
 `scripts/preview-pack-smoke.js` 的 `REQUIRED_ARTIFACTS` 已同步移除
 `docs/architecture/observability-readiness.md`。

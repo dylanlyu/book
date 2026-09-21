@@ -309,8 +309,8 @@ function isFakeClaudeMutation(args) {
   ].includes(args.join(' '));
 }
 
-function resolveManagedExistingPath(destinationPath, cursorRoot) {
-  const normalizedRoot = fs.realpathSync(cursorRoot);
+function resolveManagedExistingPath(destinationPath, claudeProjectRoot) {
+  const normalizedRoot = fs.realpathSync(claudeProjectRoot);
   const lexicalPath = path.resolve(destinationPath);
   const lexicalRelativePath = path.relative(normalizedRoot, lexicalPath);
   if (
@@ -330,19 +330,19 @@ function resolveManagedExistingPath(destinationPath, cursorRoot) {
   const realPath = fs.realpathSync(lexicalPath);
   const realRelativePath = path.relative(normalizedRoot, realPath);
   if (realRelativePath.startsWith('..') || path.isAbsolute(realRelativePath)) {
-    throw new Error(`Managed lifecycle path escapes Cursor root: ${lexicalPath}`);
+    throw new Error(`Managed lifecycle path escapes Claude project root: ${lexicalPath}`);
   }
 
   return { path: realPath, stat: pathStat };
 }
 
-function getManagedOperationSnapshot(state, cursorRoot) {
+function getManagedOperationSnapshot(state, claudeProjectRoot) {
   const snapshot = [];
   for (const operation of state.operations) {
     if (operation.ownership !== 'managed' || typeof operation.destinationPath !== 'string') {
       continue;
     }
-    const resolved = resolveManagedExistingPath(operation.destinationPath, cursorRoot);
+    const resolved = resolveManagedExistingPath(operation.destinationPath, claudeProjectRoot);
     if (resolved) {
       snapshot.push({ path: resolved.path, isFile: resolved.stat.isFile() });
     }
@@ -363,17 +363,17 @@ function getOperationLedger(state) {
   }));
 }
 
-function findDriftCandidate(state, cursorRoot) {
+function findDriftCandidate(state, claudeProjectRoot) {
   const operation = state.operations.find(candidate => {
     if (candidate.kind !== 'copy-file' || typeof candidate.destinationPath !== 'string') {
       return false;
     }
-    const resolved = resolveManagedExistingPath(candidate.destinationPath, cursorRoot);
+    const resolved = resolveManagedExistingPath(candidate.destinationPath, claudeProjectRoot);
     return resolved && resolved.stat.isFile();
   });
 
-  assert.ok(operation, 'installed state must contain a managed Cursor file that can be drifted');
-  return resolveManagedExistingPath(operation.destinationPath, cursorRoot).path;
+  assert.ok(operation, 'installed state must contain a managed Claude project file that can be drifted');
+  return resolveManagedExistingPath(operation.destinationPath, claudeProjectRoot).path;
 }
 
 function runLifecycle(options) {
@@ -392,10 +392,10 @@ function runLifecycle(options) {
   try {
     installPackage(projectDir, options.packagePath, environment);
 
-    const cursorRoot = path.join(projectDir, '.cursor');
-    const statePath = path.join(cursorRoot, 'ecc-install-state.json');
-    const sentinelPath = path.join(cursorRoot, 'user-sentinel.txt');
-    fs.mkdirSync(cursorRoot, { recursive: true });
+    const claudeProjectRoot = path.join(projectDir, '.claude');
+    const statePath = path.join(claudeProjectRoot, 'ecc', 'install-state.json');
+    const sentinelPath = path.join(claudeProjectRoot, 'user-sentinel.txt');
+    fs.mkdirSync(claudeProjectRoot, { recursive: true });
     fs.writeFileSync(sentinelPath, 'keep this user file\n', 'utf8');
 
     const runPublicCli = (publicArgs, commandOptions = {}) => {
@@ -552,7 +552,7 @@ function runLifecycle(options) {
       '--profile', 'core',
       '--with', 'capability:ito-compute',
       '--with', 'capability:prediction-markets',
-      '--target', 'cursor',
+      '--target', 'claude-project',
       '--enable-hooks',
       '--json',
     ];
@@ -560,7 +560,7 @@ function runLifecycle(options) {
       runCli(itoInstallArgs),
       'initial Itô install'
     );
-    assert.ok(fs.existsSync(statePath), 'initial install must write Cursor install-state');
+    assert.ok(fs.existsSync(statePath), 'initial install must write Claude project install-state');
     const initialState = JSON.parse(fs.readFileSync(statePath, 'utf8'));
     const initialLedger = getOperationLedger(initialState);
     assert.ok(
@@ -580,7 +580,7 @@ function runLifecycle(options) {
       'skills/ito-inference/SKILL.md',
       'skills/ito-training/SKILL.md',
     ]) {
-      const installedPath = path.join(cursorRoot, relativePath);
+      const installedPath = path.join(claudeProjectRoot, relativePath);
       const installedStat = fs.lstatSync(installedPath);
       assert.ok(installedStat.isFile(), `packed Itô asset is not a file: ${relativePath}`);
       assert.ok(!installedStat.isSymbolicLink(), `packed Itô asset is a symlink: ${relativePath}`);
@@ -607,8 +607,8 @@ function runLifecycle(options) {
     assert.match(itoStatus.stderr, /canonical ito-compute-cli is unpublished/i);
     assert.doesNotMatch(itoStatus.stderr, /npx|npm exec|npm link|install -g/i);
     assert.ok(!fs.existsSync(hostileItoSentinel), 'packed Itô bridge executed a PATH collision');
-    const managedSnapshot = getManagedOperationSnapshot(initialState, cursorRoot);
-    assert.ok(managedSnapshot.length > 0, 'initial install must create managed Cursor files');
+    const managedSnapshot = getManagedOperationSnapshot(initialState, claudeProjectRoot);
+    assert.ok(managedSnapshot.length > 0, 'initial install must create managed Claude project files');
 
     parseJsonOutput(
       runCli(itoInstallArgs),
@@ -640,18 +640,18 @@ function runLifecycle(options) {
     assert.strictEqual(statusAfterInstall.readiness.status, 'ok');
 
     const healthyBeforeDrift = parseJsonOutput(
-      runCli(['doctor', '--target', 'cursor', '--json']),
+      runCli(['doctor', '--target', 'claude-project', '--json']),
       'doctor before drift'
     );
     assert.strictEqual(healthyBeforeDrift.summary.errorCount, 0);
     assert.strictEqual(healthyBeforeDrift.summary.warningCount, 0);
 
     const state = JSON.parse(fs.readFileSync(statePath, 'utf8'));
-    const driftPath = findDriftCandidate(state, cursorRoot);
+    const driftPath = findDriftCandidate(state, claudeProjectRoot);
     fs.appendFileSync(driftPath, '\nECC_PACKED_LIFECYCLE_DRIFT\n', 'utf8');
 
     const driftedDoctor = parseJsonOutput(
-      runCli(['doctor', '--target', 'cursor', '--json'], { expectedStatus: 1 }),
+      runCli(['doctor', '--target', 'claude-project', '--json'], { expectedStatus: 1 }),
       'doctor after drift'
     );
     assert.ok(
@@ -660,13 +660,13 @@ function runLifecycle(options) {
     );
 
     const repair = parseJsonOutput(
-      runCli(['repair', '--target', 'cursor', '--json']),
+      runCli(['repair', '--target', 'claude-project', '--json']),
       'repair'
     );
     assert.ok(repair.summary.repairedCount > 0, 'repair must restore the drifted managed file');
 
     const healthyAfterRepair = parseJsonOutput(
-      runCli(['doctor', '--target', 'cursor', '--json']),
+      runCli(['doctor', '--target', 'claude-project', '--json']),
       'doctor after repair'
     );
     assert.strictEqual(healthyAfterRepair.summary.errorCount, 0);
@@ -683,10 +683,10 @@ function runLifecycle(options) {
     assert.strictEqual(statusAfterRepair.readiness.status, 'ok');
 
     parseJsonOutput(
-      runCli(['uninstall', '--target', 'cursor', '--json']),
+      runCli(['uninstall', '--target', 'claude-project', '--json']),
       'uninstall'
     );
-    assert.ok(!fs.existsSync(statePath), 'uninstall must remove Cursor install-state');
+    assert.ok(!fs.existsSync(statePath), 'uninstall must remove Claude project install-state');
     for (const entry of managedSnapshot) {
       assert.ok(!fs.existsSync(entry.path), `uninstall left managed path behind: ${entry.path}`);
     }
@@ -717,9 +717,9 @@ function runLifecycle(options) {
         'claude-setup-git-preflight',
         'claude-setup-install',
         'claude-setup-update',
-        'cursor-ito-install',
+        'claude-project-ito-install',
         'public-ecc-ito-fail-closed',
-        'cursor-repeat-install',
+        'claude-project-repeat-install',
         'doctor-clean',
         'status-installed',
         'doctor-drift',
