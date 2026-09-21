@@ -55,7 +55,9 @@
     "commands/",
     "docs/CODEX-NAVIGATION-GUIDE.md",
     "docs/COMMAND-AGENT-MAP.md",
+    "docs/ROADMAP.md",
     "docs/design/ecc-memory-vault.md",
+    "examples/eval-harness/",
     "hooks/",
     "install.ps1",
     "install.sh",
@@ -81,6 +83,7 @@
     "scripts/memory-mcp.mjs",
     "scripts/harness-adapter-compliance.js",
     "scripts/harness-audit.js",
+    "scripts/eval-harness.js",
     "scripts/operator-readiness-dashboard.js",
     "scripts/platform-audit.js",
     "scripts/preview-pack-smoke.js",
@@ -154,6 +157,7 @@
     "skills/cost-tracking/",
     "skills/council/",
     "skills/council-multi-model/",
+    "skills/counterparty-channel-discipline/",
     "skills/cpp-coding-standards/",
     "skills/cpp-testing/",
     "skills/crosspost/",
@@ -183,6 +187,7 @@
     "skills/energy-procurement/",
     "skills/enterprise-agent-ops/",
     "skills/error-handling/",
+    "skills/esign-field-placement/",
     "skills/eval-harness/",
     "skills/evm-token-decimals/",
     "skills/exa-search/",
@@ -237,7 +242,6 @@
     "skills/mcp-server-patterns/",
     "skills/messages-ops/",
     "skills/mle-workflow/",
-    "skills/motion-ui/",
     "skills/mysql-patterns/",
     "skills/nanoclaw-repl/",
     "skills/nestjs-patterns/",
@@ -271,6 +275,7 @@
     "skills/quarkus-security/",
     "skills/quarkus-tdd/",
     "skills/quarkus-verification/",
+    "skills/rails-patterns/",
     "skills/ralphinho-rfc-pipeline/",
     "skills/react-patterns/",
     "skills/react-performance/",
@@ -292,6 +297,7 @@
     "skills/security-scan/",
     "skills/seo/",
     "skills/skill-scout/",
+    "skills/skill-comply/",
     "skills/skill-stocktake/",
     "skills/social-graph-ranker/",
     "skills/springboot-patterns/",
@@ -370,12 +376,14 @@
     "skills/loop-design-check/",
     "skills/mailtrap-email-integration/",
     "skills/marketing-campaign/",
+    "skills/master-agreement-generator/",
     "skills/ml-adoption-playbook/",
     "skills/motion-advanced/",
     "skills/motion-foundations/",
     "skills/motion-patterns/",
     "skills/nextjs-turbopack/",
     "skills/nuxt4-patterns/",
+    "skills/operator-approval-loop/",
     "skills/opensource-pipeline/",
     "skills/orch-add-feature/",
     "skills/orch-build-mvp/",
@@ -395,6 +403,9 @@
     "skills/santa-method/",
     "skills/social-publisher/",
     "skills/taste/",
+    "skills/taste-application/",
+    "skills/taste-distillation/",
+    "skills/tasteforge-video/",
     "skills/tinystruct-patterns/",
     "skills/uncloud/",
     "skills/vite-patterns/",
@@ -406,11 +417,11 @@
     "!**/.pytest_cache/**"
   ],
   "bin": {
+    "book-universal": "scripts/ecc.js",
     "ecc": "scripts/ecc.js",
     "ecc-install": "scripts/install-apply.js",
     "ecc-memory-mcp": "scripts/memory-mcp.mjs",
-    "ecc-plan-canvas": "scripts/plan-canvas.js",
-    "book-universal": "scripts/ecc.js"
+    "ecc-plan-canvas": "scripts/plan-canvas.js"
   },
   "scripts": {
     "welcome": "echo '\\n  book-universal installed!\\n  Run: ecc typescript\\n  Compat: ecc-install typescript\\n  Docs: https://github.com/affaan-m/ECC\\n  Run or self-host any open-source model.\\n  Compute: Itô is the preferred compute sponsor — https://compute.itomarkets.com\\n  Any GPU provider works. This sponsorship link is passive: it does not invoke an RFQ, reserve capacity, provision compute, or configure serving.\\n  Separately, the opt-in ecc ito find bridge invokes the explicitly configured canonical Itô CLI and submits a live authenticated RFQ; it does not reserve capacity.\\n  Managed inference through Itô is not live yet.\\n'",
@@ -422,6 +433,7 @@
     "lint": "eslint . && markdownlint '**/*.md' --ignore node_modules",
     "harness:adapters": "node scripts/harness-adapter-compliance.js",
     "harness:audit": "node scripts/harness-audit.js",
+    "harness:eval": "node scripts/eval-harness.js",
     "operator:dashboard": "node scripts/operator-readiness-dashboard.js",
     "preview-pack:smoke": "node scripts/preview-pack-smoke.js",
     "release:approval-gate": "node scripts/release-approval-gate.js",
@@ -435,7 +447,7 @@
     "orchestrate:status": "node scripts/orchestration-status.js",
     "orchestrate:worker": "bash scripts/orchestrate-codex-worker.sh",
     "orchestrate:tmux": "node scripts/orchestrate-worktrees.js",
-    "test": "node scripts/ci/check-unicode-safety.js && node scripts/ci/validate-agents.js && node scripts/ci/validate-commands.js && node scripts/ci/validate-rules.js && node scripts/ci/validate-skills.js && node scripts/ci/validate-hooks.js && node scripts/ci/validate-install-manifests.js && node scripts/ci/validate-no-personal-paths.js && npm run catalog:check && npm run command-registry:check && node tests/run-all.js",
+    "test": "node scripts/ci/check-unicode-safety.js && node scripts/ci/validate-agents.js && node scripts/ci/validate-commands.js && node scripts/ci/validate-rules.js && node scripts/ci/validate-skills.js && node scripts/ci/validate-hooks.js && node scripts/ci/check-hooks-schema-keys.js && node scripts/ci/validate-install-manifests.js && node scripts/ci/validate-no-personal-paths.js && npm run catalog:check && npm run command-registry:check && node tests/run-all.js",
     "coverage": "c8 --all --include=\"scripts/**/*.js\" --include=\"scripts/**/*.mjs\" --check-coverage --lines 80 --functions 80 --branches 79 --statements 80 --reporter=text --reporter=lcov node tests/run-all.js",
     "dashboard": "python3 ./ecc_dashboard.py",
     "dashboard:web": "node scripts/dashboard-web.js"
@@ -443,30 +455,32 @@
   "dependencies": {
     "@iarna/toml": "2.2.5",
     "ajv": "8.20.0",
-    "js-yaml": "4.3.1",
-    "sql.js": "1.14.1"
+    "js-yaml": "4.3.2",
+    "sql.js": "1.14.2"
   },
   "devDependencies": {
     "@eslint/js": "9.39.2",
-    "@types/node": "26.1.2",
+    "@types/node": "26.4.0",
     "c8": "11.0.0",
-    "eslint": "10.6.0",
-    "globals": "17.4.0",
-    "markdownlint-cli": "0.48.0",
+    "eslint": "10.9.1",
+    "globals": "17.11.0",
+    "markdownlint-cli": "0.49.1",
     "typescript": "6.0.3"
   },
   "engines": {
     "node": ">=18"
   },
   "overrides": {
-    "fast-uri": "3.1.5",
+    "fast-uri": "3.1.7",
     "markdown-it": "14.3.0",
-    "js-yaml": "4.3.1"
+    "js-yaml": "4.3.2",
+    "@humanfs/node": "0.16.8"
   },
   "resolutions": {
-    "fast-uri": "3.1.5",
+    "fast-uri": "3.1.7",
     "markdown-it": "14.3.0",
-    "js-yaml": "4.3.1"
+    "js-yaml": "4.3.2",
+    "@humanfs/node": "0.16.8"
   },
   "packageManager": "yarn@4.9.2+sha512.1fc009bc09d13cfd0e19efa44cbfc2b9cf6ca61482725eb35bbc5e257e093ebf4130db6dfe15d604ff4b79efd8e1e8e99b25fa7d0a6197c9f9826358d4d65c3c"
 }

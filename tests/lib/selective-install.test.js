@@ -744,13 +744,18 @@ function runTests() {
       const homeDir = fs.mkdtempSync(path.join(os.tmpdir(), 'selective-install-'));
       const projectDir = fs.mkdtempSync(path.join(os.tmpdir(), 'selective-install-project-'));
 
-      try {
-        const _result = execFileSync('node', [scriptPath, '--profile', 'core', '--with', 'capability:security'], {
-          cwd: projectDir,
-          env: { ...process.env, HOME: homeDir },
-          encoding: 'utf8',
-          stdio: ['pipe', 'pipe', 'pipe']
-        });
+    try {
+      const _result = execFileSync('node', [
+        scriptPath,
+        '--profile', 'core',
+        '--with', 'capability:security',
+        '--enable-hooks',
+      ], {
+        cwd: projectDir,
+        env: { ...process.env, HOME: homeDir },
+        encoding: 'utf8',
+        stdio: ['pipe', 'pipe', 'pipe'],
+      });
 
         const claudeRoot = path.join(homeDir, '.claude');
         // Security skill should be installed (from --with)
@@ -758,21 +763,19 @@ function runTests() {
         // Core profile modules should be installed
         assert.ok(fs.existsSync(path.join(claudeRoot, 'rules', 'ecc', 'common', 'coding-style.md')), 'Should install core rules');
 
-        // Install state should record include/exclude
-        const statePath = path.join(claudeRoot, 'ecc', 'install-state.json');
-        const state = JSON.parse(fs.readFileSync(statePath, 'utf8'));
-        assert.strictEqual(state.request.profile, 'core');
-        assert.deepStrictEqual(state.request.includeComponents, ['capability:security']);
-        assert.deepStrictEqual(state.request.excludeComponents, []);
-        assert.ok(state.resolution.selectedModules.includes('security'));
-      } finally {
-        fs.rmSync(homeDir, { recursive: true, force: true });
-        fs.rmSync(projectDir, { recursive: true, force: true });
-      }
-    })
-  )
-    passed++;
-  else failed++;
+      // Install state should record include/exclude
+      const statePath = path.join(claudeRoot, 'ecc', 'install-state.json');
+      const state = JSON.parse(fs.readFileSync(statePath, 'utf8'));
+      assert.strictEqual(state.request.profile, 'core');
+      assert.strictEqual(state.request.hookConsent, 'enabled');
+      assert.deepStrictEqual(state.request.includeComponents, ['capability:security']);
+      assert.deepStrictEqual(state.request.excludeComponents, []);
+      assert.ok(state.resolution.selectedModules.includes('security'));
+    } finally {
+      fs.rmSync(homeDir, { recursive: true, force: true });
+      fs.rmSync(projectDir, { recursive: true, force: true });
+    }
+  })) passed++; else failed++;
 
   if (
     test('end-to-end: installs --profile developer --without capability:orchestration and state reflects exclusion', () => {
@@ -781,13 +784,18 @@ function runTests() {
       const homeDir = fs.mkdtempSync(path.join(os.tmpdir(), 'selective-install-'));
       const projectDir = fs.mkdtempSync(path.join(os.tmpdir(), 'selective-install-project-'));
 
-      try {
-        execFileSync('node', [scriptPath, '--profile', 'developer', '--without', 'capability:orchestration'], {
-          cwd: projectDir,
-          env: { ...process.env, HOME: homeDir },
-          encoding: 'utf8',
-          stdio: ['pipe', 'pipe', 'pipe']
-        });
+    try {
+      execFileSync('node', [
+        scriptPath,
+        '--profile', 'developer',
+        '--without', 'capability:orchestration',
+        '--enable-hooks',
+      ], {
+        cwd: projectDir,
+        env: { ...process.env, HOME: homeDir },
+        encoding: 'utf8',
+        stdio: ['pipe', 'pipe', 'pipe'],
+      });
 
         const claudeRoot = path.join(homeDir, '.claude');
         // Orchestration skills should NOT be installed (from --without)
@@ -796,19 +804,17 @@ function runTests() {
         assert.ok(fs.existsSync(path.join(claudeRoot, 'rules', 'ecc', 'common', 'coding-style.md')), 'Should install core rules');
         assert.ok(fs.existsSync(path.join(claudeRoot, 'skills', 'tdd-workflow', 'SKILL.md')), 'Should install workflow skills');
 
-        const statePath = path.join(claudeRoot, 'ecc', 'install-state.json');
-        const state = JSON.parse(fs.readFileSync(statePath, 'utf8'));
-        assert.strictEqual(state.request.profile, 'developer');
-        assert.deepStrictEqual(state.request.excludeComponents, ['capability:orchestration']);
-        assert.ok(!state.resolution.selectedModules.includes('orchestration'));
-      } finally {
-        fs.rmSync(homeDir, { recursive: true, force: true });
-        fs.rmSync(projectDir, { recursive: true, force: true });
-      }
-    })
-  )
-    passed++;
-  else failed++;
+      const statePath = path.join(claudeRoot, 'ecc', 'install-state.json');
+      const state = JSON.parse(fs.readFileSync(statePath, 'utf8'));
+      assert.strictEqual(state.request.profile, 'developer');
+      assert.strictEqual(state.request.hookConsent, 'enabled');
+      assert.deepStrictEqual(state.request.excludeComponents, ['capability:orchestration']);
+      assert.ok(!state.resolution.selectedModules.includes('orchestration'));
+    } finally {
+      fs.rmSync(homeDir, { recursive: true, force: true });
+      fs.rmSync(projectDir, { recursive: true, force: true });
+    }
+  })) passed++; else failed++;
 
   if (
     test('end-to-end: --with alone (no profile) installs just the component modules', () => {

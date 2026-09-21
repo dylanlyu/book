@@ -2,6 +2,7 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const { getInstallTargetAdapter, planInstallTargetScaffold } = require('./install-targets/registry');
+const { resolveInvocationEnvironment } = require('./invocation-environment');
 
 const DEFAULT_REPO_ROOT = path.join(__dirname, '../..');
 const SUPPORTED_INSTALL_TARGETS = ['claude', 'claude-project', 'codex'];
@@ -419,10 +420,11 @@ function resolveInstallPlan(options = {}) {
   const validatedHomeDir = readOptionalStringOption(options, 'homeDir');
   const targetPlanningInput = target
     ? {
-        repoRoot: manifests.repoRoot,
-        projectRoot: validatedProjectRoot || manifests.repoRoot,
-        homeDir: validatedHomeDir || os.homedir()
-      }
+      repoRoot: manifests.repoRoot,
+      projectRoot: validatedProjectRoot || manifests.repoRoot,
+      homeDir: validatedHomeDir || os.homedir(),
+      env: resolveInvocationEnvironment(options),
+    }
     : null;
   const targetAdapter = target ? getInstallTargetAdapter(target) : null;
 
@@ -501,13 +503,14 @@ function resolveInstallPlan(options = {}) {
   const excludedModules = manifests.modules.filter(module => excludedIds.has(module.id));
   const scaffoldPlan = target
     ? planInstallTargetScaffold({
-        target,
-        repoRoot: targetPlanningInput.repoRoot,
-        projectRoot: targetPlanningInput.projectRoot,
-        homeDir: targetPlanningInput.homeDir,
-        modules: selectedModules,
-        exemptValidationCodes: options.exemptValidationCodes || []
-      })
+      target,
+      repoRoot: targetPlanningInput.repoRoot,
+      projectRoot: targetPlanningInput.projectRoot,
+      homeDir: targetPlanningInput.homeDir,
+      env: targetPlanningInput.env,
+      modules: selectedModules,
+      exemptValidationCodes: options.exemptValidationCodes || [],
+    })
     : null;
 
   return {
@@ -528,6 +531,7 @@ function resolveInstallPlan(options = {}) {
     skippedModules,
     excludedModules,
     targetAdapterId: scaffoldPlan ? scaffoldPlan.adapter.id : null,
+    homeDir: targetPlanningInput ? targetPlanningInput.homeDir : null,
     targetRoot: scaffoldPlan ? scaffoldPlan.targetRoot : null,
     installStatePath: scaffoldPlan ? scaffoldPlan.installStatePath : null,
     operations: scaffoldPlan ? scaffoldPlan.operations : []

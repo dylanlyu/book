@@ -1,6 +1,7 @@
 const claudeHome = require('./claude-home');
 const claudeProject = require('./claude-project');
 const codexHome = require('./codex-home');
+const { resolveInvocationEnvironment } = require('../invocation-environment');
 
 const ADAPTERS = Object.freeze([claudeHome, claudeProject, codexHome]);
 
@@ -25,7 +26,8 @@ function planInstallTargetScaffold(options = {}) {
   const planningInput = {
     repoRoot: options.repoRoot,
     projectRoot: options.projectRoot || options.repoRoot,
-    homeDir: options.homeDir
+    homeDir: options.homeDir,
+    env: resolveInvocationEnvironment(options),
   };
   const validationIssues = adapter.validate(planningInput);
   const blockingIssues = validationIssues.filter(issue => issue.severity === 'error' && !exemptValidationCodes.has(issue.code));

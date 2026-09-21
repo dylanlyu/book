@@ -77,7 +77,7 @@ for (const harness of HARNESS_CAPABILITIES) {
 function expectedRootForAdapter(adapter) {
   const homeDir = path.resolve('/__ecc_catalog_home__');
   const projectRoot = path.resolve('/__ecc_catalog_project__');
-  const absoluteRoot = adapter.resolveRoot({ homeDir, projectRoot });
+  const absoluteRoot = adapter.resolveRoot({ homeDir, projectRoot, env: {} });
   const baseRoot = adapter.kind === 'home' ? homeDir : projectRoot;
   const prefix = adapter.kind === 'home' ? '~/' : './';
   return `${prefix}${path.relative(baseRoot, absoluteRoot).replace(/\\/g, '/')}`;

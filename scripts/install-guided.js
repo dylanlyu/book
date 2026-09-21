@@ -3,8 +3,19 @@
 
 const readline = require('readline/promises');
 
-const { getHarnessCapability, listGuidedHarnesses, normalizeHarnessSelection } = require('./lib/harness-capabilities');
-const { VALID_CLAUDE_HOOKS, VALID_CLAUDE_SCOPES, applyMultiHarnessPlan, createMultiHarnessPlan, normalizeGuidedInstallRequest } = require('./lib/multi-harness-setup');
+const {
+  getHarnessCapability,
+  listGuidedHarnesses,
+  normalizeHarnessSelection,
+} = require('./lib/harness-capabilities');
+const {
+  VALID_CLAUDE_HOOKS,
+  VALID_CLAUDE_SCOPES,
+  applyMultiHarnessPlan,
+  createMultiHarnessPlan,
+  normalizeGuidedInstallRequest,
+} = require('./lib/multi-harness-setup');
+const { formatHookCapabilityDisclosure } = require('./lib/install/hook-consent');
 const { startTerminalSpinner } = require('./lib/terminal-spinner');
 const { showTerminalWelcome } = require('./lib/terminal-welcome');
 const { stripAnsi } = require('./lib/utils');
@@ -168,6 +179,14 @@ function printPlan(plan, output) {
     const harness = getHarnessCapability(entry.id);
     output.write(`${harness.label.padEnd(13)} ${entry.channel.padEnd(17)} ${harness.destination}\n`);
   }
+  if (plan.request.harnesses.includes('claude') && plan.request.claudeHooks && plan.request.claudeHooks !== 'off') {
+    output.write(
+      `\nClaude hook profile '${plan.request.claudeHooks}' enables automation that can:\n`
+      + `${formatHookCapabilityDisclosure()}\n`
+      + "Choose '--claude-hooks off' to install without automatic hook behavior.\n"
+    );
+  }
+
 }
 
 async function confirmPlan(terminal, output) {

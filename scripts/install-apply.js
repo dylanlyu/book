@@ -11,6 +11,7 @@ const { SUPPORTED_INSTALL_TARGETS, listLegacyCompatibilityLanguages } = require(
 const { LEGACY_INSTALL_TARGETS, normalizeInstallRequest, parseInstallArgs } = require('./lib/install/request');
 const { getComputeSponsorCopy } = require('./lib/compute-sponsor');
 const { stripAnsi } = require('./lib/utils');
+const { describeMissingDependencyError } = require('./lib/missing-dependency');
 
 function getHelpText() {
   const languages = listLegacyCompatibilityLanguages();
@@ -35,6 +36,9 @@ Options:
   --without <component>
                       Exclude a user-facing install component
   --config <path>     Load install intent from ecc-install.json
+  --enable-hooks      Confirm installing the automatic hook runtime (required
+                      when the selected profile/modules materialize hooks)
+  --no-hooks          Install everything except the automatic hook runtime
   --dry-run    Show the install plan without copying files
   --json       Emit machine-readable plan/result JSON
   --help       Show this help text
@@ -101,6 +105,13 @@ function printHumanPlan(plan, dryRun) {
     }
   }
 
+  if (Array.isArray(plan.reconciledExcludedPaths) && plan.reconciledExcludedPaths.length > 0) {
+    console.log('\nReconciled excluded paths:');
+    for (const removedPath of plan.reconciledExcludedPaths) {
+      console.log(`- removed ${removedPath}`);
+    }
+  }
+
   if (!dryRun) {
     console.log(`\nDone. Install-state written to ${plan.installStatePath}`);
   }
@@ -128,7 +139,8 @@ async function main() {
     const rawPlan = createInstallPlanFromRequest(request, {
       projectRoot: process.cwd(),
       homeDir: process.env.HOME || os.homedir(),
-      claudeRulesDir: process.env.CLAUDE_RULES_DIR || null
+      env: process.env,
+      claudeRulesDir: process.env.CLAUDE_RULES_DIR || null,
     });
 
     if (options.dryRun) {
@@ -157,7 +169,12 @@ async function main() {
       printHumanPlan(result, false);
     }
   } catch (error) {
-    process.stderr.write(`Error: ${error.message}${getHelpText()}`);
+    const missingDependencyMessage = describeMissingDependencyError(error);
+    process.stderr.write(
+      missingDependencyMessage
+        ? `Error: ${missingDependencyMessage}\n`
+        : `Error: ${error.message}${getHelpText()}`
+    );
     process.exit(1);
   }
 }

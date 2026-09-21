@@ -52,6 +52,26 @@ function runTests() {
     assert.deepStrictEqual(parsed.languages, []);
   })) passed++; else failed++;
 
+  if (test('parses explicit hook consent flags', () => {
+    const enabled = parseInstallArgs([
+      'node',
+      'scripts/install-apply.js',
+      '--profile', 'core',
+      '--enable-hooks',
+    ]);
+    const declined = parseInstallArgs([
+      'node',
+      'scripts/install-apply.js',
+      '--profile', 'core',
+      '--no-hooks',
+    ]);
+
+    assert.strictEqual(enabled.enableHooks, true);
+    assert.strictEqual(enabled.noHooks, false);
+    assert.strictEqual(declined.enableHooks, false);
+    assert.strictEqual(declined.noHooks, true);
+  })) passed++; else failed++;
+
   if (test('normalizes legacy language installs into a canonical request', () => {
     const request = normalizeInstallRequest({
       target: 'claude',
@@ -74,12 +94,14 @@ function runTests() {
       moduleIds: [],
       includeComponentIds: ['lang:typescript'],
       excludeComponentIds: ['capability:media'],
-      languages: []
+      languages: [],
+      enableHooks: true,
     });
 
     assert.strictEqual(request.mode, 'manifest');
     assert.strictEqual(request.target, 'claude-project');
     assert.strictEqual(request.profileId, 'developer');
+    assert.strictEqual(request.hookConsent, 'enabled');
     assert.deepStrictEqual(request.includeComponentIds, ['lang:typescript']);
     assert.deepStrictEqual(request.excludeComponentIds, ['capability:media']);
     assert.deepStrictEqual(request.legacyLanguages, []);
@@ -145,6 +167,21 @@ function runTests() {
         languages: ['typescript']
       }),
       /cannot be combined/
+    );
+  })) passed++; else failed++;
+
+  if (test('rejects --no-hooks with an explicit hooks-runtime selection', () => {
+    assert.throws(
+      () => normalizeInstallRequest({
+        target: 'claude',
+        profileId: null,
+        moduleIds: ['hooks-runtime'],
+        includeComponentIds: [],
+        excludeComponentIds: [],
+        languages: [],
+        noHooks: true,
+      }),
+      /--no-hooks cannot be combined/
     );
   })) passed++; else failed++;
 

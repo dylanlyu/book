@@ -1,6 +1,7 @@
 'use strict';
 
 const { validateInstallModuleIds } = require('../install-manifests');
+const { resolveHookConsentFlags } = require('./hook-consent');
 
 const LEGACY_INSTALL_TARGETS = ['claude', 'claude-project'];
 
@@ -24,7 +25,9 @@ function parseInstallArgs(argv) {
     moduleIds: [],
     includeComponentIds: [],
     excludeComponentIds: [],
-    languages: []
+    languages: [],
+    enableHooks: false,
+    noHooks: false,
   };
 
   for (let index = 0; index < args.length; index += 1) {
@@ -58,6 +61,10 @@ function parseInstallArgs(argv) {
         parsed.excludeComponentIds.push(componentId.trim());
       }
       index += 1;
+    } else if (arg === '--enable-hooks') {
+      parsed.enableHooks = true;
+    } else if (arg === '--no-hooks') {
+      parsed.noHooks = true;
     } else if (arg === '--dry-run') {
       parsed.dryRun = true;
     } else if (arg === '--json') {
@@ -84,6 +91,10 @@ function normalizeInstallRequest(options = {}) {
   const legacyLanguages = dedupeStrings(
     dedupeStrings([...(Array.isArray(options.legacyLanguages) ? options.legacyLanguages : []), ...(Array.isArray(options.languages) ? options.languages : [])]).map(language => language.toLowerCase())
   );
+  const hookConsent = resolveHookConsentFlags(options);
+  if (hookConsent === 'declined' && moduleIds.includes('hooks-runtime')) {
+    throw new Error('--no-hooks cannot be combined with an explicit hooks-runtime module selection');
+  }
   const hasManifestBaseSelection = Boolean(profileId) || moduleIds.length > 0 || includeComponentIds.length > 0;
   const usingManifestMode = hasManifestBaseSelection || excludeComponentIds.length > 0;
 
@@ -103,7 +114,8 @@ function normalizeInstallRequest(options = {}) {
     includeComponentIds,
     excludeComponentIds,
     legacyLanguages,
-    configPath: config?.path || options.configPath || null
+    hookConsent,
+    configPath: config?.path || options.configPath || null,
   };
 }
 

@@ -5,7 +5,11 @@
 const assert = require('assert');
 const path = require('path');
 
-const { getInstallTargetAdapter, listInstallTargetAdapters, planInstallTargetScaffold } = require('../../scripts/lib/install-targets/registry');
+const {
+  getInstallTargetAdapter,
+  listInstallTargetAdapters,
+  planInstallTargetScaffold,
+} = require('../../scripts/lib/install-targets/registry');
 
 function normalizedRelativePath(value) {
   return String(value || '').replace(/\\/g, '/');

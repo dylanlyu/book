@@ -1,7 +1,7 @@
 {
   "name": "book",
   "version": "1.0.1",
-  "description": "Harness-native plugin for engineering teams - 68 agents, 283 skills, 94 legacy command shims, reusable hooks, rules, MCP conventions, and operator workflows for Claude Code plus adjacent agent harnesses",
+  "description": "Harness-native plugin for engineering teams - 68 agents, 290 skills, 94 legacy command shims, reusable hooks, rules, MCP conventions, and operator workflows for Claude Code plus adjacent agent harnesses",
   "author": {
     "name": "Dylan Lyu"
   },

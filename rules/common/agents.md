@@ -23,7 +23,14 @@
 
 ## Available Agents
 
-Located in `~/.claude/agents/`. Organized by category:
+ECC agents ship with the `book@dylanlyu` plugin, not in `~/.claude/agents/`.
+They are invoked through the Agent tool with a plugin-scoped `subagent_type`:
+
+```text
+Agent(subagent_type: "book:planner", prompt: "...")
+```
+
+Organized by category:
 
 **Core**: `planner`, `architect`, `tdd-guide`, `code-reviewer`, `security-reviewer`, `refactor-cleaner`, `doc-updater`, `performance-optimizer`, `code-simplifier`, `e2e-runner`, `code-explorer`, `code-architect`
 

@@ -19,7 +19,7 @@ Run review (yourself or via agent) when:
 | -------- | ----------------------------------- | ---------------------- |
 | CRITICAL | Security vulnerability or data loss | **BLOCK** — must fix   |
 | HIGH     | Bug or significant quality issue    | **WARN** — should fix  |
-| MEDIUM   | Maintainability concern             | INFO — consider fixing |
+| MEDIUM   | Maintainability concern, including an unexplained source file over the soft 800-line ceiling | INFO — consider fixing |
 | LOW      | Style or minor suggestion           | NOTE — optional        |
 
 **Approve** if no CRITICAL/HIGH. **Warning** if only HIGH (merge with caution). **Block** on any CRITICAL.

@@ -3,9 +3,11 @@
 本檔記錄本 fork **刻意移除**的功能。與上游（`affaan-m/ECC`）合併時，
 凡是清單內的路徑或設定，**一律不併入**，直接捨棄。
 
-> 上一次全面套用：2026-08-17（合併上游 52 個 commit，處理 40 個衝突檔）。
-> 同日移除 Pi harness、Antigravity 目標與 JoyCode 目標（見第 1、2 節）。
+> 上一次全面套用：2026-09-21（PR #8，合併上游 381 個 commit，處理 136 個衝突檔）。
+> 2026-08-17 合併上游 52 個 commit，處理 40 個衝突檔；同日移除 Pi harness、
+> Antigravity 目標與 JoyCode 目標（見第 1、2 節）。
 > 2026-08-18 移除全部翻譯文件、release 文件與 locale 安裝功能（見第 8 節）。
+> 2026-09-21 移除 AdaL 安裝目標、`docs/uk-UA/` 與 coordination-inventory（見第 1、2、4 節）。
 
 ---
 
@@ -24,7 +26,8 @@
 | `465cd72f` | ecc2 實驗性 Rust runtime、control pane、agent proximity、observability readiness |
 | `01f5ba4b` | Pi harness 與 Antigravity 安裝目標（含 legacy `.agent` 遷移路徑） |
 | `6bb0edaa` | JoyCode 安裝目標（`.joycode/` adapter、扁平化 rules 佈局、guided wizard 的 advanced 提示） |
-| _本次_ | 全部翻譯文件（12 個語言目錄）、release 文件（`docs/releases/`、`docs/drafts/`）、`docs/stale-pr-salvage-ledger.md`、`locale:*` 安裝元件家族，以及 8 份一次性工作日誌與 2 份孤兒設計文件 |
+| 2026-08-18 | 全部翻譯文件（12 個語言目錄）、release 文件（`docs/releases/`、`docs/drafts/`）、`docs/stale-pr-salvage-ledger.md`、`locale:*` 安裝元件家族，以及 8 份一次性工作日誌與 2 份孤兒設計文件 |
+| _本次_（PR #8） | AdaL 安裝目標（`.adal/`、`adal-project.js`）、`docs/uk-UA/` 翻譯目錄、coordination-inventory 功能（相依已移除的 agent-proximity）、`docs/control-plane/` 文件、OpenCode legacy 遷移模組，以及 3 份指向已移除面向的測試檔 |
 
 ---
 
@@ -35,9 +38,10 @@
 其他一律排除。上游若帶回下列任何目錄，整個丟掉：
 
 ```
-.agent/        .agents/*    .codebuddy/  .cursor/     .gemini/
-.hermes/       .joycode/    .kimi/       .kiro/       .openclaw/
-.opencode/     .pi/         .qwen/       .trae/       .zed/
+.adal/         .agent/      .agents/*    .codebuddy/  .cursor/
+.gemini/       .hermes/     .joycode/    .kimi/       .kiro/
+.openclaw/     .opencode/   .pi/         .qwen/       .trae/
+.zed/
 ```
 
 > `.agents/` 有兩種用途，別搞混：**倉庫根目錄的 `.agents/`（Codex 的 skill metadata）要保留**；
@@ -51,6 +55,7 @@ scripts/build-opencode.js
 scripts/gemini-adapt-agents.js
 scripts/hooks/cursor-session-env.js
 scripts/lib/cursor-agent-names.js
+scripts/lib/install-targets/adal-project.js
 scripts/lib/install-targets/antigravity-project.js
 scripts/lib/install-targets/codebuddy-project.js
 scripts/lib/install-targets/cursor-project.js
@@ -64,6 +69,8 @@ scripts/lib/install-targets/qwen-home.js
 scripts/lib/install-targets/zed-project.js
 scripts/lib/install/antigravity-agent.js
 scripts/lib/install/antigravity-legacy-migration.js
+scripts/lib/install/opencode-legacy-migration.js
+scripts/lib/opencode-paths.js
 scripts/lib/mcp-inventory/readers/opencode.js
 scripts/lib/session-adapters/opencode.js
 skills/hermes-imports/
@@ -80,7 +87,9 @@ tests/lib/session-adapters-opencode.test.js
 tests/opencode-config.test.js
 tests/opencode-plugin-hooks.test.js
 tests/opencode-tools.test.js
+tests/lib/opencode-legacy-migration.test.js
 tests/pi/pi-extension-adapter.test.js
+tests/pi/pi-hook-runtime.test.js
 tests/pi/pi-package-manifest.test.js
 tests/scripts/build-opencode.test.js
 tests/scripts/gemini-adapt-agents.test.js
@@ -114,19 +123,36 @@ observability、session、tui、worktree）。
 
 ```
 scripts/control-pane.js
-scripts/lib/control-pane/          （actions, message-sink, proximity, proximity-viz, server, state, ui）
-scripts/lib/agent-proximity/       （distance, graph, index）
+scripts/lib/control-pane/          （actions, message-sink, proximity, proximity-viz, server, state,
+                                     ui, control-plane-view, control-plane-view-ui）
+scripts/lib/agent-proximity/       （distance, graph, index, projection）
 scripts/proximity-tick.js
 scripts/observability-readiness.js
+scripts/coordination-inventory.js
+scripts/lib/coordination-inventory.js
+examples/coordination-inventory/
 docs/architecture/observability-readiness.md
 docs/design/agent-proximity.md
+docs/control-plane/
 tests/docs/ecc2-release-surface.test.js
 tests/lib/agent-proximity.test.js
+tests/lib/agent-proximity-projection.test.js
 tests/lib/control-pane-*.test.js
+tests/lib/control-plane-view.test.js
+tests/lib/control-plane-view-ui.test.js
+tests/lib/proximity-viz-a11y.test.js
 tests/scripts/control-pane.test.js
+tests/scripts/coordination-inventory.test.js
+tests/scripts/coordination-goals.test.js
 tests/scripts/observability-readiness.test.js
 ```
 
+> 2026-09-21 補記：上游新增的 `coordination-inventory` 功能以 `agent-proximity/distance`
+> 與 `agent-proximity/graph` 為引擎，本節既已排除該引擎，整組功能（CLI、lib、examples、
+> 測試）一併排除。它未接入 `package.json`、manifests 或任何文件，移除無連帶影響。
+> `tests/scripts/plugin-install-without-node-modules.test.js` 中針對 `scripts/control-pane.js`
+> 的測試區塊同樣排除。
+>
 > 2026-08-18 補記：`docs/architecture/observability-readiness.md` 當初列在本節卻沒真的刪掉，
 > 已於本次補刪；`docs/design/agent-proximity.md` 是同批的孤兒文件，一併加入清單。
 > **尚未清乾淨**：`scripts/lib/control-pane/work-item-mutations.js` 仍在倉庫中，
@@ -252,8 +278,9 @@ echo "agents: $(ls agents/*.md | wc -l)   skills: $(ls -d skills/*/ | wc -l)"
 ```
 docs/de-DE/    docs/es/       docs/ja-JP/    docs/ko-KR/
 docs/pt-BR/    docs/ru/       docs/th/       docs/tr/
-docs/ur/       docs/vi-VN/    docs/zh-CN/    docs/zh-TW/
-docs/releases/                （1.8.0、1.10.0、2.0.0、2.0.0-rc.1、2.1.0 全部版本）
+docs/uk-UA/    docs/ur/       docs/vi-VN/    docs/zh-CN/
+docs/zh-TW/
+docs/releases/                （1.8.0、1.10.0、2.0.0、2.0.0-rc.1、2.1.0、2.2.0、2.2.1 全部版本）
 docs/drafts/                  （release 公告草稿）
 docs/stale-pr-salvage-ledger.md
 ```
@@ -337,6 +364,11 @@ tests/docs/stale-pr-salvage-ledger.test.js   整檔
 | `README.md` | 頁首語言選擇器區塊（現在只剩英文，整塊移除） |
 | `tests/docs/install-identifiers.test.js`、`tests/docs/configure-ecc-install-paths.test.js`、`tests/docs/continuous-learning-v2-docs.test.js`、`tests/skills/repo-scan-install.test.js`、`tests/lib/command-plugin-root.test.js`、`tests/ci/secret-curl-flags.test.js`、`tests/ci/unified-memory-surface.test.js` | 陣列中指向翻譯文件的路徑項 |
 | `tests/docs/platform-value-loop.test.js` | `release docs link the platform value loop into the rc surface` 整個 test |
+| `tests/docs/github-ops-merge-authority.test.js` | `policyDocs` 陣列中的 `docs/ja-JP/` 與 `docs/zh-CN/` 項目 |
+| `tests/docs/install-identifiers.test.js` | 依賴 README 語言選擇器與 `docs/zh-CN/README.md` 的整段檢查（該段亦禁用本 fork 的 `npx ecc-install`） |
+| `tests/scripts/install-readme-clarity.test.js` | 針對 `ecc-universal@<version>` 釘選指令與 npm 套件頁的整段斷言（本 fork 不發佈 npm） |
+| `tests/docs/release-2.2-copy.test.js`、`tests/docs/release-2.2-launch-runbook.test.js` | 整檔（資料來源 `docs/releases/2.2.0/` 已排除） |
+| `tests/ci/release-packed-artifact-workflow.test.js` | `selects reviewed release notes...`、`disables generated additions...`、`fails retries when npm already has different bytes` 三個 test |
 
 **注意**：`tests/ci/catalog.test.js` 與 `tests/ci/validators.test.js` 的「缺少文件時要報錯」測試，
 刪除目標已從 `docs/zh-CN/AGENTS.md` 改為英文 `AGENTS.md`。測試意圖不變，別在合併時改回去。

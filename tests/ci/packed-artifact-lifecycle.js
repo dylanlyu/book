@@ -185,6 +185,130 @@ function parseJsonOutput(result, label) {
   }
 }
 
+function fakeClaudeProviderMain() {
+  const fs = require('fs');
+  const path = require('path');
+  const args = process.argv.slice(2);
+  const statePath = process.env.ECC_TEST_CLAUDE_STATE;
+  const callsPath = process.env.ECC_TEST_CLAUDE_CALLS;
+
+  if (!statePath || !callsPath) {
+    process.stderr.write('Fake Claude requires explicit state and call-log paths.\n');
+    process.exit(2);
+  }
+
+  fs.appendFileSync(callsPath, `${JSON.stringify(args)}\n`);
+  const readState = () => JSON.parse(fs.readFileSync(statePath, 'utf8'));
+  const writeState = state => fs.writeFileSync(
+    statePath,
+    `${JSON.stringify(state, null, 2)}\n`,
+    'utf8'
+  );
+  const createReadArtifacts = () => {
+    if (process.env.ECC_TEST_CLAUDE_CREATE_READ_ARTIFACTS !== '1') return;
+    const configDir = process.env.CLAUDE_CONFIG_DIR;
+    const backupDir = path.join(configDir, 'backups');
+    fs.mkdirSync(backupDir, { recursive: true });
+    fs.writeFileSync(path.join(configDir, '.claude.json'), '{"providerRead":true}\n', 'utf8');
+    fs.writeFileSync(
+      path.join(backupDir, `.claude.json.backup.${process.pid}`),
+      '{"providerRead":true}\n',
+      'utf8'
+    );
+  };
+
+  const state = readState();
+  const joined = args.join(' ');
+  if (joined === 'plugin list --json') {
+    createReadArtifacts();
+    process.stdout.write(JSON.stringify(state.plugins || []));
+    return;
+  }
+  if (joined === 'plugin marketplace list --json') {
+    createReadArtifacts();
+    process.stdout.write(JSON.stringify(state.marketplaces || []));
+    return;
+  }
+  if (joined.startsWith('plugin marketplace add ')) {
+    writeState({
+      ...state,
+      marketplaces: [{
+        name: 'ecc',
+        repo: 'affaan-m/ECC',
+        scope: 'user',
+        source: 'github',
+      }],
+    });
+    return;
+  }
+  if (joined === 'plugin marketplace update ecc') {
+    return;
+  }
+  if (joined.startsWith('plugin install book@dylanlyu ')) {
+    writeState({
+      ...state,
+      plugins: [{ enabled: true, id: 'book@dylanlyu', scope: 'user', version: '2.2.0' }],
+    });
+    return;
+  }
+  if (joined.startsWith('plugin update book@dylanlyu ')) {
+    writeState({
+      ...state,
+      plugins: (state.plugins || []).map(plugin => (
+        plugin.id === 'book@dylanlyu' && plugin.scope === 'user'
+          ? { ...plugin, enabled: true, version: '2.2.0' }
+          : plugin
+      )),
+    });
+    return;
+  }
+
+  process.stderr.write(`Unsupported fake Claude invocation: ${JSON.stringify(args)}\n`);
+  process.exit(2);
+}
+
+function createFakeClaudeExecutable(binDir) {
+  fs.mkdirSync(binDir, { recursive: true });
+  const fakeScriptPath = path.join(binDir, 'fake-claude.js');
+  fs.writeFileSync(
+    fakeScriptPath,
+    `'use strict';\n(${fakeClaudeProviderMain.toString()})();\n`,
+    'utf8'
+  );
+
+  const launcherPath = path.join(binDir, process.platform === 'win32' ? 'claude.cmd' : 'claude');
+  if (process.platform === 'win32') {
+    fs.writeFileSync(
+      launcherPath,
+      `@echo off\r\n"${process.execPath}" "${fakeScriptPath}" %*\r\n`,
+      'utf8'
+    );
+  } else {
+    fs.writeFileSync(
+      launcherPath,
+      `#!/bin/sh\nexec "${process.execPath}" "${fakeScriptPath}" "$@"\n`,
+      'utf8'
+    );
+    fs.chmodSync(launcherPath, 0o755);
+  }
+  return launcherPath;
+}
+
+function readJsonLines(filePath) {
+  if (!fs.existsSync(filePath)) return [];
+  return fs.readFileSync(filePath, 'utf8')
+    .split(/\r?\n/)
+    .filter(Boolean)
+    .map(line => JSON.parse(line));
+}
+
+function isFakeClaudeMutation(args) {
+  return ![
+    'plugin list --json',
+    'plugin marketplace list --json',
+  ].includes(args.join(' '));
+}
+
 function resolveManagedExistingPath(destinationPath, cursorRoot) {
   const normalizedRoot = fs.realpathSync(cursorRoot);
   const lexicalPath = path.resolve(destinationPath);
@@ -292,12 +416,144 @@ function runLifecycle(options) {
     assert.match(setupHelp.stdout, /ECC guided setup/);
     assert.match(setupHelp.stdout, /ecc setup --mode claude-plugin/);
 
+    for (const credentialName of [
+      'ANTHROPIC_API_KEY',
+      'CLAUDE_CODE_OAUTH_TOKEN',
+      'KIMI_API_KEY',
+      'MOONSHOT_API_KEY',
+    ]) {
+      assert.strictEqual(
+        environment[credentialName],
+        undefined,
+        `packed lifecycle must not provide ${credentialName}`
+      );
+    }
+
+    const fakeClaudeBinDir = path.join(tempRoot, 'fake-claude-bin');
+    const fakeClaudeStatePath = path.join(tempRoot, 'fake-claude-state.json');
+    const fakeClaudeCallsPath = path.join(tempRoot, 'fake-claude-calls.jsonl');
+    const claudeConfigDir = path.join(homeDir, '.claude');
+    const claudeSetupSentinel = path.join(claudeConfigDir, 'user-sentinel.txt');
+    createFakeClaudeExecutable(fakeClaudeBinDir);
+    fs.writeFileSync(
+      fakeClaudeStatePath,
+      `${JSON.stringify({ marketplaces: [], plugins: [] }, null, 2)}\n`,
+      'utf8'
+    );
+    fs.mkdirSync(claudeConfigDir, { recursive: true });
+    fs.writeFileSync(claudeSetupSentinel, 'keep this Claude user file\n', 'utf8');
+    const claudeSetupEnvironment = {
+      ...environment,
+      CLAUDE_CONFIG_DIR: claudeConfigDir,
+      ECC_TEST_CLAUDE_CALLS: fakeClaudeCallsPath,
+      ECC_TEST_CLAUDE_CREATE_READ_ARTIFACTS: '1',
+      ECC_TEST_CLAUDE_STATE: fakeClaudeStatePath,
+      PATH: `${fakeClaudeBinDir}${path.delimiter}${environment.PATH || environment.Path || ''}`,
+      Path: `${fakeClaudeBinDir}${path.delimiter}${environment.Path || environment.PATH || ''}`,
+    };
+    const claudeSetupArgs = [
+      'book-universal', 'setup',
+      '--mode', 'claude-plugin',
+      '--scope', 'user',
+    ];
+    const claudeSetupStateBeforeDryRun = fs.readFileSync(fakeClaudeStatePath, 'utf8');
+    const claudeConfigBeforeDryRun = fs.readdirSync(claudeConfigDir).sort();
+    const claudeSetupDryRun = parseJsonOutput(
+      runPublicCli(
+        [...claudeSetupArgs, '--hooks', 'standard', '--dry-run', '--json'],
+        { env: claudeSetupEnvironment }
+      ),
+      'packed Claude setup dry-run'
+    );
+    assert.strictEqual(claudeSetupDryRun.action, 'would-install');
+    assert.strictEqual(claudeSetupDryRun.dryRun, true);
+    assert.strictEqual(claudeSetupDryRun.scope, 'user');
+    assert.deepStrictEqual(
+      fs.readdirSync(claudeConfigDir).sort(),
+      claudeConfigBeforeDryRun,
+      'Claude setup dry-run must not mutate setup state'
+    );
+    assert.strictEqual(
+      fs.readFileSync(fakeClaudeStatePath, 'utf8'),
+      claudeSetupStateBeforeDryRun,
+      'Claude setup dry-run must not mutate fake provider state'
+    );
+    assert.ok(
+      readJsonLines(fakeClaudeCallsPath).every(args => !isFakeClaudeMutation(args)),
+      'Claude setup dry-run invoked a provider mutation'
+    );
+    assert.strictEqual(
+      fs.readFileSync(claudeSetupSentinel, 'utf8'),
+      'keep this Claude user file\n',
+      'Claude setup dry-run must preserve user-owned files'
+    );
+
+    const setupGitPreflight = runProcess('git', ['--version'], {
+      cwd: projectDir,
+      env: claudeSetupEnvironment,
+      label: 'Claude setup Git preflight',
+    });
+    assert.match(setupGitPreflight.stdout, /git version/i);
+    const runPackedClaudeSetup = hooks => parseJsonOutput(
+      runPublicCli(
+        [...claudeSetupArgs, '--hooks', hooks, '--yes', '--json'],
+        { env: claudeSetupEnvironment }
+      ),
+      `packed Claude setup hooks=${hooks}`
+    );
+    const claudeInitialSetup = runPackedClaudeSetup('standard');
+    assert.strictEqual(claudeInitialSetup.action, 'installed');
+    assert.strictEqual(claudeInitialSetup.hooks, 'standard');
+    assert.strictEqual(claudeInitialSetup.scope, 'user');
+    const claudeUpdatedSetup = runPackedClaudeSetup('strict');
+    assert.strictEqual(claudeUpdatedSetup.action, 'updated');
+    assert.strictEqual(claudeUpdatedSetup.hooks, 'strict');
+    assert.strictEqual(claudeUpdatedSetup.scope, 'user');
+
+    const fakeClaudeState = JSON.parse(fs.readFileSync(fakeClaudeStatePath, 'utf8'));
+    assert.deepStrictEqual(fakeClaudeState.plugins, [
+      { enabled: true, id: 'book@dylanlyu', scope: 'user', version: '2.2.0' },
+    ]);
+    assert.deepStrictEqual(fakeClaudeState.marketplaces, [
+      { name: 'ecc', repo: 'affaan-m/ECC', scope: 'user', source: 'github' },
+    ]);
+    const fakeClaudeCalls = readJsonLines(fakeClaudeCallsPath).map(args => args.join(' '));
+    assert.ok(
+      fakeClaudeCalls.some(call => call.startsWith('plugin marketplace add ')),
+      'initial packed Claude setup must add the official marketplace'
+    );
+    assert.ok(
+      fakeClaudeCalls.includes('plugin marketplace update ecc'),
+      'repeat packed Claude setup must update the official marketplace'
+    );
+    assert.ok(
+      fakeClaudeCalls.some(call => call.startsWith('plugin install book@dylanlyu ')),
+      'initial packed Claude setup must install book@dylanlyu'
+    );
+    assert.ok(
+      fakeClaudeCalls.includes('plugin update book@dylanlyu --scope user'),
+      'repeat packed Claude setup must update book@dylanlyu'
+    );
+    const claudeSettings = JSON.parse(
+      fs.readFileSync(path.join(claudeConfigDir, 'settings.json'), 'utf8')
+    );
+    assert.strictEqual(
+      claudeSettings.pluginConfigs['book@dylanlyu'].options.hook_profile,
+      'strict'
+    );
+    assert.strictEqual(
+      fs.readFileSync(claudeSetupSentinel, 'utf8'),
+      'keep this Claude user file\n',
+      'packed Claude setup must preserve user-owned files'
+    );
+
     const itoInstallArgs = [
       'install',
       '--profile', 'core',
       '--with', 'capability:ito-compute',
       '--with', 'capability:prediction-markets',
       '--target', 'cursor',
+      '--enable-hooks',
       '--json',
     ];
     parseJsonOutput(
@@ -457,6 +713,10 @@ function runLifecycle(options) {
       lifecycle: [
         'npm-install',
         'public-book-universal-setup',
+        'claude-setup-dry-run-isolated',
+        'claude-setup-git-preflight',
+        'claude-setup-install',
+        'claude-setup-update',
         'cursor-ito-install',
         'public-ecc-ito-fail-closed',
         'cursor-repeat-install',

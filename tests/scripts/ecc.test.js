@@ -14,23 +14,21 @@ function runCli(args, options = {}) {
   const envOverrides = {
     ...(options.env || {})
   };
-
-  if (typeof envOverrides.HOME === 'string' && !('USERPROFILE' in envOverrides)) {
-    envOverrides.USERPROFILE = envOverrides.HOME;
-  }
-
-  if (typeof envOverrides.USERPROFILE === 'string' && !('HOME' in envOverrides)) {
-    envOverrides.HOME = envOverrides.USERPROFILE;
-  }
+  const inheritedEnv = Object.fromEntries(
+    Object.entries(process.env).filter(([key]) => key !== 'ECC_DRY_RUN')
+  );
+  const homeAlias = typeof envOverrides.HOME === 'string' && !('USERPROFILE' in envOverrides)
+    ? { USERPROFILE: envOverrides.HOME }
+    : typeof envOverrides.USERPROFILE === 'string' && !('HOME' in envOverrides)
+      ? { HOME: envOverrides.USERPROFILE }
+      : {};
+  const env = { ...inheritedEnv, ...envOverrides, ...homeAlias };
 
   return spawnSync('node', [SCRIPT, ...args], {
     encoding: 'utf8',
     cwd: options.cwd || process.cwd(),
     maxBuffer: 10 * 1024 * 1024,
-    env: {
-      ...process.env,
-      ...envOverrides
-    }
+    env,
   });
 }
 

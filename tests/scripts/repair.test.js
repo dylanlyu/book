@@ -12,10 +12,20 @@ const INSTALL_SCRIPT = path.join(__dirname, '..', '..', 'scripts', 'install-appl
 const DOCTOR_SCRIPT = path.join(__dirname, '..', '..', 'scripts', 'doctor.js');
 const REPAIR_SCRIPT = path.join(__dirname, '..', '..', 'scripts', 'repair.js');
 const REPO_ROOT = path.join(__dirname, '..', '..');
-const CLI_TIMEOUT_MS = 30000;
-const CURRENT_PACKAGE_VERSION = JSON.parse(fs.readFileSync(path.join(REPO_ROOT, 'package.json'), 'utf8')).version;
-const CURRENT_MANIFEST_VERSION = JSON.parse(fs.readFileSync(path.join(REPO_ROOT, 'manifests', 'install-modules.json'), 'utf8')).version;
-const { createInstallState, writeInstallState } = require('../../scripts/lib/install-state');
+// Windows CI file I/O is several times slower, and these cases run full
+// install, doctor, and repair passes over hundreds of files. Keep this in
+// step with the equivalent install-apply and uninstall integration tests.
+const CLI_TIMEOUT_MS = process.platform === 'win32' ? 90000 : 30000;
+const CURRENT_PACKAGE_VERSION = JSON.parse(
+  fs.readFileSync(path.join(REPO_ROOT, 'package.json'), 'utf8')
+).version;
+const CURRENT_MANIFEST_VERSION = JSON.parse(
+  fs.readFileSync(path.join(REPO_ROOT, 'manifests', 'install-modules.json'), 'utf8')
+).version;
+const {
+  createInstallState,
+  writeInstallState,
+} = require('../../scripts/lib/install-state');
 
 function createTempDir(prefix) {
   return fs.mkdtempSync(path.join(os.tmpdir(), prefix));

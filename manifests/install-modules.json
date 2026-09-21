@@ -135,7 +135,6 @@
         "skills/frontend-patterns",
         "skills/frontend-slides",
         "skills/make-interfaces-feel-better",
-        "skills/motion-ui",
         "skills/golang-patterns",
         "skills/golang-testing",
         "skills/java-coding-standards",
@@ -157,6 +156,7 @@
         "skills/quarkus-patterns",
         "skills/quarkus-tdd",
         "skills/quarkus-verification",
+        "skills/rails-patterns",
         "skills/react-patterns",
         "skills/react-performance",
         "skills/react-testing",
@@ -266,6 +266,7 @@
         "skills/plan-canvas",
         "skills/plankton-code-quality",
         "skills/production-audit",
+        "skills/skill-comply",
         "skills/skill-scout",
         "skills/skill-stocktake",
         "skills/strategic-compact",
@@ -492,9 +493,29 @@
       "stability": "beta"
     },
     {
+      "id": "operator-desk-patterns",
+      "kind": "skills",
+      "description": "Generic operator desk patterns: never-silent approval loop, counterparty channel discipline, master agreement generation with a rolling schedule, and deterministic e-signature field placement.",
+      "paths": [
+        "skills/operator-approval-loop",
+        "skills/counterparty-channel-discipline",
+        "skills/master-agreement-generator",
+        "skills/esign-field-placement"
+      ],
+      "targets": [
+        "claude",
+        "claude-project",
+        "codex"
+      ],
+      "dependencies": [],
+      "defaultInstall": false,
+      "cost": "light",
+      "stability": "beta"
+    },
+    {
       "id": "ito-compute",
       "kind": "skills",
-      "description": "Authenticated It\\u00f4 GPU inventory, RFQ, status, device revocation, and explicitly gated node-qualification workflows through the separately installed canonical CLI.",
+      "description": "Authenticated It\u00f4 GPU inventory, RFQ, status, device revocation, and explicitly gated node-qualification workflows through the separately installed canonical CLI.",
       "paths": [
         "skills/ito-compute",
         "skills/ito-inference",
@@ -515,7 +536,7 @@
     {
       "id": "nasiko-control-plane",
       "kind": "skills",
-      "description": "Explicitly gated Nasiko control-plane installation, status, and agent-operations guidance with pinned artifact verification and opt-in telemetry boundaries.",
+      "description": "Experimental Nasiko CLI lifecycle bridge guidance for pinned installation, read-only status, qualified uninstall, and opt-in telemetry boundaries.",
       "paths": [
         "skills/nasiko-control-plane"
       ],
@@ -564,7 +585,10 @@
         "skills/ui-demo",
         "skills/video-editing",
         "skills/videodb",
-        "skills/taste"
+        "skills/taste",
+        "skills/tasteforge-video",
+        "skills/taste-distillation",
+        "skills/taste-application"
       ],
       "targets": [
         "claude",

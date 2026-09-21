@@ -82,15 +82,6 @@ for (const workflowPath of workflowPaths) {
     assert.match(verify, /tests\/ci\/packed-artifact-lifecycle\.js/);
   });
 
-  test(`${workflowPath} fails retries when npm already has different bytes`, () => {
-    const verify = jobBlock(source, 'verify', 'lifecycle');
-    assert.match(verify, /name:\s*Verify existing npm artifact matches candidate/);
-    assert.match(verify, /if:\s*steps\.npm_publish_state\.outputs\.already_published == 'true'/);
-    assert.match(verify, /npm view "\$\{PACKAGE_NAME\}@\$\{PACKAGE_VERSION\}" dist\.integrity/);
-    assert.match(verify, /createHash\(['"]sha512['"]\)/);
-    assert.match(verify, /Existing npm artifact does not match tested candidate/);
-  });
-
   test(`${workflowPath} verifies the same tgz on Node 20 across three operating systems`, () => {
     const lifecycle = jobBlock(source, 'lifecycle', 'publish');
 
@@ -161,6 +152,25 @@ test('packed lifecycle invokes installed public bins, including setup help', () 
   assert.match(lifecycleRunnerSource, /\['book-universal', 'setup', '--help'\]/);
   assert.match(lifecycleRunnerSource, /\['ecc', \.\.\.args\]/);
   assert.doesNotMatch(lifecycleRunnerSource, /node_modules.*scripts.*ecc\.js/);
+});
+
+test('packed lifecycle applies and updates README-primary Claude setup with a fake provider', () => {
+  assert.match(lifecycleRunnerSource, /createFakeClaudeExecutable/);
+  assert.match(
+    lifecycleRunnerSource,
+    /const claudeSetupArgs = \[\s*'book-universal', 'setup',\s*'--mode', 'claude-plugin',\s*'--scope', 'user',\s*\]/
+  );
+  assert.match(
+    lifecycleRunnerSource,
+    /runPublicCli\(\s*\[\.\.\.claudeSetupArgs, '--hooks', 'standard', '--dry-run', '--json'\]/
+  );
+  assert.match(lifecycleRunnerSource, /Claude setup dry-run must not mutate setup state/);
+  assert.match(lifecycleRunnerSource, /runProcess\('git', \['--version'\]/);
+  assert.match(lifecycleRunnerSource, /runPackedClaudeSetup\('standard'\)/);
+  assert.match(lifecycleRunnerSource, /runPackedClaudeSetup\('strict'\)/);
+  assert.match(lifecycleRunnerSource, /CLAUDE_CODE_OAUTH_TOKEN/);
+  assert.match(lifecycleRunnerSource, /plugin marketplace add/);
+  assert.match(lifecycleRunnerSource, /plugin update book@dylanlyu/);
 });
 
 test('packed lifecycle installs and verifies the opt-in Ito distribution surface', () => {

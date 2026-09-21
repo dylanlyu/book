@@ -18,9 +18,7 @@ const PROFILES_SCHEMA_PATH = path.join(REPO_ROOT, 'schemas/install-profiles.sche
 const COMPONENTS_SCHEMA_PATH = path.join(REPO_ROOT, 'schemas/install-components.schema.json');
 const CURATED_SKILLS_DIR = path.join(REPO_ROOT, 'skills');
 // Empty by default; add only curated skills that are intentionally unshipped.
-const INTENTIONALLY_UNSHIPPED_SKILL_IDS = new Set([
-  'skill-comply', // meta/measurement dev-skill; ships committed .pyc artifacts and a nested .gitignore, revisit after packaging cleanup
-]);
+const INTENTIONALLY_UNSHIPPED_SKILL_IDS = new Set([]);
 // Modules that are mutually exclusive alternatives rather than additive features.
 // `full` means every additive module, so it cannot meaningfully carry one of these:
 // installing two output-language packs at once gives the agent contradictory
