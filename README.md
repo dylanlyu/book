@@ -1565,7 +1565,7 @@ See [affaan-m/ECC#2065](https://github.com/affaan-m/ECC/issues/2065).
 
 | Surface | Claude Code | Codex | GitHub Copilot | Current |
 |---|---|---|---|---|
-| **Version** | Plugin | Reference config | Instruction layer | 1.0.1 |
+| **Version** | Plugin | Reference config | Instruction layer | 1.0.2 |
 
 **Key architectural decisions:**
 - **AGENTS.md** at root is the universal cross-tool file (read by Claude Code and Codex; GitHub Copilot uses `.github/copilot-instructions.md` instead)
