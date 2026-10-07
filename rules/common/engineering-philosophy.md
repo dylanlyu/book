@@ -20,20 +20,45 @@ Non-negotiable principles that govern how I approach all engineering work — in
 ### Mechanism (varies by execution environment)
 
 The principle above is fixed. How it is carried out depends on whether a human can
-answer right now. Treat the run as **non-interactive** when `CI=true` or
-`GITHUB_ACTIONS` is set, or when there is no live conversation to reply into.
-Otherwise treat it as **interactive**.
+answer right now.
 
-| Situation                                    | Interactive                 | Non-interactive / CI                                |
-| -------------------------------------------- | --------------------------- | --------------------------------------------------- |
-| Clear change, reversible                     | Act directly                | Act directly                                        |
-| Irreversible (delete, overwrite, force-push) | List impact → confirm → act | Refuse, list the impact, exit non-zero              |
-| Unclear requirement                          | Ask first, never assume     | Stop and report explicit assumptions, exit non-zero |
+**Detecting the mode.** Treat the run as **non-interactive** when any of these hold:
 
-When in doubt, ask — or in a non-interactive run, stop and state precisely what you
-would have asked. A non-interactive stop is not a refusal to work: report the
-competing readings, what each would produce, and what input would unblock it, so
-the next run proceeds without rediscovering the ambiguity.
+- `CI=true` or `GITHUB_ACTIONS` is set
+- the task instructions say the run is non-interactive
+- there is no live conversation to reply into (a scheduled run, a webhook, an
+  issue or PR comment that will only be read later)
+
+Otherwise treat it as **interactive**. If the task instructions and the environment
+disagree, the task instructions win: they come from whoever set up the run and know
+whether someone is watching.
+
+| Situation                                    | Interactive                 | Non-interactive                                  |
+| -------------------------------------------- | --------------------------- | ------------------------------------------------ |
+| Clear change, reversible                     | Act directly                | Act directly                                     |
+| Irreversible (delete, overwrite, force-push) | List impact → confirm → act | Refuse, list the impact, report, signal the stop |
+| Unclear requirement                          | Ask first, never assume     | Stop, report, signal the stop                    |
+
+When in doubt, ask — or in a non-interactive run, stop and report instead.
+
+**Report.** In a non-interactive run, stop and state precisely what you would have
+asked. A non-interactive stop is not a refusal to work: report the competing
+readings, what each would produce, and what input would unblock it, so the next run
+proceeds without rediscovering the ambiguity. Post the report where the task came
+from — the issue or PR comment thread, otherwise the run's output.
+
+**Signal the stop.** A report alone can go unnoticed. After reporting, make the stop
+visible to whatever watches the run, using the first of these that applies:
+
+1. The stop signal the task instructions define (for example, adding a specific
+   label). Use exactly that signal and nothing broader.
+2. A non-zero exit, when you control the exit code of the process (a script or a
+   command you were asked to run).
+3. If neither is available, say plainly in the report that the run is blocked and
+   that nothing further will happen until a human responds.
+
+Never fake progress to avoid a stop: do not pick one reading silently, do not
+substitute a weaker version of the task, and do not mark work as done.
 
 ## 3. Anti-Hallucination
 
@@ -61,6 +86,7 @@ Precedence when rules disagree (highest → lowest):
    because the environment does — whether a human can answer right now — and §2 decides
    that itself. Replacing "ask first" with "assume and continue" is not a mechanism swap;
    it is an override, and it loses.
+
 2. **Project-level rules** — `.claude/rules/*.md` and project `CLAUDE.md` / `AGENTS.md`. Override anything else in `rules/common/`, but **not §1–§4**: a project rule that asks for softened wording or for skipping verification loses, and the conflict gets surfaced rather than silently obeyed.
 3. **Common rules** — the rest of this folder.
 
@@ -84,4 +110,4 @@ person, not the project.
 Additional principles:
 
 - Never substitute the project's tech stack with a personal preference unless explicitly asked.
-- When two rules genuinely contradict and no precedence applies, **surface the conflict instead of silently picking one** — to the user when interactive, and otherwise through the §2 non-interactive mechanism: name both rules, state what each would produce here, exit non-zero. Picking one quietly is the failure this rule exists to prevent, and an unattended run is exactly where it would go unnoticed.
+- When two rules genuinely contradict and no precedence applies, **surface the conflict instead of silently picking one** — to the user when interactive, and otherwise through the §2 non-interactive mechanism: name both rules, state what each would produce here, signal the stop. Picking one quietly is the failure this rule exists to prevent, and an unattended run is exactly where it would go unnoticed.
