@@ -10,10 +10,15 @@ paths:
 ## API Response Pattern
 
 ```csharp
+public sealed record ApiError(
+    string Code,
+    string Message,
+    IReadOnlyList<object>? Details = null);
+
 public sealed record ApiResponse<T>(
     bool Success,
     T? Data = default,
-    string? Error = null,
+    ApiError? Error = null,
     object? Meta = null);
 ```
 

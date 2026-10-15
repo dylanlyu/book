@@ -130,12 +130,14 @@ String message = switch (result) {
 Consistent API responses:
 
 ```java
-public record ApiResponse<T>(boolean success, T data, String error) {
+public record ApiError(String code, String message, List<Object> details) {}
+
+public record ApiResponse<T>(boolean success, T data, ApiError error) {
     public static <T> ApiResponse<T> ok(T data) {
         return new ApiResponse<>(true, data, null);
     }
-    public static <T> ApiResponse<T> error(String message) {
-        return new ApiResponse<>(false, null, message);
+    public static <T> ApiResponse<T> error(String code, String message) {
+        return new ApiResponse<>(false, null, new ApiError(code, message, List.of()));
     }
 }
 ```
