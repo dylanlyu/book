@@ -154,12 +154,20 @@ Consistent API responses using a generic enum:
 
 ```rust
 #[derive(Debug, serde::Serialize)]
+pub struct ApiError {
+    pub code: String,
+    pub message: String,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub details: Vec<serde_json::Value>,
+}
+
+#[derive(Debug, serde::Serialize)]
 #[serde(tag = "status")]
 pub enum ApiResponse<T: serde::Serialize> {
     #[serde(rename = "ok")]
     Ok { data: T },
     #[serde(rename = "error")]
-    Error { message: String },
+    Error { error: ApiError },
 }
 ```
 

@@ -31,6 +31,20 @@ Every response uses a consistent shape:
 { "success": true, "data": {}, "error": null }
 ```
 
+On failure, `error` is an object:
+
+```json
+{
+  "success": false,
+  "data": null,
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "Email is required",
+    "details": [{ "field": "email", "issue": "required" }]
+  }
+}
+```
+
 For paginated responses, add metadata:
 
 ```json
@@ -39,5 +53,8 @@ For paginated responses, add metadata:
 
 - `success`: boolean status indicator
 - `data`: payload (nullable on error)
-- `error`: error message string (nullable on success)
+- `error`: error object (nullable on success)
+  - `code`: stable, machine-readable error code (e.g. `VALIDATION_ERROR`, `NOT_FOUND`)
+  - `message`: human-readable message, safe to show users (no stack traces, paths, or PII)
+  - `details` _(optional)_: array of extra context, such as per-field validation issues
 - `meta` _(paginated only)_: total · page · limit

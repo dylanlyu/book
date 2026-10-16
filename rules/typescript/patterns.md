@@ -12,10 +12,16 @@ paths:
 ## API Response Format
 
 ```typescript
+interface ApiError {
+  code: string
+  message: string
+  details?: unknown[]
+}
+
 interface ApiResponse<T> {
   success: boolean
   data?: T
-  error?: string
+  error?: ApiError
   meta?: {
     total: number
     page: number
