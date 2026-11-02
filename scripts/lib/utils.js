@@ -195,9 +195,11 @@ function sameRepoIdentity(a, b) {
   if (!a || !b) return false;
   if (normalizeRepoPath(a) === normalizeRepoPath(b)) return true;
   try {
-    const sa = fs.statSync(a);
-    const sb = fs.statSync(b);
-    return sa.ino !== 0 && sa.dev === sb.dev && sa.ino === sb.ino;
+    // Windows file IDs can exceed Number.MAX_SAFE_INTEGER; rounded IDs may
+    // otherwise make distinct files look identical.
+    const sa = fs.statSync(a, { bigint: true });
+    const sb = fs.statSync(b, { bigint: true });
+    return sa.ino !== 0n && sa.dev === sb.dev && sa.ino === sb.ino;
   } catch {
     return false;
   }
@@ -535,22 +537,25 @@ function runCommand(cmd, options = {}) {
 }
 
 /**
- * Check if current directory is a git repository
+ * Check if current directory is a git repository.
+ * @param {object} [options] - Options forwarded to runCommand, including env.
  */
-function isGitRepo() {
-  return runCommand('git rev-parse --git-dir').success;
+function isGitRepo(options = {}) {
+  return runCommand('git rev-parse --git-dir', options).success;
 }
 
 /**
  * Get git modified files, optionally filtered by regex patterns
  * @param {string[]} patterns - Array of regex pattern strings to filter files.
  *   Invalid patterns are silently skipped.
+ * @param {object} [options] - Options forwarded to every Git subprocess.
  * @returns {string[]} Array of modified file paths
  */
-function getGitModifiedFiles(patterns = []) {
-  if (!isGitRepo()) return [];
+function getGitModifiedFiles(patterns = [], options = {}) {
+  if (!isGitRepo(options)) return [];
 
-  const result = runCommand('git diff --name-only HEAD');
+  // Paths from the repository root even when diff.relative is set.
+  const result = runCommand('git -c diff.relative=false diff --name-only HEAD', options);
   if (!result.success) return [];
 
   let files = result.output.split('\n').filter(Boolean);

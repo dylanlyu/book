@@ -1,6 +1,6 @@
 ---
 name: git-workflow
-description: Git workflow best practices for branching strategies, commit conventions, PR workflow, merge/rebase decisions, conflict resolution, and release management. Use this skill whenever the user asks about Git workflows, branching, commit messages, pull requests, merging, rebasing, resolving conflicts, release tagging, or setting up Git configuration. Also trigger for questions like "how should I structure my Git workflow", "what branching strategy should I use", "how do I write a good commit message", or "how do I handle merge conflicts".
+description: Git workflow patterns including branching strategies, commit conventions, keeping history clean and readable, tidying local commits before merging, merge vs rebase, conflict resolution, and collaborative development best practices for teams of all sizes. Use when choosing a branching strategy, writing commit conventions, cleaning up history before a pull request, deciding merge versus rebase, or resolving conflicts.
 metadata:
   origin: ECC
 ---

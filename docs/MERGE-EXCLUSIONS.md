@@ -3,7 +3,10 @@
 本檔記錄本 fork **刻意移除**的功能。與上游（`affaan-m/ECC`）合併時，
 凡是清單內的路徑或設定，**一律不併入**，直接捨棄。
 
-> 上一次全面套用：2026-09-21（PR #8，合併上游 381 個 commit，處理 136 個衝突檔）。
+> 上一次全面套用：2026-11-02（PR #11，合併上游 1517 個 commit，處理 409 個衝突檔，其中 334 個屬排除項）。
+> 2026-11-02 排除上游新增的 Copilot 安裝目標、Qoder plugin、DeepSeek Harness、Pi core 打包與
+> `docs/ar/`、`docs/bn/`、`docs/pl/` 翻譯目錄（見第 1、2、4、8 節）。
+> 2026-09-21 PR #8，合併上游 381 個 commit，處理 136 個衝突檔。
 > 2026-08-17 合併上游 52 個 commit，處理 40 個衝突檔；同日移除 Pi harness、
 > Antigravity 目標與 JoyCode 目標（見第 1、2 節）。
 > 2026-08-18 移除全部翻譯文件、release 文件與 locale 安裝功能（見第 8 節）。
@@ -27,7 +30,8 @@
 | `01f5ba4b` | Pi harness 與 Antigravity 安裝目標（含 legacy `.agent` 遷移路徑） |
 | `6bb0edaa` | JoyCode 安裝目標（`.joycode/` adapter、扁平化 rules 佈局、guided wizard 的 advanced 提示） |
 | 2026-08-18 | 全部翻譯文件（12 個語言目錄）、release 文件（`docs/releases/`、`docs/drafts/`）、`docs/stale-pr-salvage-ledger.md`、`locale:*` 安裝元件家族，以及 8 份一次性工作日誌與 2 份孤兒設計文件 |
-| _本次_（PR #8） | AdaL 安裝目標（`.adal/`、`adal-project.js`）、`docs/uk-UA/` 翻譯目錄、coordination-inventory 功能（相依已移除的 agent-proximity）、`docs/control-plane/` 文件、OpenCode legacy 遷移模組，以及 3 份指向已移除面向的測試檔 |
+| PR #8（2026-09-21） | AdaL 安裝目標（`.adal/`、`adal-project.js`）、`docs/uk-UA/` 翻譯目錄、coordination-inventory 功能（相依已移除的 agent-proximity）、`docs/control-plane/` 文件、OpenCode legacy 遷移模組，以及 3 份指向已移除面向的測試檔 |
+| _本次_（PR #11） | 上游新增的 GitHub Copilot 安裝目標、Qoder plugin、DeepSeek Harness（DSH）、Pi core 打包（`pi/`、agent 轉換器）、Hermes hooks，`docs/ar/`、`docs/bn/`、`docs/pl/` 翻譯目錄，以及 control-pane 的 work-item runner/worker。從未併入本 fork，屬「不併入」而非「移除」 |
 
 ---
 
@@ -41,7 +45,7 @@
 .adal/         .agent/      .agents/*    .codebuddy/  .cursor/
 .gemini/       .hermes/     .joycode/    .kimi/       .kiro/
 .openclaw/     .opencode/   .pi/         .qwen/       .trae/
-.zed/
+.zed/          .qoder-plugin/              pi/
 ```
 
 > `.agents/` 有兩種用途，別搞混：**倉庫根目錄的 `.agents/`（Codex 的 skill metadata）要保留**；
@@ -51,6 +55,39 @@
 
 ```
 scaffolds/cursor/
+scripts/agent-convert.js                 （Pi agent 轉換器，含 lib/agent-ir.js、agent-emit-pi.js、agent-tool-map.js）
+scripts/build-pi-core.js
+scripts/ci/pi-core-load-test.js
+scripts/dsh/
+scripts/qwen-adapt-agents.js
+scripts/lib/install-targets/copilot-project.js
+scripts/lib/install/copilot-agent.js
+scripts/lib/install/copilot-rule.js
+scripts/lib/install/antigravity-rule.js
+scripts/lib/install/opencode-install-lock.js
+scripts/lib/install/opencode-script-boundary.js
+manifests/pi-core.json
+hooks/hermes/
+hooks/qoder-hooks.json
+skills/deepseek-harness-setup/
+docs/DEEPSEEK-HARNESS-GUIDE.md
+docs/HERMES-HOOKS.md
+tests/hermes-hooks.test.js
+tests/qoder-plugin.test.js
+tests/fixtures/opencode-ts-loader.mjs
+tests/lib/opencode-*.test.js
+tests/opencode-plugin-loader-contract.test.js
+tests/scripts/opencode-modular-telemetry.test.js
+tests/lib/copilot-install-target.test.js
+tests/lib/antigravity-install-target.test.js
+tests/lib/antigravity-rule.test.js
+tests/lib/agent-tool-map.test.js
+tests/scripts/build-pi-core.test.js
+tests/scripts/dsh-generate-hooks-config.test.js
+tests/scripts/qwen-adapt-agents.test.js
+tests/docs/kiro-steering-inclusion.test.js
+tests/hooks/cursor-hook-dispatchers.test.js
+tests/lib/cursor-agent-names.test.js
 scripts/build-opencode.js
 scripts/gemini-adapt-agents.js
 scripts/hooks/cursor-session-env.js
@@ -104,6 +141,7 @@ tests/scripts/trae-install.test.js
 | `commands/multi-*.md` 裡的 `--backend antigravity` | 那是**多模型後端**（`codeagent-wrapper`），與安裝目標無關 |
 | `skills/angular-developer/references/mcp.md` 的 `.antigravity/mcp.json` | 那是 Antigravity IDE 自己的 MCP 設定教學，不是 ECC adapter |
 | 倉庫根目錄 `.agents/` | Codex 的 skill metadata 佈局 |
+| `scripts/lib/install/script-boundary.js` | 上游 `opencode-script-boundary.js` 的 CommonJS scope 檢查自 `dbfd6ab0`、`2bfee727` 起也服務 Claude 的 commands-only 安裝，2026-11-02 以中性名稱保留（`apply.js` 的 `assertInstallScriptBoundary`、`install-lifecycle.js` 的 repair/uninstall 流程）。上游檔名 `opencode-script-boundary.js` 仍排除，合併時把上游對它的修改移植到 `script-boundary.js` |
 | `scripts/lib/install/link-rewrite.js` | 與 antigravity 同批引入但為共用模組，`install-lifecycle` 仍在用 |
 | `CHANGELOG.md`、`docs/stale-pr-salvage-ledger.md` 裡的 JoyCode/Antigravity | 歷史發布紀錄與 PR 打撈帳本，照既有慣例保留原文。`docs/SELECTIVE-INSTALL-DESIGN.md` 已於 2026-09-21 跟隨上游 `f8640355` 一併刪除 |
 | `tests/lib/harness-capabilities.test.js` 的 `joycode` | 「不得再宣傳已移除 harness」的迴歸守門斷言，必須保留 |
@@ -145,7 +183,15 @@ tests/scripts/control-pane.test.js
 tests/scripts/coordination-inventory.test.js
 tests/scripts/coordination-goals.test.js
 tests/scripts/observability-readiness.test.js
+tests/lib/agent-proximity-shadow-trail.test.js
+tests/lib/helpers/control-pane-contention-server.js
+tests/lib/work-item-runner.test.js
+tests/lib/control-plane-view-ui-a11y.test.js
 ```
+
+> 2026-11-02 補記：上游在 `scripts/lib/control-pane/` 新增 `work-item-runner.js` 與 `work-item-worker.js`，
+> 只被 control-pane `server.js` 使用，屬 control-pane 功能，排除。同目錄的 `work-item-mutations.js`
+> 仍依第 4 節補記保留。`tests/lib/state-store-persistence.test.js` 中依賴 `work-item-worker` 的區塊同樣排除。
 
 > 2026-09-21 補記：上游新增的 `coordination-inventory` 功能以 `agent-proximity/distance`
 > 與 `agent-proximity/graph` 為引擎，本節既已排除該引擎，整組功能（CLI、lib、examples、
@@ -196,7 +242,7 @@ tests/scripts/observability-readiness.test.js
 ### `manifests/install-modules.json`
 
 - `paths` 排除 `.cursor`、`.gemini`、`.opencode`、`.pi`、`.qwen`、`.zed`
-- **每個 module 的 `targets` 陣列**只能包含保留的 4 個目標。
+- **每個 module 的 `targets` 陣列**只能包含保留的 3 個目標（`claude`、`claude-project`、`codex`）。
   上游新增模組（例如 `nasiko-control-plane`）常帶滿所有目標，必須過濾，
   否則 `tests/lib/install-manifests.test.js` 會整批失敗。
 
@@ -233,6 +279,11 @@ JoyCode 是最後一個 advanced harness，移除後該段輸出必然是空的�
 排除 Antigravity legacy 遷移路徑：`getLegacyAntigravityLocation`、`inspectLegacyAntigravityState`、
 `cleanupLegacyAntigravityInstall`、`adaptAntigravityAgent`、`antigravity-agent-frontmatter` transform，
 以及 discovery/uninstall 的 `legacy` 記錄分支。
+
+`apply.js` 另排除 `withMcpMergeExclusions`（2026-11-02）與 `tests/lib/install-mcp-exclusions.test.js`：
+它只過濾寫入 `mcp.json` 的 `merge-json` 操作，而產生這類操作的只有 Cursor、Kimi adapter，
+保留的 3 個目標都把 MCP 設定當一般檔案複製，實際流程中永遠不會觸發。
+`ECC_DISABLED_MCPS` 對 `copy-file` MCP 設定的過濾（`applyInstallPlanLocked` 內）仍保留。
 
 ### `scripts/sync-ecc-to-codex.sh`
 
@@ -281,7 +332,8 @@ echo "agents: $(ls agents/*.md | wc -l)   skills: $(ls -d skills/*/ | wc -l)"
 docs/de-DE/    docs/es/       docs/ja-JP/    docs/ko-KR/
 docs/pt-BR/    docs/ru/       docs/th/       docs/tr/
 docs/uk-UA/    docs/ur/       docs/vi-VN/    docs/zh-CN/
-docs/zh-TW/
+docs/zh-TW/    docs/ar/       docs/bn/       docs/pl/
+tests/ci/locale-agent-frontmatter.test.js   （檢查 docs/<locale>/agents/ 的翻譯一致性）
 docs/releases/                （1.8.0、1.10.0、2.0.0、2.0.0-rc.1、2.1.0、2.2.0、2.2.1 全部版本）
 docs/drafts/                  （release 公告草稿）
 docs/stale-pr-salvage-ledger.md
@@ -370,7 +422,7 @@ tests/docs/stale-pr-salvage-ledger.test.js   整檔
 | `tests/docs/install-identifiers.test.js` | 依賴 README 語言選擇器與 `docs/zh-CN/README.md` 的整段檢查（該段亦禁用本 fork 的 `npx ecc-install`） |
 | `tests/scripts/install-readme-clarity.test.js` | 針對 `ecc-universal@<version>` 釘選指令與 npm 套件頁的整段斷言（本 fork 不發佈 npm） |
 | `tests/docs/release-2.2-copy.test.js`、`tests/docs/release-2.2-launch-runbook.test.js` | 整檔（資料來源 `docs/releases/2.2.0/` 已排除） |
-| `tests/ci/release-packed-artifact-workflow.test.js` | `selects reviewed release notes...`、`disables generated additions...`、`fails retries when npm already has different bytes` 三個 test |
+| `tests/ci/release-packed-artifact-workflow.test.js` | `selects reviewed release notes...`、`disables generated additions...`、`fails retries when npm already has different bytes` 三個 test；2026-11-02 再排除 `verifies signed tags and exact-SHA CI gates before building`、`rechecks captured tag identity immediately before publication`、`tag-push publish binds its event checkout...` 三個 workflow 結構 test（斷言上游 release.yml 的內容，fork 的 release workflow 已停用為 `.disabled` 且不發 npm）。`scripts/ci/verify-release-gates.js` 的腳本層測試保留 |
 
 **注意**：`tests/ci/catalog.test.js` 與 `tests/ci/validators.test.js` 的「缺少文件時要報錯」測試，
 刪除目標已從 `docs/zh-CN/AGENTS.md` 改為英文 `AGENTS.md`。測試意圖不變，別在合併時改回去。
@@ -407,10 +459,11 @@ docs/fixes/PATCH-SETTINGS-SIMPLE-FIX-20260422.md
 
 ```bash
 # 1. 排除的檔案是否被帶回
-git status --porcelain | grep -E 'ecc2/|control-pane|agent-proximity|proximity-tick|observability-readiness|antigravity|joycode|/\.pi/'
+git status --porcelain | grep -E 'ecc2/|control-pane|agent-proximity|proximity-tick|observability-readiness|antigravity|joycode|/\.pi/| pi/|qoder|copilot|deepseek|scripts/dsh/|hooks/hermes/' \
+  | grep -v 'control-pane/work-item-mutations.js'
 
 # 2. 排除的 harness 目錄是否重現
-ls -d ecc2 .agent .pi .cursor .kiro .opencode .qwen .zed .gemini .hermes .joycode .kimi .openclaw .codebuddy .trae 2>/dev/null
+ls -d ecc2 pi .agent .pi .cursor .kiro .opencode .qwen .zed .gemini .hermes .joycode .kimi .openclaw .codebuddy .trae .qoder-plugin hooks/hermes scripts/dsh 2>/dev/null
 
 # 3. 設定檔關鍵字
 grep -rn -E 'control-pane|control:pane|ecc-control-pane|observability:ready|agent-proximity|ecc2/|antigravity|"pi"' \

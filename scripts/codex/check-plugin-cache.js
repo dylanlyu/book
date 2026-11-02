@@ -20,8 +20,8 @@ function usage() {
     'Options:',
     '  --codex-home <dir>   Override CODEX_HOME (default: $CODEX_HOME or ~/.codex)',
     '  --plugin-dir <dir>   Check a specific installed plugin cache directory',
-    '  --marketplace <name> Marketplace cache name (default: ecc)',
-    '  --plugin <name>      Plugin cache name (default: ecc)',
+    '  --marketplace <name> Marketplace cache name (default: dylanlyu)',
+    '  --plugin <name>      Plugin cache name (default: book)',
     '  --version <version>  Plugin version (default: package.json version)',
     '  --help              Show this help text',
   ].join('\n'));
@@ -148,6 +148,9 @@ function collectManifestRefs(manifest) {
   if (typeof manifest.mcpServers === 'string') {
     refs.push({ label: 'mcpServers', ref: manifest.mcpServers, kind: 'file' });
   }
+  if (typeof manifest.hooks === 'string') {
+    refs.push({ label: 'hooks', ref: manifest.hooks, kind: 'file' });
+  }
   if (manifest.interface && typeof manifest.interface.composerIcon === 'string') {
     refs.push({
       label: 'interface.composerIcon',
@@ -187,7 +190,7 @@ function checkCache(options) {
     } else {
       log(`No installed cache entries found for ${options.marketplace}/${options.plugin}.`);
       if (options.marketplace === 'dylanlyu' && options.plugin === 'book') {
-        log('Run: codex plugin marketplace add affaan-m/ECC');
+        log('Run: codex plugin marketplace add dylanlyu/book');
       } else {
         log('Install the requested plugin into the Codex plugin cache.');
       }
@@ -224,13 +227,15 @@ function checkCache(options) {
   if (failures > 0) {
     log(`${failures} cached manifest reference(s) do not resolve.`);
     log('codex plugin list only confirms marketplace registration; it is not proof of runtime skill loading.');
-    const syncScript = path.join(REPO_ROOT, 'scripts', 'sync-ecc-to-codex.sh');
-    if (fs.existsSync(syncScript)) {
-      log('Use the supported sync path until the cache contains the referenced files:');
-      log('npm install && bash scripts/sync-ecc-to-codex.sh');
+    log('Refresh the native marketplace and re-add the plugin using the same CODEX_HOME as the affected session:');
+    if (options.marketplace === 'dylanlyu' && options.plugin === 'book') {
+      log('codex plugin marketplace upgrade dylanlyu');
+      log('codex plugin add book@dylanlyu');
     } else {
-      log('Use the supported manual sync workflow from your ECC installation.');
+      log('Follow the requested plugin marketplace instructions to refresh and re-add that native plugin.');
     }
+    log('Restart Codex, confirm the active plugin root with codex plugin list --json, and re-run this checker with --plugin-dir ACTIVE_ROOT (or --version ACTIVE_VERSION).');
+    log('See .codex-plugin/README.md for native cache recovery and runtime dependency instructions.');
     return 1;
   }
 

@@ -162,14 +162,14 @@ function parseArgs(argv) {
 
 function commandFor(kind, id, target) {
   if (kind === 'profile') {
-    return `npx book-universal install --profile ${id} --target ${target}`;
+    return `npx github:dylanlyu/book install --profile ${id} --target ${target}`;
   }
 
-  return `npx book-universal install --profile minimal --target ${target} --with ${id}`;
+  return `npx github:dylanlyu/book install --profile minimal --target ${target} --with ${id}`;
 }
 
 function planCommandFor(componentId, target) {
-  return `npx book-universal plan --profile minimal --target ${target} --with ${componentId}`;
+  return `npx github:dylanlyu/book plan --profile minimal --target ${target} --with ${componentId}`;
 }
 
 function buildSearchCorpus(parts) {
@@ -315,7 +315,7 @@ function buildConsultation(options) {
     nextSteps:
       matches.length > 0
         ? [`Preview the top component: ${matches[0].planCommand}`, `Install it: ${matches[0].installCommand}`]
-        : ['Run `npx book-universal catalog components` to browse all components.', 'Try a more specific query such as "security review", "Next.js", or "operator workflows".']
+        : ['Run `npx github:dylanlyu/book catalog components` to browse all components.', 'Try a more specific query such as "security review", "Next.js", or "operator workflows".']
   };
 }
 
@@ -324,7 +324,7 @@ function formatText(payload) {
 
   if (payload.matches.length === 0) {
     lines.push('No strong component matches found.');
-    lines.push('Try: npx book-universal catalog components');
+    lines.push('Try: npx github:dylanlyu/book catalog components');
   } else {
     lines.push('Recommended components:');
     payload.matches.forEach((match, index) => {

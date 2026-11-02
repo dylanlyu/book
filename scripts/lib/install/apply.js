@@ -36,17 +36,18 @@ const {
   completeExcludedPathsReconciliation,
   prepareExcludedPathsReconciliation,
 } = require('./excluded-paths-reconciliation');
+const {
+  completeStaleOperationsReconciliation,
+  describeStaleOperationsPreview,
+  prepareStaleOperationsReconciliation,
+  withoutStaleOperations,
+} = require('./stale-operations-reconciliation');
 const { buildInstallIndex, rewriteRelativeLinks } = require('./link-rewrite');
+const { transformInstallContent } = require('./content-transform');
+const { assertScriptBoundary, isScriptBoundary } = require('./script-boundary');
 
 function isMarkdownPath(filePath) {
   return /\.(md|mdx|markdown)$/i.test(String(filePath || ''));
-}
-
-function transformInstallContent(operation, content) {
-  if (!operation.contentTransform) {
-    return content;
-  }
-  throw new Error(`Unknown install content transform: ${operation.contentTransform}`);
 }
 
 // Map every copy-file operation to { sourceRel, destRel } so relative links in
@@ -281,6 +282,22 @@ function readPreviousInstallState(plan) {
   return readInstallState(plan.installStatePath);
 }
 
+function assertInstallScriptBoundary(plan, writtenDestinations = new Set()) {
+  if (!plan.operations.some(operation => isScriptBoundary(operation, plan.targetRoot))) return;
+  assertSafeInstallOperation(plan, { destinationPath: plan.installStatePath });
+  assertScriptBoundary(plan, {
+    readFile: destinationPath => readInstalledFileNoFollow(plan, { destinationPath }),
+    previousOperations: readPreviousInstallState(plan)?.operations || [],
+    writtenDestinations,
+    expectedContent(operation) {
+      if (!operation || operation.kind !== 'copy-file') return null;
+      const source = fs.readFileSync(operation.sourcePath);
+      return operation.contentTransform
+        ? Buffer.from(transformInstallContent(operation, source.toString('utf8'))) : source;
+    },
+  });
+}
+
 function comparablePath(filePath) {
   const resolved = path.resolve(filePath);
   return process.platform === 'win32' ? resolved.toLowerCase() : resolved;
@@ -394,9 +411,13 @@ function prepareHookConsentMigration(plan, migration) {
 }
 
 function previewInstallPlan(plan) {
-  const migration = prepareHookConsentMigration(
+  assertInstallScriptBoundary(plan);
+  const migration = prepareStaleOperationsReconciliation(
     plan,
-    prepareUserOwnedFileGuard(plan, prepareClaudeSkillMigration(plan))
+    prepareHookConsentMigration(
+      plan,
+      prepareUserOwnedFileGuard(plan, prepareClaudeSkillMigration(plan))
+    )
   );
   const appliedPlan = {
     ...plan,
@@ -408,7 +429,7 @@ function previewInstallPlan(plan) {
     : [];
   return {
     ...plan,
-    statePreview: migration.finalState,
+    statePreview: withoutStaleOperations(migration.finalState, migration),
     plannedOperations: [...plan.operations],
     operations: migration.appliedOperations,
     skippedOperations: migration.skippedOperations,
@@ -416,6 +437,7 @@ function previewInstallPlan(plan) {
       ...(Array.isArray(plan.warnings) ? plan.warnings : []),
       ...migration.warnings,
       ...hookConsentWarnings,
+      ...describeStaleOperationsPreview(migration),
     ],
     applied: false,
   };
@@ -423,6 +445,8 @@ function previewInstallPlan(plan) {
 
 function applyInstallPlan(plan, dependencies = {}) {
   assertHookConsentReady(plan);
+  // Reject module-scope conflicts before locks can create target directories/files.
+  assertInstallScriptBoundary(plan);
   const isClaudeManualTarget = plan.adapter
     && (plan.adapter.target === 'claude' || plan.adapter.target === 'claude-project');
   const settingsPathToLock = isClaudeManualTarget
@@ -440,6 +464,7 @@ function applyInstallPlan(plan, dependencies = {}) {
 }
 
 function applyInstallPlanLocked(plan, dependencies = {}, settingsLockHeld = false) {
+  const disabledServers = parseDisabledMcpServers(process.env.ECC_DISABLED_MCPS);
   const persistInstallState = dependencies.writeInstallState || writeInstallState;
   const beforeInstallStateRead = dependencies.beforeInstallStateRead;
   const beforeOperationWrite = dependencies.beforeOperationWrite;
@@ -447,11 +472,15 @@ function applyInstallPlanLocked(plan, dependencies = {}, settingsLockHeld = fals
   if (typeof beforeInstallStateRead === 'function') {
     beforeInstallStateRead({ plan });
   }
-  const migration = prepareExcludedPathsReconciliation(
+  assertInstallScriptBoundary(plan);
+  const migration = prepareStaleOperationsReconciliation(
     plan,
-    prepareHookConsentMigration(
+    prepareExcludedPathsReconciliation(
       plan,
-      prepareUserOwnedFileGuard(plan, prepareClaudeSkillMigration(plan))
+      prepareHookConsentMigration(
+        plan,
+        prepareUserOwnedFileGuard(plan, prepareClaudeSkillMigration(plan))
+      )
     )
   );
   const appliedPlan = {
@@ -459,7 +488,6 @@ function applyInstallPlanLocked(plan, dependencies = {}, settingsLockHeld = fals
     operations: migration.appliedOperations,
   };
   const preparedClaudeSettings = preflightClaudeSettingsOperations(appliedPlan);
-  const disabledServers = parseDisabledMcpServers(process.env.ECC_DISABLED_MCPS);
   const linkIndex = buildLinkIndexForPlan(appliedPlan);
   const hasLegacyMigration = migration.legacyOperationsToRemove.length > 0;
   const hookRemovalCount = appliedPlan.operations.filter(operation => (
@@ -493,6 +521,9 @@ function applyInstallPlanLocked(plan, dependencies = {}, settingsLockHeld = fals
         beforeOperationWrite({ plan: appliedPlan, operation });
       }
       assertNoNewUserOwnedFile(migration, operation, appliedPlan);
+      if (operation.sourceRelativePath === 'manifests/install-assets/commonjs-scripts-package.json') {
+        assertInstallScriptBoundary(appliedPlan, writtenDestinations);
+      }
 
       if (
         operation.kind === 'update-claude-settings'
@@ -537,17 +568,11 @@ function applyInstallPlanLocked(plan, dependencies = {}, settingsLockHeld = fals
           throw new Error(`Missing merge payload for ${operation.destinationPath}`);
         }
 
-        const filteredPayload = (
-          isMcpConfigPath(operation.destinationPath) && disabledServers.length > 0
-        )
-          ? filterMcpConfig(payload, disabledServers).config
-          : payload;
-
         const currentValue = readOptionalJsonObject(
           operation.destinationPath,
           'existing JSON config'
         );
-        const mergedValue = deepMergeJson(currentValue, filteredPayload);
+        const mergedValue = deepMergeJson(currentValue, payload);
         fs.writeFileSync(operation.destinationPath, formatJson(mergedValue), 'utf8');
         writtenDestinations.add(operation.destinationPath);
         continue;
@@ -599,7 +624,12 @@ function applyInstallPlanLocked(plan, dependencies = {}, settingsLockHeld = fals
         );
       }
 
-      finalState = stateWithContentDigests(migration.finalState, appliedPlan);
+      // Stale records leave only the successful final state; the bridge and
+      // failure checkpoint above keep them so a failed install retains ownership.
+      finalState = stateWithContentDigests(
+        withoutStaleOperations(migration.finalState, migration),
+        appliedPlan
+      );
       if (typeof beforeInstallStateWrite === 'function') {
         beforeInstallStateWrite({ plan: appliedPlan, state: finalState });
       }
@@ -649,6 +679,18 @@ function applyInstallPlanLocked(plan, dependencies = {}, settingsLockHeld = fals
     ];
   }
 
+  let stalePathsRemoved = [];
+  let stalePathsWarnings = [];
+  try {
+    const staleReconciliation = completeStaleOperationsReconciliation(migration, appliedPlan);
+    stalePathsRemoved = staleReconciliation.removedPaths;
+    stalePathsWarnings = staleReconciliation.warnings;
+  } catch (error) {
+    stalePathsWarnings = [
+      `Stale install-state reconciliation did not finish: ${error.message}. Files ECC no longer installs were preserved; remove them manually if unwanted.`,
+    ];
+  }
+
   return {
     ...plan,
     statePreview: finalState,
@@ -656,10 +698,12 @@ function applyInstallPlanLocked(plan, dependencies = {}, settingsLockHeld = fals
     operations: migration.appliedOperations,
     skippedOperations: migration.skippedOperations,
     reconciledExcludedPaths: excludedPathsRemoved,
+    reconciledStalePaths: stalePathsRemoved,
     warnings: [
       ...(Array.isArray(plan.warnings) ? plan.warnings : []),
       ...migration.warnings,
       ...excludedPathsWarnings,
+      ...stalePathsWarnings,
     ],
     applied: true,
   };
@@ -667,6 +711,8 @@ function applyInstallPlanLocked(plan, dependencies = {}, settingsLockHeld = fals
 
 module.exports = {
   applyInstallPlan,
+  assertInstallScriptBoundary,
   assertSafeInstallOperation,
+  prepareHookConsentMigration,
   previewInstallPlan,
 };

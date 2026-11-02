@@ -99,7 +99,7 @@ function findFileIssues(filePath) {
       const lineNum = index + 1;
       
       // Check for console.log
-      if (line.includes('console.log') && !line.trim().startsWith('//') && !line.trim().startsWith('*')) {
+      if (line.includes('console.log') && !line.trim().startsWith('//') && !line.trim().startsWith('*') && !line.trim().startsWith('#')) {
         issues.push({
           type: 'console.log',
           message: `console.log found at line ${lineNum}`,
@@ -109,7 +109,7 @@ function findFileIssues(filePath) {
       }
       
       // Check for debugger statements
-      if (/\bdebugger\b/.test(line) && !line.trim().startsWith('//')) {
+      if (/\bdebugger\b/.test(line) && !line.trim().startsWith('//') && !line.trim().startsWith('#')) {
         issues.push({
           type: 'debugger',
           message: `debugger statement at line ${lineNum}`,
@@ -119,7 +119,7 @@ function findFileIssues(filePath) {
       }
       
       // Check for TODO/FIXME without issue reference
-      const todoMatch = line.match(/\/\/\s*(TODO|FIXME):?\s*(.+)/);
+    const todoMatch = line.match(/(?:\/\/|#)\s*(TODO|FIXME):?\s*(\S.*)/);
       if (todoMatch && !todoMatch[2].match(/#\d+|issue/i)) {
         issues.push({
           type: 'todo',
@@ -322,7 +322,7 @@ function getLinterInvocation(command, args, platform = process.platform) {
 function runLinterCommand(command, args) {
   try {
     const invocation = getLinterInvocation(command, args);
-    return spawnSync(invocation.command, invocation.args, invocation.options);
+    return spawnSync(invocation.command, invocation.args, { ...invocation.options, shell: false });
   } catch (error) {
     return { status: null, stdout: '', stderr: '', error };
   }

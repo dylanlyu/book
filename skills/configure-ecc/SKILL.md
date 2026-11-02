@@ -5,7 +5,7 @@ metadata:
   origin: ECC
 ---
 
-# Configure Everything Claude Code
+# Configure ECC
 
 Run a conversational wizard inside the current harness. Inventory first, collect
 only supported choices, preview, confirm once, apply non-interactively, verify,
@@ -13,7 +13,7 @@ and show the welcome only after success. Never clone ECC into a temporary
 directory or copy plugin components by hand.
 
 For a human-operated terminal, the canonical entry points are `ecc setup` and
-`npx book-universal setup`. Inside a harness, use the explicit non-interactive
+`npx github:dylanlyu/book setup`. Inside a harness, use the explicit non-interactive
 commands below instead.
 
 ## Route by the current harness

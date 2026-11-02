@@ -3,7 +3,7 @@
 // Slash commands: /ecc /help /skill /docs /release
 //
 // Env: DISCORD_BOT_TOKEN (required), DISCORD_APP_ID (required),
-//      ECC_REPO (path to local clone, default ~/GitHub/ECC/everything-claude-code),
+//      ECC_REPO (path to local clone, default ~/GitHub/ECC),
 //      DISCORD_INVITE (optional, shown in /ecc)
 //
 // Crash-only design: any gateway close, error, or missed heartbeat ack exits
@@ -21,7 +21,12 @@ if (!TOKEN || !APP_ID) {
   console.error('missing DISCORD_BOT_TOKEN / DISCORD_APP_ID');
   process.exit(1);
 }
-const REPO = process.env.ECC_REPO || join(homedir(), 'GitHub/ECC/everything-claude-code');
+// Prefer ~/GitHub/ECC. The nested legacy checkout path is still accepted so
+// existing hosts keep working without setting ECC_REPO.
+const REPO = process.env.ECC_REPO || [
+  join(homedir(), 'GitHub/ECC'),
+  join(homedir(), 'GitHub/ECC/everything-claude-code'),
+].find(dir => existsSync(join(dir, 'package.json'))) || join(homedir(), 'GitHub/ECC');
 const REPO_URL = 'https://github.com/affaan-m/ECC';
 const INVITE = process.env.DISCORD_INVITE || '';
 const API = 'https://discord.com/api/v10';
@@ -138,7 +143,7 @@ const handlers = {
     '',
     `- repo: ${REPO_URL}`,
     '- site: https://ecc.tools',
-    `- install: \`/plugin marketplace add affaan-m/everything-claude-code\` then \`/plugin install ecc\``,
+    `- install: \`/plugin marketplace add affaan-m/ECC\` then \`/plugin install ecc\``,
     INVITE ? `- invite a friend: ${INVITE}` : '',
   ].filter(Boolean).join('\n'),
 

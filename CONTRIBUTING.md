@@ -1,4 +1,4 @@
-# Contributing to Everything Claude Code
+# Contributing to ECC
 
 Thanks for wanting to contribute! This repo is a community resource for Claude Code users.
 
@@ -14,6 +14,10 @@ Thanks for wanting to contribute! This repo is a community resource for Claude C
 - [MCP and documentation (e.g. Context7)](#mcp-and-documentation-eg-context7)
 - [Cross-Harness and Translations](#cross-harness-and-translations)
 - [Pull Request Process](#pull-request-process)
+- [Releases](#releases)
+- [Guidelines](#guidelines)
+- [File Naming](#file-naming)
+- [Questions?](#questions)
 
 ---
 
@@ -428,7 +432,31 @@ Translations live under `docs/` (e.g. `docs/zh-CN`, `docs/zh-TW`, `docs/ja-JP`).
 
 ---
 
+## Issue submission
+
+Please submit at most five Issues within any 20-minute period and keep at
+most ten Issues open at once. The [Issue moderation policy](.github/ISSUE_MODERATION.md)
+explains the automatic closure, reopening, and maintainer alert rules. Existing
+open Issues stay open when the policy takes effect.
+
 ## Pull Request Process
+
+### Submission volume
+
+Please submit at most five PRs within any 20-minute period. Automated moderation
+closes and locks excess PRs, including drafts. More than ten submissions within
+20 minutes triggers a maintainer alert and an account-block attempt. Closed PRs
+still count toward the window. Contributors with repository write access bypass
+this policy. Maintainers can review exceptions through the moderation alert.
+
+Please also keep at most ten PRs open at a time. When you open or reopen a PR
+above that cap, automation closes the newest ones with a comment explaining the
+count. Get existing PRs merged or close the ones you no longer need, then reopen.
+Ten open PRs is more than any one reviewer can keep in flight, so this keeps
+review time on the work you care about most.
+
+See the [moderation runbook](.github/PR_MODERATION.md)
+for activation, credential requirements, and recovery.
 
 ### 1. PR Title Format
 
@@ -479,6 +507,32 @@ Run `npm test` locally. It is the same gauntlet CI runs, and it catches almost e
 1. Maintainers review within 48 hours
 2. Address feedback if requested
 3. Once approved, merged to main
+
+---
+
+## Releases
+
+This fork does **not** publish to npm. Releases are GitHub tags and GitHub
+Releases only; the CLI is installed straight from the repository
+(`npx github:dylanlyu/book` or `npm install -g github:dylanlyu/book`). The
+release workflows ship disabled (`.github/workflows/*.yml.disabled`), so there
+is no automated publish step.
+
+1. Bump the version in a pull request. Every versioned manifest must match:
+   `VERSION`, `package.json`, `package-lock.json`, `agent.yaml`, `AGENTS.md`,
+   `.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`,
+   `.agents/plugins/marketplace.json`, `.codex-plugin/plugin.json`,
+   `plugins/book/.codex-plugin/plugin.json`, the README version row, and
+   `docs/SELECTIVE-INSTALL-ARCHITECTURE.md`. `node tests/plugin-manifest.test.js`
+   checks the package, lockfile, plugin, marketplace, `AGENTS.md`, `agent.yaml`,
+   and README versions against `package.json`; check `VERSION` and the
+   architecture doc by hand. `CHANGELOG.md` mirrors upstream's history and is
+   not versioned per fork release.
+2. After the pull request merges, tag `vX.Y.Z` on `main`, push the tag, and
+   create the GitHub Release from it.
+
+Tags and GitHub Releases are immutable once published. Never move or re-tag a
+published version; ship a new patch version instead.
 
 ---
 

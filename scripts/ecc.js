@@ -29,7 +29,11 @@ const COMMANDS = {
   },
   consult: {
     script: 'consult.js',
-    description: 'Recommend ECC components and profiles from a natural language query'
+    description: 'Recommend ECC components and profiles from a natural language query',
+  },
+  profile: {
+    script: 'profile.js',
+    description: 'Inspect Lean/Full profiles, stage managed generations, and resolve task context',
   },
   ito: {
     script: 'ito.js',
@@ -108,6 +112,7 @@ const PRIMARY_COMMANDS = [
   'plan',
   'catalog',
   'consult',
+  'profile',
   'ito',
   'nasiko',
   'memory',
@@ -162,6 +167,7 @@ Examples:
   ecc catalog components --family language
   ecc catalog show framework:nextjs
   ecc consult "security reviews"
+  ecc profile preview lean@1 --target codex --selection auto --json
   ecc ito login [--no-browser]
   ecc ito logout
   ecc ito auth
@@ -258,20 +264,28 @@ function runCommand(commandName, args) {
     throw new Error(`Unknown command: ${commandName}`);
   }
   const isItoLogin = commandName === 'ito' && getInvocationCommand(args) === 'login';
-  const result = spawnSync(process.execPath, [path.join(__dirname, command.script), ...args], {
-    cwd: process.cwd(),
-    env:
-      commandName === 'ito'
+  const isProfileStart = commandName === 'profile' && getInvocationCommand(args) === 'start';
+  const result = spawnSync(
+    process.execPath,
+    [path.join(__dirname, command.script), ...args],
+    {
+      cwd: process.cwd(),
+      env: commandName === 'ito'
         ? {
             ...createSafeItoInvocationEnvironment(process.env, args, {
               includeControls: true
             })
           }
         : process.env,
-    stdio: isItoLogin || commandName === 'setup' || commandName === 'install' ? 'inherit' : commandName === 'memory' ? ['inherit', 'pipe', 'pipe'] : ['pipe', 'pipe', 'pipe'],
-    encoding: 'utf8',
-    maxBuffer: 10 * 1024 * 1024
-  });
+      stdio: isItoLogin || isProfileStart || commandName === 'setup' || commandName === 'install'
+        ? 'inherit'
+        : commandName === 'memory' || commandName === 'profile'
+          ? ['inherit', 'pipe', 'pipe']
+          : ['pipe', 'pipe', 'pipe'],
+      encoding: 'utf8',
+      maxBuffer: 10 * 1024 * 1024,
+    }
+  );
 
   if (result.error) {
     throw result.error;

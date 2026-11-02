@@ -32,7 +32,6 @@
 </p>
 
 <p align="center">
-  <a href="https://www.npmjs.com/package/book-universal"><img src="https://img.shields.io/npm/dw/book-universal?label=book-universal&logo=npm" alt="book-universal npm downloads" /></a>
   <a href="https://www.npmjs.com/package/ecc-agentshield"><img src="https://img.shields.io/npm/dw/ecc-agentshield?label=ecc-agentshield&logo=npm" alt="ecc-agentshield npm downloads" /></a>
 </p>
 
@@ -47,7 +46,7 @@
 </p>
 
 > [!WARNING]
-> **Official sources only.** Install ECC only from verified channels: the GitHub repository [github.com/affaan-m/ECC](https://github.com/affaan-m/ECC), the npm packages [`book-universal`](https://www.npmjs.com/package/book-universal) and [`ecc-agentshield`](https://www.npmjs.com/package/ecc-agentshield), the [GitHub App](https://github.com/apps/ecc-tools), the plugin slug `book@dylanlyu`, and the project website [ecc.tools](https://ecc.tools). Third-party re-uploads and unofficial mirrors are not maintained or reviewed by the project and may contain malware.
+> **Official sources only.** Install ECC only from verified channels: the GitHub repository [github.com/affaan-m/ECC](https://github.com/affaan-m/ECC), the npm package [`ecc-agentshield`](https://www.npmjs.com/package/ecc-agentshield), the [GitHub App](https://github.com/apps/ecc-tools), the plugin slug `book@dylanlyu`, and the project website [ecc.tools](https://ecc.tools). Third-party re-uploads and unofficial mirrors are not maintained or reviewed by the project and may contain malware.
 
 ## Install with Claude Code
 
@@ -60,8 +59,8 @@ Run these commands inside Claude Code:
 
 That installs ECC's skills, agents, commands, and plugin-managed hooks. If you choose this path, stop there. Do not also run a full manual install into Claude Code.
 
-> Guided package setup is coming in `book-universal` 2.2.0. Use the native
-> Claude plugin commands above while npm remains on 2.1.0.
+> This fork is not published to npm. Guided package setup runs straight from
+> GitHub instead: `npx github:dylanlyu/book setup` (see [Install ECC](#install-ecc)).
 
 <div align="center">
 
@@ -107,8 +106,9 @@ That installs ECC's skills, agents, commands, and plugin-managed hooks. If you c
   <a href="https://serpapi.com/github-ecc" title="SerpApi: Web Search API"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/images/sponsors/serpapi-logo-dark-mode.svg" /><img src="assets/images/sponsors/serpapi-logo-light-mode.svg" width="200" alt="SerpApi: Web Search API" /></picture></a>
 </p>
 
-<sub><strong>Past sponsors:</strong> <a href="https://www.atlascloud.ai/?utm_source=github&amp;utm_medium=link&amp;utm_campaign=ECC">Atlas Cloud</a></sub>
-<sub><strong>Community sponsors:</strong> <a href="https://github.com/mikejmorgan-ai">Mike Morgan</a> · <a href="https://github.com/jasonwu513">@jasonwu513</a> · <a href="https://github.com/1anter">@1anter</a> · <a href="https://github.com/massimotodaro">@massimotodaro</a> · <a href="https://github.com/meadmccabe">@meadmccabe</a></sub>
+<sub><strong>Past sponsors:</strong> <a href="https://www.atlascloud.ai/?utm_source=github&amp;utm_medium=link&amp;utm_campaign=ECC">Atlas Cloud</a> · <a href="https://github.com/mikejmorgan-ai">Mike Morgan (inactive)</a></sub>
+
+<sub><strong>Community sponsors:</strong> <a href="https://github.com/jasonwu513">@jasonwu513</a> · <a href="https://github.com/1anter">@1anter</a> · <a href="https://github.com/massimotodaro">@massimotodaro</a> · <a href="https://github.com/meadmccabe">@meadmccabe</a></sub>
 
 <sub><a href="https://github.com/sponsors/affaan-m"><strong>Become a Sponsor</strong></a> · <a href="SPONSORS.md">Sponsor Tiers</a> · <a href="SPONSORING.md">Sponsorship Program</a></sub>
 
@@ -130,13 +130,13 @@ Instead of rebuilding that process in every prompt, you install it once and make
 
 ECC is MIT-licensed open source. It works best with Claude Code today, with first-class Codex support and adapters for GitHub Copilot and other harnesses. See the [support status matrix](#platform-support) before assuming feature parity.
 
-Access to 68 agents, 290 skills, and 94 legacy command shims, plus hooks, rules, memory, continuous learning, and AgentShield security scanning. The agents are specialized for planning, review, build repair, security, architecture, and domain work.
+Access to 71 agents, 311 skills, and 98 legacy command shims, plus hooks, rules, memory, continuous learning, and AgentShield security scanning. The agents are specialized for planning, review, build repair, security, architecture, and domain work.
 
 | Included         |       Count | What it gives you                                                                    |
 | ---------------- | ----------: | ------------------------------------------------------------------------------------ |
-| Agents           |   68 agents | Planning, review, build repair, security, architecture, and domain work              |
-| Skills           |  290 skills | TDD, research, security, docs, frontend, data, ML, operations, and more              |
-| Commands         | 94 commands | Convenient entry points while ECC moves to a skills-first surface                    |
+| Agents           |   71 agents | Planning, review, build repair, security, architecture, and domain work              |
+| Skills           |  311 skills | TDD, research, security, docs, frontend, data, ML, operations, and more              |
+| Commands         | 98 commands | Convenient entry points while ECC moves to a skills-first surface                    |
 | Hooks and memory |     Runtime | Enforcement, session summaries, continuous learning, instincts, and context controls |
 | Rules            |   Selective | Always-loaded standards you choose by language or project                            |
 | AgentShield      |    Included | Scanning for prompts, hooks, MCP config, permissions, secrets, and agent files       |
@@ -153,16 +153,16 @@ Access to 68 agents, 290 skills, and 94 legacy command shims, plus hooks, rules,
 ## Install ECC
 
 > [!IMPORTANT]
-> Guided package setup is coming in `book-universal` 2.2.0. The current npm
-> release, 2.1.0, does not include the guided setup commands. Use the native
-> Claude plugin commands at the top of this README until 2.2.0 is published.
+> This fork is not published to npm. Run the ECC CLI straight from GitHub with
+> `npx github:dylanlyu/book <command>`, or install it globally with
+> `npm install -g github:dylanlyu/book`.
 
 ### Pick one path only (per harness)
 
 You can use ECC with Claude Code, Codex, and other harnesses at the same time. Choose one install method for each harness:
 
 - **Recommended today for Claude Code:** use the [native plugin commands above](#install-with-claude-code)
-- **Coming in release 2.2:** guided package setup for Claude Code and Codex; see the preview at the bottom of this install area
+- **Also available:** guided package setup for Claude Code and Codex via `npx github:dylanlyu/book`; see [Claude Code details](#claude-code-details)
 - **Works:** Claude Code plugin + Codex native plugin
 - **Works:** Claude Code plugin + the legacy Codex sync flow
 - **Avoid:** Claude Code plugin + full Claude manual install
@@ -179,26 +179,21 @@ If you already layered multiple installs and things look duplicated, skip straig
 For Claude Code plugin setup, updates, scope changes, and hook-profile changes:
 
 ```bash
-npx book-universal setup
+npx github:dylanlyu/book setup
 ```
 
-The same published package works with modern package runners:
+Run it with npx straight from the GitHub repository:
 
 | Package runner | Guided setup command |
 |---|---|
-| npm / npx | `npx book-universal setup` |
-| pnpm | `pnpm dlx book-universal setup` |
-| Yarn 2+ | `yarn dlx book-universal setup` |
-| Bun | `bunx book-universal setup` |
-
-Yarn Classic 1 does not provide `yarn dlx`; use `npx`, install the package globally, or upgrade Yarn for a temporary one-shot run.
+| npm / npx | `npx github:dylanlyu/book setup` |
 
 The wizard inventories the official marketplace and every native Claude install scope before making changes, then installs, updates, or safely moves `book@dylanlyu` to the scope you choose. Rerun the same command whenever you want to update ECC, change scope, or change its hook profile. This setup wizard currently configures the Claude Code plugin; use the multi-harness wizard below for Codex.
 
 To configure more than one coding agent in one reviewed flow, use the multi-harness wizard:
 
 ```bash
-npx book-universal install --guided
+npx github:dylanlyu/book install --guided
 ```
 
 It lets you select any combination of Claude Code and Codex, shows each install channel and destination, preflights every selection before the first write, and asks for one final confirmation.
@@ -211,7 +206,7 @@ It lets you select any combination of Claude Code and Codex, shows each install 
 For automation, make every provider-specific choice explicit:
 
 ```bash
-npx book-universal install --guided \
+npx github:dylanlyu/book install --guided \
   --harness claude --harness codex \
   --claude-scope local --claude-hooks standard \
   --profile core --yes
@@ -220,7 +215,7 @@ npx book-universal install --guided \
 Verify the native guided Codex path without writing first:
 
 ```bash
-npx book-universal install --guided --harness codex --dry-run
+npx github:dylanlyu/book install --guided --harness codex --dry-run
 ```
 
 ### Claude Code
@@ -232,7 +227,7 @@ Use Claude Code's built-in marketplace commands only when you specifically want 
 /plugin install book@dylanlyu
 ```
 
-That installs ECC's skills, agents, commands, and plugin-managed hooks. Claude Code owns these built-in commands, including their errors when a marketplace, plugin, or conflicting scope already exists. ECC cannot intercept that parser. If either command reports an existing install or scope conflict, run `npx book-universal setup`; the ECC-owned flow inspects the current state and chooses install, update, or verified scope migration instead of blindly adding a duplicate.
+That installs ECC's skills, agents, commands, and plugin-managed hooks. Claude Code owns these built-in commands, including their errors when a marketplace, plugin, or conflicting scope already exists. ECC cannot intercept that parser. If either command reports an existing install or scope conflict, run `npx github:dylanlyu/book setup`; the ECC-owned flow inspects the current state and chooses install, update, or verified scope migration instead of blindly adding a duplicate.
 
 After ECC is installed, `/ecc:configure-ecc` is the namespaced in-Claude reconfiguration skill. It delegates to the same safe setup flow, but it is available only after the plugin is installed and cannot replace Claude Code's built-in `/plugin` command during a first install.
 
@@ -279,11 +274,11 @@ ECC has three public identifiers, and they are not interchangeable:
 
 - GitHub source repo: `affaan-m/ECC`
 - Claude marketplace/plugin identifier: `book@dylanlyu`
-- npm package: `book-universal`
+- CLI package name: `book-universal` (not published to npm; get it with `npx github:dylanlyu/book` or `npm install -g github:dylanlyu/book`)
 
-This is intentional. Anthropic marketplace/plugin installs are keyed by a canonical plugin identifier, so ECC uses `book@dylanlyu` to keep tool names and slash-command namespaces short enough for strict Desktop/API validators. Older posts may still show the former long marketplace identifier; treat that as a legacy alias only. Separately, the npm package stayed on `book-universal`, so npm installs and marketplace installs intentionally use different names.
+This is intentional. Anthropic marketplace/plugin installs are keyed by a canonical plugin identifier, so ECC uses `book@dylanlyu` to keep tool names and slash-command namespaces short enough for strict Desktop/API validators. Older posts may still show the former long marketplace identifier; treat that as a legacy alias only. Separately, the CLI package is named `book-universal`, so CLI installs and marketplace installs intentionally use different names.
 
-npm releases are cut per version tag, not per commit, so `book-universal` tracks releases (2.1, 2.2, ...) rather than every push to `main`. Install from git if you want the bleeding edge.
+This fork does not publish to npm; versions are marked by GitHub tags and Releases. `npx github:dylanlyu/book` and `npm install -g github:dylanlyu/book` fetch the repository's default branch, so they follow `main` rather than a tagged release.
 
 If your local Claude setup was wiped or reset, that does not mean you need to repurchase anything. Start with `node scripts/ecc.js list-installed`, then run `node scripts/ecc.js doctor` and `node scripts/ecc.js repair` before reinstalling. That usually restores ECC-managed files without rebuilding your setup.
 </details>
@@ -293,13 +288,13 @@ If your local Claude setup was wiped or reset, that does not mean you need to re
 Current Codex releases can install ECC as a native repo-marketplace plugin. The marketplace entry uses the repository root so Codex's cache receives the manifest together with all referenced skills, MCP configuration, hook runtime, scripts, and assets:
 
 ```bash
-codex plugin marketplace add affaan-m/ECC
+codex plugin marketplace add dylanlyu/book
 codex plugin add book@dylanlyu
 codex plugin list --json
 node scripts/codex/check-plugin-cache.js
 ```
 
-Both add commands are idempotent. To refresh later, run `codex plugin marketplace upgrade ecc` followed by `codex plugin add book@dylanlyu`. Codex stores one enabled plugin state in the active `CODEX_HOME`; it does not offer Claude's `user`, `project`, and `local` scopes. Its native hooks require an explicit trust decision and do not use Claude's four ECC hook profiles. Inside Codex, invoke `$configure-ecc` for the guided provider-aware flow.
+Both add commands are idempotent. To refresh later, run `codex plugin marketplace upgrade dylanlyu` followed by `codex plugin add book@dylanlyu`. Codex stores one enabled plugin state in the active `CODEX_HOME`; it does not offer Claude's `user`, `project`, and `local` scopes. Its native hooks require an explicit trust decision and do not use Claude's four ECC hook profiles. Inside Codex, invoke `$configure-ecc` for the guided provider-aware flow.
 
 The older `scripts/sync-ecc-to-codex.sh` path is a deprecated compatibility option for users who intentionally need copied and merged configuration in `~/.codex`; it is not required for the native plugin. New sync runs write an ownership manifest so cleanup can preserve modified user files. Run Codex once first so `~/.codex/config.toml` exists, then:
 
@@ -385,7 +380,7 @@ Point your harness at the endpoint, then install ECC:
 
 ```bash
 bash ./install.sh --target claude-project --profile minimal
-npx book-universal doctor --target claude-project
+npx github:dylanlyu/book doctor --target claude-project
 ```
 
 The harness discovers the installed project instructions and skills natively. The installer dry-run and regression suite verify that each project target stays inside its own project-local root.
@@ -460,6 +455,7 @@ Manual component-by-component copying also works. Each component is fully indepe
 
 ```bash
 # Just agents
+mkdir -p ~/.claude/agents
 cp agents/*.md ~/.claude/agents/
 
 # Rules directories (common + language-specific)
@@ -504,7 +500,7 @@ Use this only when you are intentionally skipping the plugin path:
 ```bash
 git clone https://github.com/affaan-m/ECC.git
 cd ECC
-./install.sh --profile full
+./install.sh --profile full --enable-hooks
 ```
 
 Windows:
@@ -512,8 +508,10 @@ Windows:
 ```powershell
 git clone https://github.com/affaan-m/ECC.git
 cd ECC
-.\install.ps1 --profile full
+.\install.ps1 --profile full --enable-hooks
 ```
+
+These examples enable the automatic hook runtime. To install without hooks, replace `--enable-hooks` with `--no-hooks`.
 
 If you choose this path, stop there. Do not also run `/plugin install`.
 
@@ -575,6 +573,12 @@ Without `ccg-workflow`, these `multi-*` commands will not run correctly.
 </details>
 
 <details>
+<summary><strong>Astra review requires the Codex CLI</strong></summary>
+
+`/astra-review` sends Claude-written code to GPT-6-Astra for an independent cross-provider review. It runs the locally installed [Codex CLI](https://github.com/openai/codex) with your ChatGPT login (`codex login`); no OpenAI API key is needed, and API keys in your environment are not forwarded. Invoking the command is your consent to send that diff to OpenAI. Setup, scopes, push gating, and troubleshooting are in the [Astra Review Guide](docs/ASTRA-REVIEW-GUIDE.md).
+</details>
+
+<details>
 <summary><strong>Reset, repair, or uninstall</strong></summary>
 
 ### Reset / Uninstall ECC
@@ -607,37 +611,28 @@ If you stacked methods, clean up in this order:
 4. Reinstall once, using a single path.
 </details>
 
-## Coming soon: guided setup in release 2.2
+## Guided setup from GitHub
 
-> [!WARNING]
-> These ECC package-runner commands are not available in the current npm
-> release, 2.1.0. Do not run them until `book-universal` 2.2.0 is published.
-
-The earlier README description—**Recommended default:** run the guided Claude plugin setup—was published too soon. That recommendation is withdrawn until release 2.2.
+The earlier README description—**Recommended default:** run the guided Claude plugin setup—depended on an npm release that this fork does not publish. The native plugin commands at the top of this README remain the recommended default; the guided commands below run straight from GitHub instead.
 
 For Claude Code plugin setup, updates, scope changes, and hook-profile changes:
 
 ```bash
-npx book-universal setup
+npx github:dylanlyu/book setup
 ```
 
-Release 2.2 will support the same guided setup through modern package runners:
+Run it with npx straight from the GitHub repository:
 
 | Package runner | Guided setup command |
 |---|---|
-| npm / npx | `npx book-universal setup` |
-| pnpm | `pnpm dlx book-universal setup` |
-| Yarn 2+ | `yarn dlx book-universal setup` |
-| Bun | `bunx book-universal setup` |
-
-Yarn Classic 1 does not provide `yarn dlx`; use `npx`, install the package globally, or upgrade Yarn for a temporary one-shot run after 2.2 is published.
+| npm / npx | `npx github:dylanlyu/book setup` |
 
 The wizard inventories the official marketplace and every native Claude install scope before making changes, then installs, updates, or safely moves `book@dylanlyu` to the scope you choose. Rerun the same command whenever you want to update ECC, change scope, or change its hook profile. This setup wizard currently configures the Claude Code plugin; use the multi-harness wizard below for Codex.
 
 To configure more than one coding agent in one reviewed flow, use the multi-harness wizard:
 
 ```bash
-npx book-universal install --guided
+npx github:dylanlyu/book install --guided
 ```
 
 It lets you select any combination of Claude Code and Codex, shows each install channel and destination, preflights every selection before the first write, and asks for one final confirmation.
@@ -650,7 +645,7 @@ It lets you select any combination of Claude Code and Codex, shows each install 
 For automation, make every provider-specific choice explicit:
 
 ```bash
-npx book-universal install --guided \
+npx github:dylanlyu/book install --guided \
   --harness claude --harness codex \
   --claude-scope local --claude-hooks standard \
   --profile core --yes
@@ -659,18 +654,18 @@ npx book-universal install --guided \
 Verify the native guided Codex path without writing first:
 
 ```bash
-npx book-universal install --guided --harness codex --dry-run
+npx github:dylanlyu/book install --guided --harness codex --dry-run
 ```
 
-Additional package-name commands will also become available through the 2.2 alias:
+Other CLI commands run the same way:
 
 ```bash
-npx book-universal consult "security reviews" --target claude
-npx book-universal install --profile minimal --target claude --with capability:machine-learning
-npx book-universal doctor --target claude
+npx github:dylanlyu/book consult "security reviews" --target claude
+npx github:dylanlyu/book install --profile minimal --target claude --with capability:machine-learning
+npx github:dylanlyu/book doctor --target claude
 ```
 
-Do not use `npx ecc-install --profile minimal --target claude`: `ecc-install` is a binary name inside `book-universal`, not a separately published npm package.
+Do not use `npx ecc-install --profile minimal --target claude`: `ecc-install` is a binary that ships with the `book-universal` CLI package (available on `PATH` after `npm install -g github:dylanlyu/book`), not a separately published npm package.
 
 ## Start Using ECC
 
@@ -681,6 +676,7 @@ Start with the workflow you need, not the full catalog.
 | Building a feature | `/ecc:plan "describe the feature"`, then `tdd-workflow` |
 | Fixing a bug | Reproduce it with a failing test, then use `tdd-workflow` |
 | Reviewing new code | `/code-review` for a fresh-context review |
+| Triaging a GitHub issue | `/ecc:issue-review <number>` (plugin) or `/issue-review <number>` (manual install) to verify it against the code and draft a reply |
 | Repairing a build | `/build-fix` |
 | Cleaning a codebase | `/refactor-clean` |
 | Checking context pressure | `/context-budget` |
@@ -721,6 +717,7 @@ Skills are the canonical workflow surface; maintained slash entries stay availab
 | Design system architecture | `/ecc:plan` + architect agent | architect |
 | Write code with tests first | `tdd-workflow` skill | tdd-guide |
 | Review code I just wrote | `/code-review` | code-reviewer |
+| Review a GitHub issue | `/ecc:issue-review` (plugin), `/issue-review` (manual install) | — (issue-review skill) |
 | Fix a failing build | `/build-fix` | build-error-resolver |
 | Run end-to-end tests | `e2e-testing` skill | e2e-runner |
 | Find security vulnerabilities | `/security-scan` | security-reviewer |
@@ -815,7 +812,7 @@ It's harness- and model-agnostic: a plain CLI (`ecc-plan-canvas`) speaking JSON,
 
 ### v1.0.0: First Fork Release (Aug 2026)
 
-First release of this fork. Renamed to plugin `book`, marketplace `dylanlyu`, npm package `book-universal`.
+First release of this fork. Renamed to plugin `book`, marketplace `dylanlyu`, CLI package name `book-universal` (not published to npm).
 
 ### v2.0.0: The Agent Harness Operating System (Jun 2026)
 
@@ -945,7 +942,7 @@ Rules, skills, agents, and hooks solve different problems. Keeping those jobs se
 ECC's Memory Vault gives Claude, Codex, and other harnesses one local, inspectable Markdown format for durable context and handoffs. Project and team memories live under `.ecc/memory/`; user memories live under `~/.ecc/memory/`.
 
 ```bash
-npm install -g book-universal
+npm install -g github:dylanlyu/book
 ecc memory init --scope project
 ecc memory search "authentication migration" --target-harness codex
 ecc memory doctor
@@ -960,10 +957,10 @@ Memory is unreviewed context, not executable policy. Verify important claims aga
 
 The Memory Vault stores portable `ecc.memory.v1` Markdown documents instead of copying vendor transcripts or emailing context between agents. Project memories are protected by a fail-closed `.gitignore`; use the team scope only for human-inspected, version-controlled sharing. Team memories remain unreviewed context even after they are committed.
 
-Skill-only, minimal, manual, and Claude plugin installs do not put the Memory Vault runtime on `PATH`. Install the npm runtime separately before using the CLI or optional MCP server:
+Skill-only, minimal, manual, and Claude plugin installs do not put the Memory Vault runtime on `PATH`. Install the CLI runtime from GitHub separately before using the CLI or optional MCP server:
 
 ```bash
-npm install -g book-universal
+npm install -g github:dylanlyu/book
 ecc memory --help
 command -v ecc-memory-mcp
 ```
@@ -1031,15 +1028,15 @@ This repo is the raw code. The guides explain everything.
 | Parallelization | Git worktrees, cascade method, when to scale instances |
 | Subagent Orchestration | The context problem, iterative retrieval pattern |
 
-[Commands Quick Reference](./COMMANDS-QUICK-REF.md) | [Manual Adaptation Guide](docs/MANUAL-ADAPTATION-GUIDE.md)
+[Commands Quick Reference](./COMMANDS-QUICK-REF.md) | [Manual Adaptation Guide](docs/MANUAL-ADAPTATION-GUIDE.md) | [Astra Review Guide](docs/ASTRA-REVIEW-GUIDE.md) | [Troubleshooting FAQ](./TROUBLESHOOTING.md) | [Roadmap](docs/ROADMAP.md)
 
 ## What's Inside
 
 ```text
 ECC/
-|-- agents/           # 68 specialized subagents for delegation
-|-- skills/           # 284 reusable workflows loaded on demand
-|-- commands/         # 94 maintained slash-command shims
+|-- agents/           # 71 specialized subagents for delegation
+|-- skills/           # 311 reusable workflows loaded on demand
+|-- commands/         # 98 maintained slash-command shims
 |-- rules/            # opt-in common and language standards
 |-- hooks/            # runtime automation and enforcement
 |-- scripts/          # install, repair, sync, orchestration, and checks
@@ -1059,7 +1056,7 @@ ECC/
 |   |-- plugin.json         # Plugin metadata and component paths
 |   |-- marketplace.json    # Marketplace catalog for /plugin marketplace add
 |
-|-- agents/           # 67 specialized subagents for delegation
+|-- agents/           # 71 specialized subagents for delegation
 |   |-- planner.md           # Feature implementation planning
 |   |-- architect.md         # System design decisions
 |   |-- tdd-guide.md         # Test-driven development
@@ -1086,6 +1083,7 @@ ECC/
 |   |-- kotlin-reviewer.md   # Kotlin/Android/KMP code review
 |   |-- kotlin-build-resolver.md # Kotlin/Gradle build errors
 |   |-- harmonyos-app-resolver.md # HarmonyOS/ArkTS app development
+|   |-- ruby-reviewer.md     # Ruby/Rails code review
 |   |-- rust-reviewer.md     # Rust code review
 |   |-- rust-build-resolver.md # Rust build error resolution
 |   |-- pytorch-build-resolver.md # PyTorch/CUDA training errors
@@ -1100,6 +1098,7 @@ ECC/
 |   |-- article-writing/            # Long-form writing in a supplied voice without generic AI tone
 |   |-- content-engine/             # Multi-platform social content and repurposing workflows
 |   |-- market-research/            # Source-attributed market, competitor, and investor research
+|   |-- osint-investigation/        # OSINT methodology: competing hypotheses, falsification, visual and evidence verification
 |   |-- investor-materials/         # Pitch decks, one-pagers, memos, and financial models
 |   |-- investor-outreach/          # Personalized fundraising outreach and follow-up
 |   |-- continuous-learning/        # Legacy v1 Stop-hook pattern extraction
@@ -1135,6 +1134,7 @@ ECC/
 |   |-- springboot-verification/    # Spring Boot verification
 |   |-- configure-ecc/              # Interactive installation wizard
 |   |-- security-scan/              # AgentShield security auditor integration
+|   |-- issue-review/               # GitHub issue review: verify, dedupe, severity, draft reply
 |   |-- java-coding-standards/      # Java coding standards
 |   |-- jpa-patterns/               # JPA/Hibernate patterns
 |   |-- postgres-patterns/          # PostgreSQL optimization patterns
@@ -1166,6 +1166,7 @@ ECC/
 |-- commands/         # Maintained slash-entry compatibility; prefer skills/
 |   |-- plan.md             # /plan - Implementation planning
 |   |-- code-review.md      # /code-review - Quality review
+|   |-- issue-review.md     # /issue-review - GitHub issue review
 |   |-- build-fix.md        # /build-fix - Fix build errors
 |   |-- refactor-clean.md   # /refactor-clean - Dead code removal
 |   |-- quality-gate.md     # /quality-gate - Verification gate
@@ -1547,7 +1548,7 @@ See [affaan-m/ECC#2065](https://github.com/affaan-m/ECC/issues/2065).
 | Harness | Status | Recommended distribution | Important limitation |
 |---|---|---|---|
 | Claude Code | Stable primary | Plugin or selective installer | The plugin advertises the installed catalog to the model; use a selective/manual profile when context footprint matters. Optional shell-backed skills are not portable to every OS. |
-| Codex | Supported sync; marketplace experimental | Repo config or `sync-ecc-to-codex.sh` | No ECC hook runtime. The marketplace package can omit shared repository content from Codex's cache; use sync for the reliable path. |
+| Codex | Supported native plugin | Codex marketplace plugin or repo config | Native hooks require an explicit trust decision and do not use Claude's hook profiles. The legacy sync is compatibility-only. |
 | GitHub Copilot | Instruction-only | Checked-in instructions and prompt files | No ECC hooks, runtime agents, delegation, or native skill discovery. |
 
 ### Cross-tool capability map
@@ -1555,22 +1556,22 @@ See [affaan-m/ECC#2065](https://github.com/affaan-m/ECC/issues/2065).
 | Capability | Claude Code | Codex | GitHub Copilot |
 |---|---|---|---|
 | Instructions | Native | Native `AGENTS.md` | Native instruction file |
-| Skills | Native installed set | Native synced set | Prompt/instruction references only |
-| Agents/delegation | Native agents | Codex multi-agent roles | Not supported |
-| ECC hooks | Native plugin hooks | Not supported | Not supported |
-| MCP configuration | Available, explicit activation | TOML merge through sync | Not supplied by ECC |
+| Skills | Native installed set | Native plugin set | Prompt/instruction references only |
+| Agents/delegation | Native agents | Codex multi-agent roles; Claude agent files are not installed as roles | Not supported |
+| ECC hooks | Native plugin hooks | Native reviewed subset with explicit trust | Not supported |
+| MCP configuration | Available, explicit activation | Native plugin manifest; legacy sync can merge TOML | Not supplied by ECC |
 | Secret detection | Hook-based | Sandbox-based | Instruction-based |
 | Auto-format | PostToolUse hook | Not supported | Not supported |
 | Parity with Claude Code | Primary reference | Partial | Not a parity target |
 
 | Surface | Claude Code | Codex | GitHub Copilot | Current |
 |---|---|---|---|---|
-| **Version** | Plugin | Reference config | Instruction layer | 1.0.2 |
+| **Version** | Plugin | Reference config | Instruction layer | 1.0.3 |
 
 **Key architectural decisions:**
 - **AGENTS.md** at root is the universal cross-tool file (read by Claude Code and Codex; GitHub Copilot uses `.github/copilot-instructions.md` instead)
 - **Skills format** (SKILL.md with YAML frontmatter) works across Claude Code and Codex
-- Codex's lack of hooks is compensated by `AGENTS.md`, optional `model_instructions_file` overrides, and sandbox permissions
+- Codex's narrower native hook set is supplemented by `AGENTS.md`, optional `model_instructions_file` overrides, and sandbox permissions
 
 <details>
 <summary><strong>Codex macOS app + CLI support in depth</strong></summary>
@@ -1588,9 +1589,14 @@ npm install && bash scripts/sync-ecc-to-codex.sh
 cp .codex/config.toml ~/.codex/config.toml
 ```
 
-The sync script safely merges ECC MCP servers into your existing `~/.codex/config.toml` using an **add-only** strategy: it never removes or modifies your existing servers. Run with `--dry-run` to preview changes, or `--update-mcp` to force-refresh ECC servers to the latest recommended config.
+Normal MCP sync preserves existing server settings and warns when they differ from ECC's recommendation. An existing `chrome-devtools-mcp@latest` entry therefore stays unchanged; updating the repository alone does not adopt the recommended `chrome-devtools-mcp@1.10.1` pin. Existing legacy-sync users can preview and explicitly apply the refresh from the updated ECC checkout:
 
-For Context7, ECC uses the canonical Codex section name `[mcp_servers.context7]` while still launching the `@upstash/context7-mcp` package. If you already have a legacy `[mcp_servers.context7-mcp]` entry, `--update-mcp` migrates it to the canonical section name.
+```bash
+bash scripts/sync-ecc-to-codex.sh --dry-run --update-mcp
+bash scripts/sync-ecc-to-codex.sh --update-mcp
+```
+
+Review the preview before applying: `--update-mcp` replaces the entire recommended `chrome-devtools` server section, including custom command arguments and nested settings. Unrelated user-managed servers remain in place. Retired defaults such as Context7 are not refreshed or migrated by this flag.
 
 Codex macOS app:
 - Open this repository as your workspace.
@@ -1606,7 +1612,7 @@ Codex macOS app:
 | Config | 1 | `.codex/config.toml`: top-level approvals/sandbox/web_search, MCP servers, notifications, profiles |
 | AGENTS.md | 2 | Root (universal) + `.codex/AGENTS.md` (Codex-specific supplement) |
 | Skills | 32 | `.agents/skills/`: SKILL.md + agents/openai.yaml per skill |
-| MCP Servers | 6 | GitHub, Context7, Exa, Memory, Playwright, Sequential Thinking (7 with Supabase via `--update-mcp` sync) |
+| MCP Servers | 6 legacy reference entries | GitHub, Context7, Exa, Memory, Playwright, Sequential Thinking. Current managed sync recommends `chrome-devtools`; see the explicit refresh instructions above. |
 | Profiles | 2 | `strict` (read-only sandbox) and `yolo` (full auto-approve) |
 | Agent Roles | 3 | `.codex/agents/`: explorer, reviewer, docs-researcher |
 
@@ -1702,19 +1708,26 @@ Add to `~/.claude/settings.json`:
 {
   "model": "sonnet",
   "env": {
-    "MAX_THINKING_TOKENS": "10000",
+    "CLAUDE_CODE_EFFORT_LEVEL": "medium",
     "CLAUDE_AUTOCOMPACT_PCT_OVERRIDE": "50",
     "CLAUDE_CODE_SUBAGENT_MODEL": "haiku"
   }
 }
 ```
 
+The effort setting requires a model that supports effort controls. On Amazon Bedrock,
+Google Cloud's Agent Platform, and Microsoft Foundry, the `sonnet` alias currently
+resolves to Sonnet 4.5, which does not support effort controls. Select an effort-capable
+model available from your provider, or omit `CLAUDE_CODE_EFFORT_LEVEL`.
+
 | Setting | Default | Recommended | Impact |
 |---------|---------|-------------|--------|
 | `model` | opus | **sonnet** | ~60% cost reduction; handles 80%+ of coding tasks |
-| `MAX_THINKING_TOKENS` | 31,999 | **10,000** | ~70% reduction in hidden thinking cost per request |
+| `CLAUDE_CODE_EFFORT_LEVEL` | Model-dependent | **medium**, if supported | Controls adaptive reasoning depth on models that support effort controls; lower effort trades reasoning depth for latency and cost |
 | `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE` | 95 | **50** | Compacts earlier, better quality in long sessions |
 | `ECC_CONTEXT_MONITOR_COST_WARNINGS` | on | **off for subscription users** | Suppresses agent-facing API-rate estimate warnings while keeping context/scope/loop warnings |
+
+For fixed-budget models, `MAX_THINKING_TOKENS` controls the thinking budget. On Opus 4.6 or Sonnet 4.6, also set `CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING=1` to use that mode. A positive token value does not cap adaptive reasoning; see the [performance rule](rules/common/performance.md#extended-thinking--plan-mode).
 
 Switch to Opus only when you need deep architectural reasoning:
 ```
@@ -1798,7 +1811,8 @@ Install ECC only from official sources:
 
 - GitHub repository: <https://github.com/affaan-m/ECC>
 - Claude Code plugin: `book@dylanlyu`
-- npm packages: [`book-universal`](https://www.npmjs.com/package/book-universal) and [`ecc-agentshield`](https://www.npmjs.com/package/ecc-agentshield)
+- npm package: [`ecc-agentshield`](https://www.npmjs.com/package/ecc-agentshield)
+- ECC CLI (not published to npm): `npx github:dylanlyu/book` or `npm install -g github:dylanlyu/book`
 - GitHub App: <https://github.com/apps/ecc-tools>
 - Website: <https://ecc.tools>
 
@@ -1862,7 +1876,11 @@ Run the cache check from an ECC checkout:
 node scripts/codex/check-plugin-cache.js
 ```
 
-If it reports unresolved parent references, use `bash scripts/sync-ecc-to-codex.sh`. Registration in `codex plugin list` confirms the marketplace entry, not that every referenced file reached the plugin cache. Runtime skill loading from local/repo marketplaces is still unreliable upstream ([openai/codex#26037](https://github.com/openai/codex/issues/26037)); see [#2128](https://github.com/affaan-m/ECC/issues/2128) for the full investigation.
+If it reports unresolved parent references, refresh the native cache with `codex plugin marketplace upgrade dylanlyu`, run `codex plugin add book@dylanlyu` again, and restart Codex. Registration in `codex plugin list` confirms the marketplace entry, while the cache check verifies that the installed manifest can resolve its skills, MCP configuration, and assets. Use `bash scripts/sync-ecc-to-codex.sh` only when you intentionally need the legacy copied-configuration compatibility path.
+
+If Codex 0.164.0 reports `unsupported plugin entry type` after you install hook
+dependencies into the cache, see the [cache-local runtime dependency procedure](.codex-plugin/README.md#runtime-dependencies-and-codex-01640-cache-checks).
+It avoids npm executable symlinks without disabling Codex's hook trust checks.
 </details>
 
 <details>

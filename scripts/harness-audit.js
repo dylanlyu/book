@@ -3,6 +3,11 @@
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
+const {
+  countPythonTestFiles,
+  gitignoreIgnoresEnvFiles,
+  hasPythonTestSuite,
+} = require('./lib/harness-audit-consumer');
 
 const CATEGORIES = [
   'Tool Coverage',
@@ -211,7 +216,8 @@ function hasFileWithExtension(rootDir, relativeDir, extensions) {
 
 function detectTargetMode(rootDir) {
   const packageJson = safeParseJson(safeRead(rootDir, 'package.json'));
-  if (packageJson?.name === 'everything-claude-code') {
+  // 'everything-claude-code' is the legacy package name, kept for older checkouts.
+  if (['ecc-universal', 'everything-claude-code'].includes(packageJson?.name)) {
     return 'repo';
   }
 
@@ -222,7 +228,12 @@ function detectTargetMode(rootDir) {
   return 'consumer';
 }
 
-const ECC_PLUGIN_KEY_PATTERNS = [/^book@/i, /^everything-claude-code@/i];
+// The everything-claude-code entries below are legacy install ids, kept so
+// existing 1.x installs are still detected.
+const ECC_PLUGIN_KEY_PATTERNS = [
+  /^book@/i,
+  /^everything-claude-code@/i,
+];
 
 const ECC_LEGACY_PLUGIN_DIRS = ['book', 'book@dylanlyu', 'everything-claude-code', 'everything-claude-code@everything-claude-code'];
 
@@ -787,6 +798,7 @@ function getConsumerChecks(rootDir) {
   const gitignore = safeRead(rootDir, '.gitignore');
   const projectHooks = safeRead(rootDir, '.claude/settings.json');
   const pluginInstall = findPluginInstall(rootDir);
+  const pythonTestCount = countPythonTestFiles(rootDir);
 
   return [
     {
@@ -795,7 +807,7 @@ function getConsumerChecks(rootDir) {
       points: 4,
       scopes: ['repo'],
       path: '~/.claude/plugins/book/ (legacy everything-claude-code paths also supported)',
-      description: 'Everything Claude Code is installed for the active user or project',
+      description: 'ECC is installed for the active user or project',
       pass: Boolean(pluginInstall),
       fix: 'Install the ECC plugin for this user or project before auditing project-specific harness quality.'
     },
@@ -841,8 +853,11 @@ function getConsumerChecks(rootDir) {
       scopes: ['repo'],
       path: 'tests/',
       description: 'The project has an automated test entrypoint',
-      pass: typeof packageJson?.scripts?.test === 'string' || countFiles(rootDir, 'tests', '.test.js') > 0 || hasFileWithExtension(rootDir, '.', ['.spec.js', '.spec.ts', '.test.ts']),
-      fix: 'Add a test script or checked-in tests so harness recommendations can be verified automatically.'
+      pass: typeof packageJson?.scripts?.test === 'string' ||
+        countFiles(rootDir, 'tests', '.test.js') > 0 ||
+        hasFileWithExtension(rootDir, '.', ['.spec.js', '.spec.ts', '.test.ts']) ||
+        hasPythonTestSuite(rootDir, pythonTestCount),
+      fix: 'Add a test script or checked-in tests so harness recommendations can be verified automatically.',
     },
     {
       id: 'consumer-ci-workflow',
@@ -871,8 +886,9 @@ function getConsumerChecks(rootDir) {
       scopes: ['repo'],
       path: 'evals/',
       description: 'The project has evals or multiple automated tests',
-      pass: countFiles(rootDir, 'evals', null) > 0 || countFiles(rootDir, 'tests', '.test.js') >= 3,
-      fix: 'Add eval fixtures or at least a few focused automated tests for critical flows.'
+      pass: countFiles(rootDir, 'evals', null) > 0 ||
+        countFiles(rootDir, 'tests', '.test.js') + pythonTestCount >= 3,
+      fix: 'Add eval fixtures or at least a few focused automated tests for critical flows.',
     },
     {
       id: 'consumer-security-policy',
@@ -891,8 +907,8 @@ function getConsumerChecks(rootDir) {
       scopes: ['repo'],
       path: '.gitignore',
       description: 'The project ignores common secret env files',
-      pass: gitignore.includes('.env'),
-      fix: 'Ignore .env-style files in .gitignore so secrets do not land in the repo.'
+      pass: gitignoreIgnoresEnvFiles(gitignore),
+      fix: 'Ignore .env-style files in .gitignore so secrets do not land in the repo.',
     },
     {
       id: 'consumer-hook-guardrails',

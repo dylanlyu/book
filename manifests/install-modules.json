@@ -58,14 +58,21 @@
       "description": "Core slash-command library and command docs.",
       "paths": [
         "commands",
+        "scripts/astra-review.js",
         "scripts/harness-audit.js",
-        "scripts/skills-health.js"
+        "scripts/skills-health.js",
+        "scripts/lib/skill-evolution",
+        "scripts/lib/astra-review",
+        "scripts/ci/validate-skill-host-compat.js",
+        "scripts/ci/validate-skills.js"
       ],
       "targets": [
         "claude",
         "claude-project"
       ],
-      "dependencies": [],
+      "dependencies": [
+        "shared-script-utils"
+      ],
       "defaultInstall": true,
       "cost": "medium",
       "stability": "stable"
@@ -97,14 +104,17 @@
         ".codex",
         "mcp-configs",
         "scripts/auto-update.js",
-        "scripts/setup-package-manager.js"
+        "scripts/setup-package-manager.js",
+        "scripts/lib/package-manager.js"
       ],
       "targets": [
         "claude",
         "claude-project",
         "codex"
       ],
-      "dependencies": [],
+      "dependencies": [
+        "shared-script-utils"
+      ],
       "defaultInstall": true,
       "cost": "light",
       "stability": "stable"
@@ -118,6 +128,7 @@
         "skills/angular-developer",
         "skills/api-design",
         "skills/backend-patterns",
+        "skills/bengali-nlp",
         "skills/coding-standards",
         "skills/compose-multiplatform-patterns",
         "skills/contract-first",
@@ -133,6 +144,7 @@
         "skills/fastapi-patterns",
         "skills/frontend-design-direction",
         "skills/frontend-patterns",
+        "skills/i18n-sync",
         "skills/frontend-slides",
         "skills/make-interfaces-feel-better",
         "skills/golang-patterns",
@@ -165,6 +177,7 @@
         "skills/springboot-patterns",
         "skills/springboot-tdd",
         "skills/springboot-verification",
+        "skills/typescript-patterns",
         "skills/ui-to-vue",
         "skills/vue-patterns",
         "skills/accessibility",
@@ -195,6 +208,11 @@
         "commands-core",
         "platform-configs"
       ],
+      "optionalDependencies": [
+        "rules-core",
+        "agents-core",
+        "commands-core"
+      ],
       "defaultInstall": false,
       "cost": "medium",
       "stability": "stable"
@@ -207,6 +225,7 @@
         "skills/clickhouse-io",
         "skills/database-migrations",
         "skills/jpa-patterns",
+        "skills/mybatis-patterns",
         "skills/mysql-patterns",
         "skills/postgres-patterns",
         "skills/prisma-patterns",
@@ -244,6 +263,25 @@
       "stability": "stable"
     },
     {
+      "id": "documentation-context",
+      "kind": "skills",
+      "description": "Optional durable domain-context and ADR handoff workflow.",
+      "paths": [
+        "skills/context-and-decisions"
+      ],
+      "targets": [
+        "claude",
+        "claude-project",
+        "codex"
+      ],
+      "dependencies": [
+        "workflow-quality"
+      ],
+      "defaultInstall": false,
+      "cost": "light",
+      "stability": "beta"
+    },
+    {
       "id": "workflow-quality",
       "kind": "skills",
       "description": "Evaluation, TDD, verification, compaction, learning, and cross-harness memory skills, including the legacy continuous-learning v1 path. The unified-memory workflow requires the separately installed book-universal CLI runtime.",
@@ -267,14 +305,17 @@
         "skills/plankton-code-quality",
         "skills/production-audit",
         "skills/skill-comply",
+        "skills/skill-host-compat",
         "skills/skill-scout",
         "skills/skill-stocktake",
+        "skills/story-lifecycle",
         "skills/strategic-compact",
         "skills/tdd-workflow",
         "skills/verification-loop",
         "skills/windows-desktop-e2e",
         "skills/agent-self-evaluation",
         "skills/architecture-decision-records",
+        "skills/brownfield-retrospective",
         "skills/browser-qa",
         "skills/ck",
         "skills/click-path-audit",
@@ -294,7 +335,8 @@
         "skills/repo-scan",
         "skills/rules-distill",
         "skills/santa-method",
-        "skills/git-workflow"
+        "skills/git-workflow",
+        "skills/conventional-commit-review"
       ],
       "targets": [
         "claude",
@@ -307,6 +349,25 @@
       "defaultInstall": true,
       "cost": "medium",
       "stability": "stable"
+    },
+    {
+      "id": "documentation-governance",
+      "kind": "skills",
+      "description": "Optional documentation-governance routing and deterministic read-only audits.",
+      "paths": [
+        "skills/docs-governance"
+      ],
+      "targets": [
+        "claude",
+        "claude-project",
+        "codex"
+      ],
+      "dependencies": [
+        "workflow-quality"
+      ],
+      "defaultInstall": false,
+      "cost": "light",
+      "stability": "beta"
     },
     {
       "id": "optimization-workflows",
@@ -340,12 +401,14 @@
       "kind": "skills",
       "description": "Security review and security-focused framework guidance.",
       "paths": [
+        "skills/agent-security-hardening",
         "skills/defi-amm-security",
         "skills/django-security",
         "skills/healthcare-phi-compliance",
         "skills/hipaa-compliance",
         "skills/laravel-security",
         "skills/llm-trading-agent-security",
+        "skills/mcp-dependency-review",
         "skills/nodejs-keccak256",
         "skills/perl-security",
         "skills/quarkus-security",
@@ -381,6 +444,7 @@
         "skills/deep-research",
         "skills/exa-search",
         "skills/research-ops",
+        "skills/osint-investigation",
         "skills/scientific-db-pubmed-database",
         "skills/scientific-db-uspto-database",
         "skills/scientific-pkg-gget",
@@ -447,12 +511,14 @@
         "skills/email-ops",
         "skills/finance-billing-ops",
         "skills/github-ops",
+        "skills/issue-review",
         "skills/google-workspace-ops",
         "skills/jira-integration",
         "skills/knowledge-ops",
         "skills/messages-ops",
         "skills/project-flow-ops",
         "skills/terminal-ops",
+        "skills/token-card",
         "skills/unified-notifications-ops",
         "skills/workspace-surface-audit",
         "skills/mailtrap-email-integration"
@@ -623,6 +689,9 @@
         "commands-core",
         "platform-configs"
       ],
+      "optionalDependencies": [
+        "commands-core"
+      ],
       "defaultInstall": false,
       "cost": "medium",
       "stability": "beta"
@@ -673,6 +742,7 @@
         "skills/dynamic-workflow-mode",
         "skills/enterprise-agent-ops",
         "skills/nanoclaw-repl",
+        "skills/prompt-caching-strategy",
         "skills/prompt-optimizer",
         "skills/ralphinho-rfc-pipeline",
         "skills/regex-vs-llm-structured-text",
@@ -683,6 +753,7 @@
         "skills/agent-payment-x402",
         "skills/autonomous-agent-harness",
         "skills/gan-style-harness",
+        "skills/agent-runtime-gateway-smoke-test",
         "skills/opensource-pipeline",
         "skills/orch-add-feature",
         "skills/orch-build-mvp",
@@ -809,6 +880,86 @@
       ],
       "defaultInstall": false,
       "cost": "medium",
+      "stability": "stable"
+    },
+    {
+      "id": "documentation-change-impact",
+      "kind": "skills",
+      "description": "Optional read-only change-impact analysis workflow.",
+      "paths": [
+        "skills/change-impact"
+      ],
+      "targets": [
+        "claude",
+        "claude-project",
+        "codex"
+      ],
+      "dependencies": [
+        "workflow-quality"
+      ],
+      "defaultInstall": false,
+      "cost": "light",
+      "stability": "beta"
+    },
+    {
+      "id": "documentation-module-governance",
+      "kind": "skills",
+      "description": "Optional module-local instructions and documentation ownership workflow.",
+      "paths": [
+        "skills/module-governance"
+      ],
+      "targets": [
+        "claude",
+        "claude-project",
+        "codex"
+      ],
+      "dependencies": [
+        "documentation-context",
+        "documentation-governance",
+        "documentation-change-impact",
+        "framework-language"
+      ],
+      "defaultInstall": false,
+      "cost": "light",
+      "stability": "beta"
+    },
+    {
+      "id": "documentation-test-regression",
+      "kind": "skills",
+      "description": "Optional test-collaboration and module-regression workflow.",
+      "paths": [
+        "skills/test-collaboration",
+        "skills/module-regression"
+      ],
+      "targets": [
+        "claude",
+        "claude-project",
+        "codex"
+      ],
+      "dependencies": [
+        "workflow-quality"
+      ],
+      "defaultInstall": false,
+      "cost": "light",
+      "stability": "beta"
+    },
+    {
+      "id": "shared-script-utils",
+      "kind": "platform",
+      "description": "Shared utility files required by installed commands and platform tools.",
+      "paths": [
+        "scripts/lib/utils.js",
+        "scripts/lib/agent-data-home.js",
+        "scripts/lib/path-safety.js"
+      ],
+      "targets": [
+        "claude",
+        "claude-project",
+        "codex"
+      ],
+      "dependencies": [],
+      "defaultInstall": false,
+      "cost": "light",
       "stability": "stable"
     }
   ]
