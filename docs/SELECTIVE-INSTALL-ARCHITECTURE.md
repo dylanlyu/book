@@ -708,7 +708,7 @@ Suggested payload:
     "skippedModules": []
   },
   "source": {
-    "repoVersion": "1.0.2",
+    "repoVersion": "1.0.3",
     "repoCommit": "git-sha",
     "manifestVersion": 1
   },
