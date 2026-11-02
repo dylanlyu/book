@@ -280,6 +280,11 @@ JoyCode 是最後一個 advanced harness，移除後該段輸出必然是空的�
 `cleanupLegacyAntigravityInstall`、`adaptAntigravityAgent`、`antigravity-agent-frontmatter` transform，
 以及 discovery/uninstall 的 `legacy` 記錄分支。
 
+`apply.js` 另排除 `withMcpMergeExclusions`（2026-11-02）與 `tests/lib/install-mcp-exclusions.test.js`：
+它只過濾寫入 `mcp.json` 的 `merge-json` 操作，而產生這類操作的只有 Cursor、Kimi adapter，
+保留的 3 個目標都把 MCP 設定當一般檔案複製，實際流程中永遠不會觸發。
+`ECC_DISABLED_MCPS` 對 `copy-file` MCP 設定的過濾（`applyInstallPlanLocked` 內）仍保留。
+
 ### `scripts/sync-ecc-to-codex.sh`
 
 排除 `CURSOR_RULES_DIR`。保留 `ECC_RULES_DIR`（指向正規 `rules/`）與 `LEGACY_STATE_HELPER`。

@@ -18,7 +18,7 @@ manual, and Claude plugin installs do not create the required commands on
 or MCP examples:
 
 ```bash
-npm install -g book-universal
+npm install -g github:dylanlyu/book
 ecc memory --help
 command -v ecc-memory-mcp
 ```

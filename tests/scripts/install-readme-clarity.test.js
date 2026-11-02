@@ -51,7 +51,7 @@ function runTests() {
 
   if (test('README leads with the idempotent guided plugin setup path', () => {
     assert.ok(
-      readme.includes('npx book-universal setup'),
+      readme.includes('npx github:dylanlyu/book setup'),
       'README should lead new users to the package-name setup command'
     );
     assert.ok(
@@ -76,14 +76,11 @@ function runTests() {
     );
   })) passed++; else failed++;
 
-  if (test('README documents modern package-runner alternatives', () => {
-    assert.ok(readme.includes('pnpm dlx book-universal setup'));
-    assert.ok(readme.includes('yarn dlx book-universal setup'));
-    assert.ok(readme.includes('bunx book-universal setup'));
-    assert.ok(
-      readme.includes('Yarn Classic 1 does not provide `yarn dlx`'),
-      'README should not advertise the modern Yarn command to Yarn Classic users'
-    );
+  if (test('README does not advertise npm registry runners for the unpublished CLI', () => {
+    // This fork does not publish book-universal to npm (docs/MERGE-EXCLUSIONS.md section 5).
+    for (const runner of ['npx book-universal', 'pnpm dlx book-universal', 'yarn dlx book-universal', 'bunx book-universal', 'npm install -g book-universal']) {
+      assert.ok(!readme.includes(runner), 'README must not tell users to run ' + runner);
+    }
   })) passed++; else failed++;
 
   if (test('README documents reset and uninstall flow', () => {
@@ -138,7 +135,7 @@ function runTests() {
       'README should surface component discovery before install steps'
     );
     assert.ok(
-      readme.includes('npx book-universal consult "security reviews" --target claude'),
+      readme.includes('npx github:dylanlyu/book consult "security reviews" --target claude'),
       'README should document the packaged consult command'
     );
     assert.ok(

@@ -243,32 +243,6 @@ function isMcpConfigPath(filePath) {
   return basename === '.mcp.json' || basename === 'mcp.json';
 }
 
-function withMcpMergeExclusions(plan, disabledServers) {
-  if (disabledServers.length === 0) {
-    return plan;
-  }
-  const filterOperation = operation => (
-    operation.kind === 'merge-json' && isMcpConfigPath(operation.destinationPath)
-      && isPlainObject(operation.mergePayload)
-      && isPlainObject(operation.mergePayload.mcpServers)
-      ? {
-        ...operation,
-        mergePayload: filterMcpConfig(operation.mergePayload, disabledServers).config,
-      }
-      : operation
-  );
-  // Writes, recovery checkpoints, and the final ownership ledger must use the
-  // same payload. Repair and uninstall later run without the install environment.
-  return {
-    ...plan,
-    operations: plan.operations.map(filterOperation),
-    statePreview: {
-      ...plan.statePreview,
-      operations: plan.statePreview.operations.map(filterOperation),
-    },
-  };
-}
-
 function assertSafeInstallOperation(plan, operation) {
   if (!operation || typeof operation.destinationPath !== 'string') {
     throw new Error('Refusing to apply install operation: missing destination path.');
@@ -436,8 +410,7 @@ function prepareHookConsentMigration(plan, migration) {
   };
 }
 
-function previewInstallPlan(rawPlan) {
-  const plan = withMcpMergeExclusions(rawPlan, parseDisabledMcpServers(process.env.ECC_DISABLED_MCPS));
+function previewInstallPlan(plan) {
   assertInstallScriptBoundary(plan);
   const migration = prepareStaleOperationsReconciliation(
     plan,
@@ -490,9 +463,8 @@ function applyInstallPlan(plan, dependencies = {}) {
     : applyInstallPlanLocked(plan, dependencies, false);
 }
 
-function applyInstallPlanLocked(rawPlan, dependencies = {}, settingsLockHeld = false) {
+function applyInstallPlanLocked(plan, dependencies = {}, settingsLockHeld = false) {
   const disabledServers = parseDisabledMcpServers(process.env.ECC_DISABLED_MCPS);
-  const plan = withMcpMergeExclusions(rawPlan, disabledServers);
   const persistInstallState = dependencies.writeInstallState || writeInstallState;
   const beforeInstallStateRead = dependencies.beforeInstallStateRead;
   const beforeOperationWrite = dependencies.beforeOperationWrite;

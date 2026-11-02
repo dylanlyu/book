@@ -32,7 +32,6 @@
 </p>
 
 <p align="center">
-  <a href="https://www.npmjs.com/package/book-universal"><img src="https://img.shields.io/npm/dw/book-universal?label=book-universal&logo=npm" alt="book-universal npm downloads" /></a>
   <a href="https://www.npmjs.com/package/ecc-agentshield"><img src="https://img.shields.io/npm/dw/ecc-agentshield?label=ecc-agentshield&logo=npm" alt="ecc-agentshield npm downloads" /></a>
 </p>
 
@@ -47,7 +46,7 @@
 </p>
 
 > [!WARNING]
-> **Official sources only.** Install ECC only from verified channels: the GitHub repository [github.com/affaan-m/ECC](https://github.com/affaan-m/ECC), the npm packages [`book-universal`](https://www.npmjs.com/package/book-universal) and [`ecc-agentshield`](https://www.npmjs.com/package/ecc-agentshield), the [GitHub App](https://github.com/apps/ecc-tools), the plugin slug `book@dylanlyu`, and the project website [ecc.tools](https://ecc.tools). Third-party re-uploads and unofficial mirrors are not maintained or reviewed by the project and may contain malware.
+> **Official sources only.** Install ECC only from verified channels: the GitHub repository [github.com/affaan-m/ECC](https://github.com/affaan-m/ECC), the npm package [`ecc-agentshield`](https://www.npmjs.com/package/ecc-agentshield), the [GitHub App](https://github.com/apps/ecc-tools), the plugin slug `book@dylanlyu`, and the project website [ecc.tools](https://ecc.tools). Third-party re-uploads and unofficial mirrors are not maintained or reviewed by the project and may contain malware.
 
 ## Install with Claude Code
 
@@ -60,8 +59,8 @@ Run these commands inside Claude Code:
 
 That installs ECC's skills, agents, commands, and plugin-managed hooks. If you choose this path, stop there. Do not also run a full manual install into Claude Code.
 
-> Guided package setup is coming in `book-universal` 2.2.0. Use the native
-> Claude plugin commands above while npm remains on 2.1.0.
+> This fork is not published to npm. Guided package setup runs straight from
+> GitHub instead: `npx github:dylanlyu/book setup` (see [Install ECC](#install-ecc)).
 
 <div align="center">
 
@@ -154,16 +153,16 @@ Access to 71 agents, 311 skills, and 98 legacy command shims, plus hooks, rules,
 ## Install ECC
 
 > [!IMPORTANT]
-> Guided package setup is coming in `book-universal` 2.2.0. The current npm
-> release, 2.1.0, does not include the guided setup commands. Use the native
-> Claude plugin commands at the top of this README until 2.2.0 is published.
+> This fork is not published to npm. Run the ECC CLI straight from GitHub with
+> `npx github:dylanlyu/book <command>`, or install it globally with
+> `npm install -g github:dylanlyu/book`.
 
 ### Pick one path only (per harness)
 
 You can use ECC with Claude Code, Codex, and other harnesses at the same time. Choose one install method for each harness:
 
 - **Recommended today for Claude Code:** use the [native plugin commands above](#install-with-claude-code)
-- **Coming in release 2.2:** guided package setup for Claude Code and Codex; see the preview at the bottom of this install area
+- **Also available:** guided package setup for Claude Code and Codex via `npx github:dylanlyu/book`; see [Claude Code details](#claude-code-details)
 - **Works:** Claude Code plugin + Codex native plugin
 - **Works:** Claude Code plugin + the legacy Codex sync flow
 - **Avoid:** Claude Code plugin + full Claude manual install
@@ -180,26 +179,21 @@ If you already layered multiple installs and things look duplicated, skip straig
 For Claude Code plugin setup, updates, scope changes, and hook-profile changes:
 
 ```bash
-npx book-universal setup
+npx github:dylanlyu/book setup
 ```
 
-The same published package works with modern package runners:
+Run it with npx straight from the GitHub repository:
 
 | Package runner | Guided setup command |
 |---|---|
-| npm / npx | `npx book-universal setup` |
-| pnpm | `pnpm dlx book-universal setup` |
-| Yarn 2+ | `yarn dlx book-universal setup` |
-| Bun | `bunx book-universal setup` |
-
-Yarn Classic 1 does not provide `yarn dlx`; use `npx`, install the package globally, or upgrade Yarn for a temporary one-shot run.
+| npm / npx | `npx github:dylanlyu/book setup` |
 
 The wizard inventories the official marketplace and every native Claude install scope before making changes, then installs, updates, or safely moves `book@dylanlyu` to the scope you choose. Rerun the same command whenever you want to update ECC, change scope, or change its hook profile. This setup wizard currently configures the Claude Code plugin; use the multi-harness wizard below for Codex.
 
 To configure more than one coding agent in one reviewed flow, use the multi-harness wizard:
 
 ```bash
-npx book-universal install --guided
+npx github:dylanlyu/book install --guided
 ```
 
 It lets you select any combination of Claude Code and Codex, shows each install channel and destination, preflights every selection before the first write, and asks for one final confirmation.
@@ -212,7 +206,7 @@ It lets you select any combination of Claude Code and Codex, shows each install 
 For automation, make every provider-specific choice explicit:
 
 ```bash
-npx book-universal install --guided \
+npx github:dylanlyu/book install --guided \
   --harness claude --harness codex \
   --claude-scope local --claude-hooks standard \
   --profile core --yes
@@ -221,7 +215,7 @@ npx book-universal install --guided \
 Verify the native guided Codex path without writing first:
 
 ```bash
-npx book-universal install --guided --harness codex --dry-run
+npx github:dylanlyu/book install --guided --harness codex --dry-run
 ```
 
 ### Claude Code
@@ -233,7 +227,7 @@ Use Claude Code's built-in marketplace commands only when you specifically want 
 /plugin install book@dylanlyu
 ```
 
-That installs ECC's skills, agents, commands, and plugin-managed hooks. Claude Code owns these built-in commands, including their errors when a marketplace, plugin, or conflicting scope already exists. ECC cannot intercept that parser. If either command reports an existing install or scope conflict, run `npx book-universal setup`; the ECC-owned flow inspects the current state and chooses install, update, or verified scope migration instead of blindly adding a duplicate.
+That installs ECC's skills, agents, commands, and plugin-managed hooks. Claude Code owns these built-in commands, including their errors when a marketplace, plugin, or conflicting scope already exists. ECC cannot intercept that parser. If either command reports an existing install or scope conflict, run `npx github:dylanlyu/book setup`; the ECC-owned flow inspects the current state and chooses install, update, or verified scope migration instead of blindly adding a duplicate.
 
 After ECC is installed, `/ecc:configure-ecc` is the namespaced in-Claude reconfiguration skill. It delegates to the same safe setup flow, but it is available only after the plugin is installed and cannot replace Claude Code's built-in `/plugin` command during a first install.
 
@@ -280,11 +274,11 @@ ECC has three public identifiers, and they are not interchangeable:
 
 - GitHub source repo: `affaan-m/ECC`
 - Claude marketplace/plugin identifier: `book@dylanlyu`
-- npm package: `book-universal`
+- CLI package name: `book-universal` (not published to npm; get it with `npx github:dylanlyu/book` or `npm install -g github:dylanlyu/book`)
 
-This is intentional. Anthropic marketplace/plugin installs are keyed by a canonical plugin identifier, so ECC uses `book@dylanlyu` to keep tool names and slash-command namespaces short enough for strict Desktop/API validators. Older posts may still show the former long marketplace identifier; treat that as a legacy alias only. Separately, the npm package stayed on `book-universal`, so npm installs and marketplace installs intentionally use different names.
+This is intentional. Anthropic marketplace/plugin installs are keyed by a canonical plugin identifier, so ECC uses `book@dylanlyu` to keep tool names and slash-command namespaces short enough for strict Desktop/API validators. Older posts may still show the former long marketplace identifier; treat that as a legacy alias only. Separately, the CLI package is named `book-universal`, so CLI installs and marketplace installs intentionally use different names.
 
-npm releases are cut per version tag, not per commit, so `book-universal` tracks releases (2.1, 2.2, ...) rather than every push to `main`. Install from git if you want the bleeding edge.
+This fork does not publish to npm; versions are marked by GitHub tags and Releases. `npx github:dylanlyu/book` and `npm install -g github:dylanlyu/book` fetch the repository's default branch, so they follow `main` rather than a tagged release.
 
 If your local Claude setup was wiped or reset, that does not mean you need to repurchase anything. Start with `node scripts/ecc.js list-installed`, then run `node scripts/ecc.js doctor` and `node scripts/ecc.js repair` before reinstalling. That usually restores ECC-managed files without rebuilding your setup.
 </details>
@@ -386,7 +380,7 @@ Point your harness at the endpoint, then install ECC:
 
 ```bash
 bash ./install.sh --target claude-project --profile minimal
-npx book-universal doctor --target claude-project
+npx github:dylanlyu/book doctor --target claude-project
 ```
 
 The harness discovers the installed project instructions and skills natively. The installer dry-run and regression suite verify that each project target stays inside its own project-local root.
@@ -617,37 +611,28 @@ If you stacked methods, clean up in this order:
 4. Reinstall once, using a single path.
 </details>
 
-## Coming soon: guided setup in release 2.2
+## Guided setup from GitHub
 
-> [!WARNING]
-> These ECC package-runner commands are not available in the current npm
-> release, 2.1.0. Do not run them until `book-universal` 2.2.0 is published.
-
-The earlier README description—**Recommended default:** run the guided Claude plugin setup—was published too soon. That recommendation is withdrawn until release 2.2.
+The earlier README description—**Recommended default:** run the guided Claude plugin setup—depended on an npm release that this fork does not publish. The native plugin commands at the top of this README remain the recommended default; the guided commands below run straight from GitHub instead.
 
 For Claude Code plugin setup, updates, scope changes, and hook-profile changes:
 
 ```bash
-npx book-universal setup
+npx github:dylanlyu/book setup
 ```
 
-Release 2.2 will support the same guided setup through modern package runners:
+Run it with npx straight from the GitHub repository:
 
 | Package runner | Guided setup command |
 |---|---|
-| npm / npx | `npx book-universal setup` |
-| pnpm | `pnpm dlx book-universal setup` |
-| Yarn 2+ | `yarn dlx book-universal setup` |
-| Bun | `bunx book-universal setup` |
-
-Yarn Classic 1 does not provide `yarn dlx`; use `npx`, install the package globally, or upgrade Yarn for a temporary one-shot run after 2.2 is published.
+| npm / npx | `npx github:dylanlyu/book setup` |
 
 The wizard inventories the official marketplace and every native Claude install scope before making changes, then installs, updates, or safely moves `book@dylanlyu` to the scope you choose. Rerun the same command whenever you want to update ECC, change scope, or change its hook profile. This setup wizard currently configures the Claude Code plugin; use the multi-harness wizard below for Codex.
 
 To configure more than one coding agent in one reviewed flow, use the multi-harness wizard:
 
 ```bash
-npx book-universal install --guided
+npx github:dylanlyu/book install --guided
 ```
 
 It lets you select any combination of Claude Code and Codex, shows each install channel and destination, preflights every selection before the first write, and asks for one final confirmation.
@@ -660,7 +645,7 @@ It lets you select any combination of Claude Code and Codex, shows each install 
 For automation, make every provider-specific choice explicit:
 
 ```bash
-npx book-universal install --guided \
+npx github:dylanlyu/book install --guided \
   --harness claude --harness codex \
   --claude-scope local --claude-hooks standard \
   --profile core --yes
@@ -669,18 +654,18 @@ npx book-universal install --guided \
 Verify the native guided Codex path without writing first:
 
 ```bash
-npx book-universal install --guided --harness codex --dry-run
+npx github:dylanlyu/book install --guided --harness codex --dry-run
 ```
 
-Additional package-name commands will also become available through the 2.2 alias:
+Other CLI commands run the same way:
 
 ```bash
-npx book-universal consult "security reviews" --target claude
-npx book-universal install --profile minimal --target claude --with capability:machine-learning
-npx book-universal doctor --target claude
+npx github:dylanlyu/book consult "security reviews" --target claude
+npx github:dylanlyu/book install --profile minimal --target claude --with capability:machine-learning
+npx github:dylanlyu/book doctor --target claude
 ```
 
-Do not use `npx ecc-install --profile minimal --target claude`: `ecc-install` is a binary name inside `book-universal`, not a separately published npm package.
+Do not use `npx ecc-install --profile minimal --target claude`: `ecc-install` is a binary that ships with the `book-universal` CLI package (available on `PATH` after `npm install -g github:dylanlyu/book`), not a separately published npm package.
 
 ## Start Using ECC
 
@@ -827,7 +812,7 @@ It's harness- and model-agnostic: a plain CLI (`ecc-plan-canvas`) speaking JSON,
 
 ### v1.0.0: First Fork Release (Aug 2026)
 
-First release of this fork. Renamed to plugin `book`, marketplace `dylanlyu`, npm package `book-universal`.
+First release of this fork. Renamed to plugin `book`, marketplace `dylanlyu`, CLI package name `book-universal` (not published to npm).
 
 ### v2.0.0: The Agent Harness Operating System (Jun 2026)
 
@@ -957,7 +942,7 @@ Rules, skills, agents, and hooks solve different problems. Keeping those jobs se
 ECC's Memory Vault gives Claude, Codex, and other harnesses one local, inspectable Markdown format for durable context and handoffs. Project and team memories live under `.ecc/memory/`; user memories live under `~/.ecc/memory/`.
 
 ```bash
-npm install -g book-universal
+npm install -g github:dylanlyu/book
 ecc memory init --scope project
 ecc memory search "authentication migration" --target-harness codex
 ecc memory doctor
@@ -972,10 +957,10 @@ Memory is unreviewed context, not executable policy. Verify important claims aga
 
 The Memory Vault stores portable `ecc.memory.v1` Markdown documents instead of copying vendor transcripts or emailing context between agents. Project memories are protected by a fail-closed `.gitignore`; use the team scope only for human-inspected, version-controlled sharing. Team memories remain unreviewed context even after they are committed.
 
-Skill-only, minimal, manual, and Claude plugin installs do not put the Memory Vault runtime on `PATH`. Install the npm runtime separately before using the CLI or optional MCP server:
+Skill-only, minimal, manual, and Claude plugin installs do not put the Memory Vault runtime on `PATH`. Install the CLI runtime from GitHub separately before using the CLI or optional MCP server:
 
 ```bash
-npm install -g book-universal
+npm install -g github:dylanlyu/book
 ecc memory --help
 command -v ecc-memory-mcp
 ```
@@ -1826,7 +1811,8 @@ Install ECC only from official sources:
 
 - GitHub repository: <https://github.com/affaan-m/ECC>
 - Claude Code plugin: `book@dylanlyu`
-- npm packages: [`book-universal`](https://www.npmjs.com/package/book-universal) and [`ecc-agentshield`](https://www.npmjs.com/package/ecc-agentshield)
+- npm package: [`ecc-agentshield`](https://www.npmjs.com/package/ecc-agentshield)
+- ECC CLI (not published to npm): `npx github:dylanlyu/book` or `npm install -g github:dylanlyu/book`
 - GitHub App: <https://github.com/apps/ecc-tools>
 - Website: <https://ecc.tools>
 

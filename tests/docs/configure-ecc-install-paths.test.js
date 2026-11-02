@@ -50,7 +50,7 @@ for (const relativePath of configureEccDocs) {
     const content = readConfigureEccDoc(relativePath);
 
     assert.ok(content.includes('ecc setup'));
-    assert.ok(content.includes('npx book-universal setup'));
+    assert.ok(content.includes('npx github:dylanlyu/book setup'));
     assert.ok(content.includes('--mode claude-plugin'));
     assert.ok(content.includes('--scope <scope>'));
     assert.ok(content.includes('--hooks <hooks>'));

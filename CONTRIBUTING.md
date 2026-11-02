@@ -512,21 +512,27 @@ Run `npm test` locally. It is the same gauntlet CI runs, and it catches almost e
 
 ## Releases
 
-Releases are cut on a regular cadence, roughly every two weeks, plus out-of-band
-patches for security or data-loss fixes.
+This fork does **not** publish to npm. Releases are GitHub tags and GitHub
+Releases only; the CLI is installed straight from the repository
+(`npx github:dylanlyu/book` or `npm install -g github:dylanlyu/book`). The
+release workflows ship disabled (`.github/workflows/*.yml.disabled`), so there
+is no automated publish step.
 
-1. Sync the version everywhere: `VERSION` and `package.json`.
-2. Update `CHANGELOG.md` and write reviewed release notes at
-   `docs/releases/<version>/release-notes.md` (required by the release workflow).
-3. Tag `vX.Y.Z` on `main` and push the tag. The `release.yml` workflow verifies
-   the tag is exactly on `origin/main`, checks the VERSION sync, tests
-   the exact packed artifact on Linux, macOS, and Windows, publishes to npm with
-   provenance, verifies registry bytes, and creates the GitHub Release from the
-   reviewed notes.
+1. Bump the version in a pull request. Every versioned manifest must match:
+   `VERSION`, `package.json`, `package-lock.json`, `agent.yaml`, `AGENTS.md`,
+   `.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`,
+   `.agents/plugins/marketplace.json`, `.codex-plugin/plugin.json`,
+   `plugins/book/.codex-plugin/plugin.json`, the README version row, and
+   `docs/SELECTIVE-INSTALL-ARCHITECTURE.md`. `node tests/plugin-manifest.test.js`
+   checks the package, lockfile, plugin, marketplace, `AGENTS.md`, `agent.yaml`,
+   and README versions against `package.json`; check `VERSION` and the
+   architecture doc by hand. `CHANGELOG.md` mirrors upstream's history and is
+   not versioned per fork release.
+2. After the pull request merges, tag `vX.Y.Z` on `main`, push the tag, and
+   create the GitHub Release from it.
 
-Tags and GitHub Releases are immutable once published: downstream packagers poll
-`/releases`, download `archive/refs/tags/vX.Y.Z.tar.gz`, and pin its sha256.
-Never move or re-tag a published version; ship a new patch version instead.
+Tags and GitHub Releases are immutable once published. Never move or re-tag a
+published version; ship a new patch version instead.
 
 ---
 
