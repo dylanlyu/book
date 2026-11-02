@@ -6,6 +6,8 @@ const assert = require('assert');
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
+const { execFileSync } = require('child_process');
+const { normalizeInstallRequest, parseInstallArgs } = require('../../scripts/lib/install/request');
 
 const {
   parseArgs,

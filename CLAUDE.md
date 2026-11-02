@@ -21,6 +21,10 @@ This is a **Claude Code plugin** - a collection of production-ready agents, skil
 # Run all tests
 node tests/run-all.js
 
+# Run files through a 4-process pool, or only files whose path contains a pattern
+ECC_TEST_JOBS=4 node tests/run-all.js
+ECC_TEST_ONLY=package-manager,hooks/hooks.test node tests/run-all.js
+
 # Run individual test files
 node tests/lib/utils.test.js
 node tests/lib/package-manager.test.js

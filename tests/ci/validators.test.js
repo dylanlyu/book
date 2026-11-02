@@ -185,12 +185,14 @@ function runCatalogValidator(overrides = {}) {
   const argvPreamble = argv.map(arg => `process.argv.push(${JSON.stringify(arg)});`).join('\n');
   source = `${argvPreamble}\n${source}`;
 
+  const resolvedRoot = overrides.ROOT || repoRoot;
   const resolvedOverrides = {
-    ROOT: repoRoot,
-    README_PATH: path.join(repoRoot, 'README.md'),
-    AGENTS_PATH: path.join(repoRoot, 'AGENTS.md'),
-    PLUGIN_JSON_PATH: path.join(repoRoot, '.claude-plugin', 'plugin.json'),
-    MARKETPLACE_JSON_PATH: path.join(repoRoot, '.claude-plugin', 'marketplace.json'),
+    ROOT: resolvedRoot,
+    README_PATH: path.join(resolvedRoot, 'README.md'),
+    AGENTS_PATH: path.join(resolvedRoot, 'AGENTS.md'),
+    PLUGIN_JSON_PATH: path.join(resolvedRoot, '.claude-plugin', 'plugin.json'),
+    MARKETPLACE_JSON_PATH: path.join(resolvedRoot, '.claude-plugin', 'marketplace.json'),
+    SOUL_PATH: path.join(resolvedRoot, 'SOUL.md'),
     ...overrides,
   };
 
@@ -254,6 +256,9 @@ function writeCatalogFixture(testDir, options = {}) {
   const {
     readmeCounts = { agents: 1, skills: 1, commands: 1 },
     readmeProjectTreeAgents = readmeCounts.agents,
+    readmeProjectTreeSkills = readmeCounts.skills,
+    readmeProjectTreeCommands = readmeCounts.commands,
+    readmeExtraTreeBlock = '',
     readmeTableCounts = readmeCounts,
     readmeParityCounts = readmeCounts,
     readmeUnrelatedSkillsCount = 16,
@@ -265,12 +270,14 @@ function writeCatalogFixture(testDir, options = {}) {
     ],
     pluginCounts = { agents: 1, skills: 1, commands: 1 },
     marketplaceCounts = { agents: 1, skills: 1, commands: 1 },
+    crossHarnessCounts = { agents: 1, skills: 1, commands: 1 },
   } = options;
 
   const readmePath = path.join(testDir, 'README.md');
   const agentsPath = path.join(testDir, 'AGENTS.md');
   const pluginJsonPath = path.join(testDir, '.claude-plugin', 'plugin.json');
   const marketplaceJsonPath = path.join(testDir, '.claude-plugin', 'marketplace.json');
+  const soulPath = path.join(testDir, 'SOUL.md');
 
   fs.mkdirSync(path.join(testDir, 'agents'), { recursive: true });
   fs.mkdirSync(path.join(testDir, 'commands'), { recursive: true });
@@ -281,7 +288,10 @@ function writeCatalogFixture(testDir, options = {}) {
   fs.writeFileSync(path.join(testDir, 'commands', 'plan.md'), '---\ndescription: Plan\n---\n# Plan');
   fs.writeFileSync(path.join(testDir, 'skills', 'demo-skill', 'SKILL.md'), '---\nname: demo-skill\ndescription: Demo skill\norigin: ECC\n---\n# Demo Skill');
 
-  fs.writeFileSync(readmePath, `Access to ${readmeCounts.agents} agents, ${readmeCounts.skills} skills, and ${readmeCounts.commands} commands.\n- **Public surface synced to the live repo** - metadata, catalog counts, plugin manifests, and install-facing docs now match the actual OSS surface: ${readmeCounts.agents} agents, ${readmeCounts.skills} skills, and ${readmeCounts.commands} legacy command shims.\n|-- agents/           # ${readmeProjectTreeAgents} specialized subagents for delegation\n| Feature | Claude Code | Codex CLI |\n|---------|------------|-----------|\n| Agents | PASS: ${readmeTableCounts.agents} agents | Shared | 1 |\n| Commands | PASS: ${readmeTableCounts.commands} commands | Shared | 1 |\n| Skills | PASS: ${readmeTableCounts.skills} skills | Shared | 1 |\n\n| Feature | Count | Format |\n|-----------|-------|---------|\n| Skills | ${readmeUnrelatedSkillsCount} | .agents/skills/ |\n\n## Cross-Tool Feature Parity\n\n| Feature | Claude Code | Codex CLI |\n|---------|------------|-----------|\n| **Agents** | ${readmeParityCounts.agents} | Shared (AGENTS.md) |\n| **Commands** | ${readmeParityCounts.commands} | Instruction-based |\n| **Skills** | ${readmeParityCounts.skills} | 10 (native format) |\n`);
+  fs.writeFileSync(readmePath, `Access to ${readmeCounts.agents} agents, ${readmeCounts.skills} skills, and ${readmeCounts.commands} commands.\n- **Public surface synced to the live repo** - metadata, catalog counts, plugin manifests, and install-facing docs now match the actual OSS surface: ${readmeCounts.agents} agents, ${readmeCounts.skills} skills, and ${readmeCounts.commands} legacy command shims.\n|-- agents/           # ${readmeProjectTreeAgents} specialized subagents for delegation
+|-- skills/           # ${readmeProjectTreeSkills} reusable workflows loaded on demand
+|-- commands/         # ${readmeProjectTreeCommands} maintained slash-command shims
+${readmeExtraTreeBlock}\n| Feature | Claude Code | Codex CLI |\n|---------|------------|-----------|\n| Agents | PASS: ${readmeTableCounts.agents} agents | Shared | 1 |\n| Commands | PASS: ${readmeTableCounts.commands} commands | Shared | 1 |\n| Skills | PASS: ${readmeTableCounts.skills} skills | Shared | 1 |\n\n| Feature | Count | Format |\n|-----------|-------|---------|\n| Skills | ${readmeUnrelatedSkillsCount} | .agents/skills/ |\n\n## Cross-Tool Feature Parity\n\n| Feature | Claude Code | Codex CLI |\n|---------|------------|-----------|\n| **Agents** | ${readmeParityCounts.agents} | Shared (AGENTS.md) |\n| **Commands** | ${readmeParityCounts.commands} | Instruction-based |\n| **Skills** | ${readmeParityCounts.skills} | 10 (native format) |\n`);
   fs.writeFileSync(agentsPath, `This is a **production-ready AI coding plugin** providing ${summaryCounts.agents} specialized agents, ${summaryCounts.skills} skills, ${summaryCounts.commands} commands, and automated hook workflows for software development.\n\n\`\`\`\n${structureLines.join('\n')}\n\`\`\`\n`);
   fs.writeFileSync(pluginJsonPath, JSON.stringify({
     name: 'ecc',
@@ -293,8 +303,12 @@ function writeCatalogFixture(testDir, options = {}) {
       description: `Marketplace plugin — ${marketplaceCounts.agents} agents, ${marketplaceCounts.skills} skills, ${marketplaceCounts.commands} legacy command shims`,
     }],
   }, null, 2));
+  fs.writeFileSync(
+    soulPath,
+    `ECC is a production-ready AI coding plugin with ${crossHarnessCounts.agents} specialized agents, ${crossHarnessCounts.skills} skills, ${crossHarnessCounts.commands} commands, and automated hook workflows.\n`
+  );
 
-  return { readmePath, agentsPath, pluginJsonPath, marketplaceJsonPath };
+  return { readmePath, agentsPath, pluginJsonPath, marketplaceJsonPath, soulPath };
 }
 
 function runTests() {
@@ -571,6 +585,33 @@ function runTests() {
     cleanupTestDir(testDir);
   })) passed++; else failed++;
 
+  if (test('fails when cross-harness identity counts drift', () => {
+    const testDir = createTestDir();
+    const {
+      readmePath,
+      agentsPath,
+      soulPath,
+      pluginJsonPath,
+      marketplaceJsonPath,
+    } = writeCatalogFixture(testDir, {
+      crossHarnessCounts: { agents: 9, skills: 8, commands: 7 },
+    });
+
+    const result = runCatalogValidator({
+      ROOT: testDir,
+      README_PATH: readmePath,
+      AGENTS_PATH: agentsPath,
+      SOUL_PATH: soulPath,
+      PLUGIN_JSON_PATH: pluginJsonPath,
+      MARKETPLACE_JSON_PATH: marketplaceJsonPath,
+    });
+
+    assert.strictEqual(result.code, 1, 'Should fail when cross-harness counts drift');
+    const output = result.stdout + result.stderr;
+    assert.ok(output.includes('SOUL.md'), 'Should report SOUL.md mismatches');
+    cleanupTestDir(testDir);
+  })) passed++; else failed++;
+
   if (test('does not require obsolete cross-harness parity counts in README', () => {
     const testDir = createTestDir();
     const {
@@ -628,6 +669,7 @@ function runTests() {
     const {
       readmePath,
       agentsPath,
+      soulPath,
       pluginJsonPath,
       marketplaceJsonPath,
     } = writeCatalogFixture(testDir, {
@@ -637,6 +679,7 @@ function runTests() {
       summaryCounts: { agents: 6, skills: 6, commands: 6 },
       pluginCounts: { agents: 18, skills: 18, commands: 18 },
       marketplaceCounts: { agents: 19, skills: 19, commands: 19 },
+      crossHarnessCounts: { agents: 18, skills: 18, commands: 18 },
     });
 
     const result = runCatalogValidator({
@@ -646,6 +689,7 @@ function runTests() {
       AGENTS_PATH: agentsPath,
       PLUGIN_JSON_PATH: pluginJsonPath,
       MARKETPLACE_JSON_PATH: marketplaceJsonPath,
+      SOUL_PATH: soulPath,
     });
 
     assert.strictEqual(result.code, 0, `Should sync and pass, got stderr: ${result.stderr}`);
@@ -665,6 +709,8 @@ function runTests() {
     assert.ok(agentsDoc.includes('skills/          — 1 workflow skills and domain knowledge'), 'Should sync AGENTS structure');
     assert.ok(pluginJson.includes('1 agents, 1 skills, 1 legacy command shims'), 'Should sync plugin manifest catalog description');
     assert.ok(marketplaceJson.includes('1 agents, 1 skills, 1 legacy command shims'), 'Should sync marketplace plugin catalog description');
+    const soul = fs.readFileSync(soulPath, 'utf8');
+    assert.ok(soul.includes('with 1 specialized agents, 1 skills, 1 commands'), 'Should sync SOUL.md catalog summary');
 
     cleanupTestDir(testDir);
   })) passed++; else failed++;
@@ -693,6 +739,65 @@ function runTests() {
     });
 
     assert.strictEqual(result.code, 0, `Should accept formatting variations, got stderr: ${result.stderr}`);
+    cleanupTestDir(testDir);
+  })) passed++; else failed++;
+
+  if (test('flags a stale count hidden in a second README project-tree block', () => {
+    const testDir = createTestDir();
+    const {
+      readmePath,
+      agentsPath,
+      pluginJsonPath,
+      marketplaceJsonPath,
+    } = writeCatalogFixture(testDir, {
+      readmeExtraTreeBlock: '|-- agents/           # 9 specialized subagents for delegation',
+    });
+
+    const result = runCatalogValidator({
+      ROOT: testDir,
+      README_PATH: readmePath,
+      AGENTS_PATH: agentsPath,
+      PLUGIN_JSON_PATH: pluginJsonPath,
+      MARKETPLACE_JSON_PATH: marketplaceJsonPath,
+    });
+
+    const output = result.stdout + result.stderr;
+    assert.strictEqual(result.code, 1, `Should fail on a stale second block, got ${output}`);
+    assert.ok(
+      output.includes('README.md project tree (agents) block'),
+      `Should name the offending block, got ${output}`
+    );
+    cleanupTestDir(testDir);
+  })) passed++; else failed++;
+
+  if (test('write mode repairs a stale second README project-tree block', () => {
+    const testDir = createTestDir();
+    const {
+      readmePath,
+      agentsPath,
+      pluginJsonPath,
+      marketplaceJsonPath,
+    } = writeCatalogFixture(testDir, {
+      readmeExtraTreeBlock: '|-- agents/           # 9 specialized subagents for delegation',
+    });
+
+    const result = runCatalogValidator({
+      argv: ['--write', '--text'],
+      ROOT: testDir,
+      README_PATH: readmePath,
+      AGENTS_PATH: agentsPath,
+      PLUGIN_JSON_PATH: pluginJsonPath,
+      MARKETPLACE_JSON_PATH: marketplaceJsonPath,
+    });
+
+    assert.strictEqual(result.code, 0, `Should sync every block, got ${result.stderr}`);
+    const readme = fs.readFileSync(readmePath, 'utf8');
+    assert.ok(!readme.includes('# 9 specialized subagents for delegation'), 'Should repair the second block too');
+    assert.strictEqual(
+      readme.split('# 1 specialized subagents for delegation').length - 1,
+      2,
+      'Should correct both blocks'
+    );
     cleanupTestDir(testDir);
   })) passed++; else failed++;
 
@@ -813,6 +918,21 @@ function runTests() {
 
     const result = runValidatorWithDir('validate-hooks', 'HOOKS_FILE', hooksFile);
     assert.strictEqual(result.code, 0, 'Should pass valid inline JS');
+    cleanupTestDir(testDir);
+  })) passed++; else failed++;
+
+  if (test('unescapes inline JS in one pass so an escaped backslash before n stays literal', () => {
+    const testDir = createTestDir();
+    const hooksFile = path.join(testDir, 'hooks.json');
+    // Shell body `console.log('\\n')` is a valid program; a sequential unescape turned it into a raw newline.
+    fs.writeFileSync(hooksFile, JSON.stringify({
+      hooks: {
+        PreToolUse: [{ id: 'test:escaped-backslash-inline-js', matcher: 'test', hooks: [{ type: 'command', command: 'node -e "console.log(\'\\\\n\')"' }] }]
+      }
+    }));
+
+    const result = runValidatorWithDir('validate-hooks', 'HOOKS_FILE', hooksFile);
+    assert.strictEqual(result.code, 0, `Should pass escaped-backslash inline JS, stderr: ${result.stderr}`);
     cleanupTestDir(testDir);
   })) passed++; else failed++;
 

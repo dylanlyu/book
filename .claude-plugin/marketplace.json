@@ -11,7 +11,7 @@
     {
       "name": "book",
       "source": "./",
-      "description": "Harness-native operator layer - 68 agents, 290 skills, 94 legacy command shims, reusable hooks, rules, selective install profiles, and production-ready workflows for Claude Code, Codex, and related agent harnesses",
+      "description": "Harness-native operator layer - 71 agents, 311 skills, 98 legacy command shims, reusable hooks, rules, selective install profiles, and production-ready workflows for Claude Code, Codex, and related agent harnesses",
       "version": "1.0.2",
       "author": {
         "name": "Dylan Lyu",
@@ -19,9 +19,27 @@
       },
       "repository": "https://github.com/dylanlyu/book",
       "license": "MIT",
-      "keywords": ["agents", "skills", "hooks", "commands", "tdd", "code-review", "security", "best-practices"],
+      "keywords": [
+        "agents",
+        "skills",
+        "hooks",
+        "commands",
+        "tdd",
+        "code-review",
+        "security",
+        "best-practices"
+      ],
       "category": "workflow",
-      "tags": ["agents", "skills", "hooks", "commands", "tdd", "code-review", "security", "best-practices"],
+      "tags": [
+        "agents",
+        "skills",
+        "hooks",
+        "commands",
+        "tdd",
+        "code-review",
+        "security",
+        "best-practices"
+      ],
       "strict": false
     }
   ]

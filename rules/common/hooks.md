@@ -13,7 +13,7 @@
 - Enable only for trusted, well-defined plans
 - Disable for exploratory work
 - **Never** use `--dangerously-skip-permissions`
-- Configure `allowedTools` in `~/.claude.json` instead
+- Configure `permissions.allow` rules in `~/.claude/settings.json` (or a project's `.claude/settings.json`) instead
 
 ## TodoWrite
 

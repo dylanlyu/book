@@ -239,20 +239,10 @@ function materializeScaffoldOperation(sourceRoot, operation) {
   });
 }
 
-function isSelectedAntigravityLegacyRule(operation, ruleLanguages) {
-  const normalizedSourcePath = String(operation.sourceRelativePath || '').replace(/\\/g, '/');
-  if (!normalizedSourcePath.startsWith('rules/')) {
-    return true;
-  }
-
-  const namespace = normalizedSourcePath.split('/')[1];
-  return namespace === 'common' || ruleLanguages.includes(namespace);
-}
-
 function dedupeCopyFileOperations(operations) {
   // A `copy-file` operation fully overwrites its destination, so when several
   // of them target the same path (e.g. a generic `commands/<name>.md` shadowed
-  // by an OpenCode `.opencode/commands/<name>.md` override) only the last one
+  // by a more specific override for the same destination) only the last one
   // actually determines the installed content. Recording the shadowed earlier
   // writes in install-state makes `doctor` report perpetual drift and drives
   // `repair` to clobber the override with the generic source (issue #2414).
@@ -307,15 +297,18 @@ function createManifestInstallPlan(options = {}) {
   const adapter = getInstallTargetAdapter(target);
   const materializedOperations = plan.operations.flatMap(operation => (
     materializeScaffoldOperation(sourceRoot, operation)
-  ));
-  const ruleLanguages = Array.isArray(options.ruleLanguages) ? [...options.ruleLanguages] : [];
-  const operations = dedupeCopyFileOperations(
-    options.legacyMode && target === 'antigravity'
-      ? materializedOperations.filter(operation => (
-        isSelectedAntigravityLegacyRule(operation, ruleLanguages)
-      ))
-      : materializedOperations
-  );
+  )).map(operation => {
+    // Persist this projection so install, doctor and repair compare the same
+    // native component names rather than restoring plugin-only references.
+    if (['claude', 'claude-project'].includes(target)
+      && operation.kind === 'copy-file'
+      && /\.(md|mdx|markdown)$/i.test(operation.destinationPath)
+      && !operation.contentTransform) {
+      return { ...operation, contentTransform: 'claude-manual-plugin-namespace' };
+    }
+    return operation;
+  });
+  const operations = dedupeCopyFileOperations(materializedOperations);
   const source = {
     repoVersion: getPackageVersion(sourceRoot),
     repoCommit: getRepoCommit(sourceRoot),

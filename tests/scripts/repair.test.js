@@ -171,7 +171,7 @@ function runTests() {
             legacyMode: false
           },
           resolution: {
-            selectedModules: ['platform-configs'],
+            selectedModules: ['platform-configs', 'shared-script-utils'],
             skippedModules: []
           },
           operations: [
@@ -291,7 +291,7 @@ function runTests() {
             legacyMode: false
           },
           resolution: {
-            selectedModules: ['platform-configs'],
+            selectedModules: ['platform-configs', 'shared-script-utils'],
             skippedModules: []
           },
           operations: [

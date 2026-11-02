@@ -17,6 +17,7 @@ const path = require('path');
 const { assertWithinTrustedRoot } = require('./path-safety');
 
 const AGENT_DATA_HOME_ENV = 'ECC_AGENT_DATA_HOME';
+const CLAUDE_CONFIG_DIR_ENV = 'CLAUDE_CONFIG_DIR';
 const DEFAULT_CLAUDE_DIR_NAME = '.claude';
 const PROJECT_CONFIG_RELATIVE = path.join('.claude', 'ecc-agent-data.json');
 
@@ -71,6 +72,10 @@ function resolveProjectRootFromConfigPath(configPath) {
 }
 
 function getDefaultClaudeAgentDataHome() {
+  // Launcher-owned CLAUDE_CONFIG_DIR moves the Claude trusted root with its
+  // profile. Project-provided paths must still remain inside that root.
+  const fromClaudeConfigDir = expandHomePath(process.env[CLAUDE_CONFIG_DIR_ENV]);
+  if (fromClaudeConfigDir) return fromClaudeConfigDir;
   return path.join(getHomeDirFromEnv(), DEFAULT_CLAUDE_DIR_NAME);
 }
 
@@ -88,7 +93,11 @@ function isSafeProjectConfigSyntax(candidate) {
 }
 
 function resolveAllowedProjectConfigHome(candidate) {
-  const allowedRoots = [getDefaultClaudeAgentDataHome()];
+  const allowedRoots = [
+    getDefaultClaudeAgentDataHome(),
+    // Keep ~/.claude eligible when CLAUDE_CONFIG_DIR points elsewhere.
+    path.join(getHomeDirFromEnv(), DEFAULT_CLAUDE_DIR_NAME),
+  ];
 
   for (const allowedRoot of allowedRoots) {
     try {
@@ -174,6 +183,7 @@ function ensureAgentDataHomeEnv(options = {}) {
 
 module.exports = {
   AGENT_DATA_HOME_ENV,
+  CLAUDE_CONFIG_DIR_ENV,
   DEFAULT_CLAUDE_DIR_NAME,
   PROJECT_CONFIG_RELATIVE,
   expandHomePath,

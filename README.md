@@ -107,8 +107,9 @@ That installs ECC's skills, agents, commands, and plugin-managed hooks. If you c
   <a href="https://serpapi.com/github-ecc" title="SerpApi: Web Search API"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/images/sponsors/serpapi-logo-dark-mode.svg" /><img src="assets/images/sponsors/serpapi-logo-light-mode.svg" width="200" alt="SerpApi: Web Search API" /></picture></a>
 </p>
 
-<sub><strong>Past sponsors:</strong> <a href="https://www.atlascloud.ai/?utm_source=github&amp;utm_medium=link&amp;utm_campaign=ECC">Atlas Cloud</a></sub>
-<sub><strong>Community sponsors:</strong> <a href="https://github.com/mikejmorgan-ai">Mike Morgan</a> · <a href="https://github.com/jasonwu513">@jasonwu513</a> · <a href="https://github.com/1anter">@1anter</a> · <a href="https://github.com/massimotodaro">@massimotodaro</a> · <a href="https://github.com/meadmccabe">@meadmccabe</a></sub>
+<sub><strong>Past sponsors:</strong> <a href="https://www.atlascloud.ai/?utm_source=github&amp;utm_medium=link&amp;utm_campaign=ECC">Atlas Cloud</a> · <a href="https://github.com/mikejmorgan-ai">Mike Morgan (inactive)</a></sub>
+
+<sub><strong>Community sponsors:</strong> <a href="https://github.com/jasonwu513">@jasonwu513</a> · <a href="https://github.com/1anter">@1anter</a> · <a href="https://github.com/massimotodaro">@massimotodaro</a> · <a href="https://github.com/meadmccabe">@meadmccabe</a></sub>
 
 <sub><a href="https://github.com/sponsors/affaan-m"><strong>Become a Sponsor</strong></a> · <a href="SPONSORS.md">Sponsor Tiers</a> · <a href="SPONSORING.md">Sponsorship Program</a></sub>
 
@@ -130,13 +131,13 @@ Instead of rebuilding that process in every prompt, you install it once and make
 
 ECC is MIT-licensed open source. It works best with Claude Code today, with first-class Codex support and adapters for GitHub Copilot and other harnesses. See the [support status matrix](#platform-support) before assuming feature parity.
 
-Access to 68 agents, 290 skills, and 94 legacy command shims, plus hooks, rules, memory, continuous learning, and AgentShield security scanning. The agents are specialized for planning, review, build repair, security, architecture, and domain work.
+Access to 71 agents, 311 skills, and 98 legacy command shims, plus hooks, rules, memory, continuous learning, and AgentShield security scanning. The agents are specialized for planning, review, build repair, security, architecture, and domain work.
 
 | Included         |       Count | What it gives you                                                                    |
 | ---------------- | ----------: | ------------------------------------------------------------------------------------ |
-| Agents           |   68 agents | Planning, review, build repair, security, architecture, and domain work              |
-| Skills           |  290 skills | TDD, research, security, docs, frontend, data, ML, operations, and more              |
-| Commands         | 94 commands | Convenient entry points while ECC moves to a skills-first surface                    |
+| Agents           |   71 agents | Planning, review, build repair, security, architecture, and domain work              |
+| Skills           |  311 skills | TDD, research, security, docs, frontend, data, ML, operations, and more              |
+| Commands         | 98 commands | Convenient entry points while ECC moves to a skills-first surface                    |
 | Hooks and memory |     Runtime | Enforcement, session summaries, continuous learning, instincts, and context controls |
 | Rules            |   Selective | Always-loaded standards you choose by language or project                            |
 | AgentShield      |    Included | Scanning for prompts, hooks, MCP config, permissions, secrets, and agent files       |
@@ -293,13 +294,13 @@ If your local Claude setup was wiped or reset, that does not mean you need to re
 Current Codex releases can install ECC as a native repo-marketplace plugin. The marketplace entry uses the repository root so Codex's cache receives the manifest together with all referenced skills, MCP configuration, hook runtime, scripts, and assets:
 
 ```bash
-codex plugin marketplace add affaan-m/ECC
+codex plugin marketplace add dylanlyu/book
 codex plugin add book@dylanlyu
 codex plugin list --json
 node scripts/codex/check-plugin-cache.js
 ```
 
-Both add commands are idempotent. To refresh later, run `codex plugin marketplace upgrade ecc` followed by `codex plugin add book@dylanlyu`. Codex stores one enabled plugin state in the active `CODEX_HOME`; it does not offer Claude's `user`, `project`, and `local` scopes. Its native hooks require an explicit trust decision and do not use Claude's four ECC hook profiles. Inside Codex, invoke `$configure-ecc` for the guided provider-aware flow.
+Both add commands are idempotent. To refresh later, run `codex plugin marketplace upgrade dylanlyu` followed by `codex plugin add book@dylanlyu`. Codex stores one enabled plugin state in the active `CODEX_HOME`; it does not offer Claude's `user`, `project`, and `local` scopes. Its native hooks require an explicit trust decision and do not use Claude's four ECC hook profiles. Inside Codex, invoke `$configure-ecc` for the guided provider-aware flow.
 
 The older `scripts/sync-ecc-to-codex.sh` path is a deprecated compatibility option for users who intentionally need copied and merged configuration in `~/.codex`; it is not required for the native plugin. New sync runs write an ownership manifest so cleanup can preserve modified user files. Run Codex once first so `~/.codex/config.toml` exists, then:
 
@@ -460,6 +461,7 @@ Manual component-by-component copying also works. Each component is fully indepe
 
 ```bash
 # Just agents
+mkdir -p ~/.claude/agents
 cp agents/*.md ~/.claude/agents/
 
 # Rules directories (common + language-specific)
@@ -504,7 +506,7 @@ Use this only when you are intentionally skipping the plugin path:
 ```bash
 git clone https://github.com/affaan-m/ECC.git
 cd ECC
-./install.sh --profile full
+./install.sh --profile full --enable-hooks
 ```
 
 Windows:
@@ -512,8 +514,10 @@ Windows:
 ```powershell
 git clone https://github.com/affaan-m/ECC.git
 cd ECC
-.\install.ps1 --profile full
+.\install.ps1 --profile full --enable-hooks
 ```
+
+These examples enable the automatic hook runtime. To install without hooks, replace `--enable-hooks` with `--no-hooks`.
 
 If you choose this path, stop there. Do not also run `/plugin install`.
 
@@ -572,6 +576,12 @@ That runtime provides the external dependencies these commands expect, including
 - `~/.claude/.ccg/prompts/*`
 
 Without `ccg-workflow`, these `multi-*` commands will not run correctly.
+</details>
+
+<details>
+<summary><strong>Astra review requires the Codex CLI</strong></summary>
+
+`/astra-review` sends Claude-written code to GPT-6-Astra for an independent cross-provider review. It runs the locally installed [Codex CLI](https://github.com/openai/codex) with your ChatGPT login (`codex login`); no OpenAI API key is needed, and API keys in your environment are not forwarded. Invoking the command is your consent to send that diff to OpenAI. Setup, scopes, push gating, and troubleshooting are in the [Astra Review Guide](docs/ASTRA-REVIEW-GUIDE.md).
 </details>
 
 <details>
@@ -681,6 +691,7 @@ Start with the workflow you need, not the full catalog.
 | Building a feature | `/ecc:plan "describe the feature"`, then `tdd-workflow` |
 | Fixing a bug | Reproduce it with a failing test, then use `tdd-workflow` |
 | Reviewing new code | `/code-review` for a fresh-context review |
+| Triaging a GitHub issue | `/ecc:issue-review <number>` (plugin) or `/issue-review <number>` (manual install) to verify it against the code and draft a reply |
 | Repairing a build | `/build-fix` |
 | Cleaning a codebase | `/refactor-clean` |
 | Checking context pressure | `/context-budget` |
@@ -721,6 +732,7 @@ Skills are the canonical workflow surface; maintained slash entries stay availab
 | Design system architecture | `/ecc:plan` + architect agent | architect |
 | Write code with tests first | `tdd-workflow` skill | tdd-guide |
 | Review code I just wrote | `/code-review` | code-reviewer |
+| Review a GitHub issue | `/ecc:issue-review` (plugin), `/issue-review` (manual install) | — (issue-review skill) |
 | Fix a failing build | `/build-fix` | build-error-resolver |
 | Run end-to-end tests | `e2e-testing` skill | e2e-runner |
 | Find security vulnerabilities | `/security-scan` | security-reviewer |
@@ -1031,15 +1043,15 @@ This repo is the raw code. The guides explain everything.
 | Parallelization | Git worktrees, cascade method, when to scale instances |
 | Subagent Orchestration | The context problem, iterative retrieval pattern |
 
-[Commands Quick Reference](./COMMANDS-QUICK-REF.md) | [Manual Adaptation Guide](docs/MANUAL-ADAPTATION-GUIDE.md)
+[Commands Quick Reference](./COMMANDS-QUICK-REF.md) | [Manual Adaptation Guide](docs/MANUAL-ADAPTATION-GUIDE.md) | [Astra Review Guide](docs/ASTRA-REVIEW-GUIDE.md) | [Troubleshooting FAQ](./TROUBLESHOOTING.md) | [Roadmap](docs/ROADMAP.md)
 
 ## What's Inside
 
 ```text
 ECC/
-|-- agents/           # 68 specialized subagents for delegation
-|-- skills/           # 284 reusable workflows loaded on demand
-|-- commands/         # 94 maintained slash-command shims
+|-- agents/           # 71 specialized subagents for delegation
+|-- skills/           # 311 reusable workflows loaded on demand
+|-- commands/         # 98 maintained slash-command shims
 |-- rules/            # opt-in common and language standards
 |-- hooks/            # runtime automation and enforcement
 |-- scripts/          # install, repair, sync, orchestration, and checks
@@ -1059,7 +1071,7 @@ ECC/
 |   |-- plugin.json         # Plugin metadata and component paths
 |   |-- marketplace.json    # Marketplace catalog for /plugin marketplace add
 |
-|-- agents/           # 67 specialized subagents for delegation
+|-- agents/           # 71 specialized subagents for delegation
 |   |-- planner.md           # Feature implementation planning
 |   |-- architect.md         # System design decisions
 |   |-- tdd-guide.md         # Test-driven development
@@ -1086,6 +1098,7 @@ ECC/
 |   |-- kotlin-reviewer.md   # Kotlin/Android/KMP code review
 |   |-- kotlin-build-resolver.md # Kotlin/Gradle build errors
 |   |-- harmonyos-app-resolver.md # HarmonyOS/ArkTS app development
+|   |-- ruby-reviewer.md     # Ruby/Rails code review
 |   |-- rust-reviewer.md     # Rust code review
 |   |-- rust-build-resolver.md # Rust build error resolution
 |   |-- pytorch-build-resolver.md # PyTorch/CUDA training errors
@@ -1100,6 +1113,7 @@ ECC/
 |   |-- article-writing/            # Long-form writing in a supplied voice without generic AI tone
 |   |-- content-engine/             # Multi-platform social content and repurposing workflows
 |   |-- market-research/            # Source-attributed market, competitor, and investor research
+|   |-- osint-investigation/        # OSINT methodology: competing hypotheses, falsification, visual and evidence verification
 |   |-- investor-materials/         # Pitch decks, one-pagers, memos, and financial models
 |   |-- investor-outreach/          # Personalized fundraising outreach and follow-up
 |   |-- continuous-learning/        # Legacy v1 Stop-hook pattern extraction
@@ -1135,6 +1149,7 @@ ECC/
 |   |-- springboot-verification/    # Spring Boot verification
 |   |-- configure-ecc/              # Interactive installation wizard
 |   |-- security-scan/              # AgentShield security auditor integration
+|   |-- issue-review/               # GitHub issue review: verify, dedupe, severity, draft reply
 |   |-- java-coding-standards/      # Java coding standards
 |   |-- jpa-patterns/               # JPA/Hibernate patterns
 |   |-- postgres-patterns/          # PostgreSQL optimization patterns
@@ -1166,6 +1181,7 @@ ECC/
 |-- commands/         # Maintained slash-entry compatibility; prefer skills/
 |   |-- plan.md             # /plan - Implementation planning
 |   |-- code-review.md      # /code-review - Quality review
+|   |-- issue-review.md     # /issue-review - GitHub issue review
 |   |-- build-fix.md        # /build-fix - Fix build errors
 |   |-- refactor-clean.md   # /refactor-clean - Dead code removal
 |   |-- quality-gate.md     # /quality-gate - Verification gate
@@ -1547,7 +1563,7 @@ See [affaan-m/ECC#2065](https://github.com/affaan-m/ECC/issues/2065).
 | Harness | Status | Recommended distribution | Important limitation |
 |---|---|---|---|
 | Claude Code | Stable primary | Plugin or selective installer | The plugin advertises the installed catalog to the model; use a selective/manual profile when context footprint matters. Optional shell-backed skills are not portable to every OS. |
-| Codex | Supported sync; marketplace experimental | Repo config or `sync-ecc-to-codex.sh` | No ECC hook runtime. The marketplace package can omit shared repository content from Codex's cache; use sync for the reliable path. |
+| Codex | Supported native plugin | Codex marketplace plugin or repo config | Native hooks require an explicit trust decision and do not use Claude's hook profiles. The legacy sync is compatibility-only. |
 | GitHub Copilot | Instruction-only | Checked-in instructions and prompt files | No ECC hooks, runtime agents, delegation, or native skill discovery. |
 
 ### Cross-tool capability map
@@ -1555,10 +1571,10 @@ See [affaan-m/ECC#2065](https://github.com/affaan-m/ECC/issues/2065).
 | Capability | Claude Code | Codex | GitHub Copilot |
 |---|---|---|---|
 | Instructions | Native | Native `AGENTS.md` | Native instruction file |
-| Skills | Native installed set | Native synced set | Prompt/instruction references only |
-| Agents/delegation | Native agents | Codex multi-agent roles | Not supported |
-| ECC hooks | Native plugin hooks | Not supported | Not supported |
-| MCP configuration | Available, explicit activation | TOML merge through sync | Not supplied by ECC |
+| Skills | Native installed set | Native plugin set | Prompt/instruction references only |
+| Agents/delegation | Native agents | Codex multi-agent roles; Claude agent files are not installed as roles | Not supported |
+| ECC hooks | Native plugin hooks | Native reviewed subset with explicit trust | Not supported |
+| MCP configuration | Available, explicit activation | Native plugin manifest; legacy sync can merge TOML | Not supplied by ECC |
 | Secret detection | Hook-based | Sandbox-based | Instruction-based |
 | Auto-format | PostToolUse hook | Not supported | Not supported |
 | Parity with Claude Code | Primary reference | Partial | Not a parity target |
@@ -1570,7 +1586,7 @@ See [affaan-m/ECC#2065](https://github.com/affaan-m/ECC/issues/2065).
 **Key architectural decisions:**
 - **AGENTS.md** at root is the universal cross-tool file (read by Claude Code and Codex; GitHub Copilot uses `.github/copilot-instructions.md` instead)
 - **Skills format** (SKILL.md with YAML frontmatter) works across Claude Code and Codex
-- Codex's lack of hooks is compensated by `AGENTS.md`, optional `model_instructions_file` overrides, and sandbox permissions
+- Codex's narrower native hook set is supplemented by `AGENTS.md`, optional `model_instructions_file` overrides, and sandbox permissions
 
 <details>
 <summary><strong>Codex macOS app + CLI support in depth</strong></summary>
@@ -1588,9 +1604,14 @@ npm install && bash scripts/sync-ecc-to-codex.sh
 cp .codex/config.toml ~/.codex/config.toml
 ```
 
-The sync script safely merges ECC MCP servers into your existing `~/.codex/config.toml` using an **add-only** strategy: it never removes or modifies your existing servers. Run with `--dry-run` to preview changes, or `--update-mcp` to force-refresh ECC servers to the latest recommended config.
+Normal MCP sync preserves existing server settings and warns when they differ from ECC's recommendation. An existing `chrome-devtools-mcp@latest` entry therefore stays unchanged; updating the repository alone does not adopt the recommended `chrome-devtools-mcp@1.10.1` pin. Existing legacy-sync users can preview and explicitly apply the refresh from the updated ECC checkout:
 
-For Context7, ECC uses the canonical Codex section name `[mcp_servers.context7]` while still launching the `@upstash/context7-mcp` package. If you already have a legacy `[mcp_servers.context7-mcp]` entry, `--update-mcp` migrates it to the canonical section name.
+```bash
+bash scripts/sync-ecc-to-codex.sh --dry-run --update-mcp
+bash scripts/sync-ecc-to-codex.sh --update-mcp
+```
+
+Review the preview before applying: `--update-mcp` replaces the entire recommended `chrome-devtools` server section, including custom command arguments and nested settings. Unrelated user-managed servers remain in place. Retired defaults such as Context7 are not refreshed or migrated by this flag.
 
 Codex macOS app:
 - Open this repository as your workspace.
@@ -1606,7 +1627,7 @@ Codex macOS app:
 | Config | 1 | `.codex/config.toml`: top-level approvals/sandbox/web_search, MCP servers, notifications, profiles |
 | AGENTS.md | 2 | Root (universal) + `.codex/AGENTS.md` (Codex-specific supplement) |
 | Skills | 32 | `.agents/skills/`: SKILL.md + agents/openai.yaml per skill |
-| MCP Servers | 6 | GitHub, Context7, Exa, Memory, Playwright, Sequential Thinking (7 with Supabase via `--update-mcp` sync) |
+| MCP Servers | 6 legacy reference entries | GitHub, Context7, Exa, Memory, Playwright, Sequential Thinking. Current managed sync recommends `chrome-devtools`; see the explicit refresh instructions above. |
 | Profiles | 2 | `strict` (read-only sandbox) and `yolo` (full auto-approve) |
 | Agent Roles | 3 | `.codex/agents/`: explorer, reviewer, docs-researcher |
 
@@ -1702,19 +1723,26 @@ Add to `~/.claude/settings.json`:
 {
   "model": "sonnet",
   "env": {
-    "MAX_THINKING_TOKENS": "10000",
+    "CLAUDE_CODE_EFFORT_LEVEL": "medium",
     "CLAUDE_AUTOCOMPACT_PCT_OVERRIDE": "50",
     "CLAUDE_CODE_SUBAGENT_MODEL": "haiku"
   }
 }
 ```
 
+The effort setting requires a model that supports effort controls. On Amazon Bedrock,
+Google Cloud's Agent Platform, and Microsoft Foundry, the `sonnet` alias currently
+resolves to Sonnet 4.5, which does not support effort controls. Select an effort-capable
+model available from your provider, or omit `CLAUDE_CODE_EFFORT_LEVEL`.
+
 | Setting | Default | Recommended | Impact |
 |---------|---------|-------------|--------|
 | `model` | opus | **sonnet** | ~60% cost reduction; handles 80%+ of coding tasks |
-| `MAX_THINKING_TOKENS` | 31,999 | **10,000** | ~70% reduction in hidden thinking cost per request |
+| `CLAUDE_CODE_EFFORT_LEVEL` | Model-dependent | **medium**, if supported | Controls adaptive reasoning depth on models that support effort controls; lower effort trades reasoning depth for latency and cost |
 | `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE` | 95 | **50** | Compacts earlier, better quality in long sessions |
 | `ECC_CONTEXT_MONITOR_COST_WARNINGS` | on | **off for subscription users** | Suppresses agent-facing API-rate estimate warnings while keeping context/scope/loop warnings |
+
+For fixed-budget models, `MAX_THINKING_TOKENS` controls the thinking budget. On Opus 4.6 or Sonnet 4.6, also set `CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING=1` to use that mode. A positive token value does not cap adaptive reasoning; see the [performance rule](rules/common/performance.md#extended-thinking--plan-mode).
 
 Switch to Opus only when you need deep architectural reasoning:
 ```
@@ -1862,7 +1890,11 @@ Run the cache check from an ECC checkout:
 node scripts/codex/check-plugin-cache.js
 ```
 
-If it reports unresolved parent references, use `bash scripts/sync-ecc-to-codex.sh`. Registration in `codex plugin list` confirms the marketplace entry, not that every referenced file reached the plugin cache. Runtime skill loading from local/repo marketplaces is still unreliable upstream ([openai/codex#26037](https://github.com/openai/codex/issues/26037)); see [#2128](https://github.com/affaan-m/ECC/issues/2128) for the full investigation.
+If it reports unresolved parent references, refresh the native cache with `codex plugin marketplace upgrade dylanlyu`, run `codex plugin add book@dylanlyu` again, and restart Codex. Registration in `codex plugin list` confirms the marketplace entry, while the cache check verifies that the installed manifest can resolve its skills, MCP configuration, and assets. Use `bash scripts/sync-ecc-to-codex.sh` only when you intentionally need the legacy copied-configuration compatibility path.
+
+If Codex 0.164.0 reports `unsupported plugin entry type` after you install hook
+dependencies into the cache, see the [cache-local runtime dependency procedure](.codex-plugin/README.md#runtime-dependencies-and-codex-01640-cache-checks).
+It avoids npm executable symlinks without disabling Codex's hook trust checks.
 </details>
 
 <details>
