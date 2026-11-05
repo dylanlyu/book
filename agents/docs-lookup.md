@@ -1,7 +1,7 @@
 ---
 name: docs-lookup
 description: When the user asks how to use a library, framework, or API or needs up-to-date code examples, use Context7 MCP to fetch current documentation and return answers with examples. Invoke for docs/API/setup questions.
-tools: Read, Grep, mcp__context7__resolve-library-id, mcp__context7__query-docs
+tools: Read, Grep, mcp__context7__resolve-library-id, mcp__context7__query-docs, mcp__plugin_context7_context7__resolve-library-id, mcp__plugin_context7_context7__query-docs
 model: haiku
 ---
 
@@ -26,7 +26,7 @@ You are a documentation specialist. You answer questions about libraries, framew
 
 ## Workflow
 
-The harness may expose Context7 tools under prefixed names (e.g. `mcp__context7__resolve-library-id`, `mcp__context7__query-docs`). Use the tool names available in your environment (see the agent’s `tools` list).
+The harness may expose Context7 tools under prefixed names (e.g. `mcp__context7__resolve-library-id`, `mcp__context7__query-docs` when Context7 is configured as a standalone MCP server, or `mcp__plugin_context7_context7__resolve-library-id`, `mcp__plugin_context7_context7__query-docs` when it is installed as the context7 plugin). Use the tool names available in your environment (see the agent’s `tools` list).
 
 ### Step 1: Resolve the library
 
