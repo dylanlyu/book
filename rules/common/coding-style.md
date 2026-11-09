@@ -41,6 +41,7 @@ Rationale: Immutable data prevents hidden side effects, makes debugging easier, 
 ## File Organization
 
 MANY SMALL FILES > FEW LARGE FILES:
+
 - High cohesion, low coupling
 - 200-400 lines typical, with 800 lines as a soft maintainability ceiling for source files
 - Test, generated, and vendored files may exceed the ceiling when their size is justified by their role
@@ -58,6 +59,7 @@ Each edit should be limited to a single functional module or logical component t
 ## Error Handling
 
 ALWAYS handle errors comprehensively:
+
 - Handle errors explicitly at every level
 - Provide user-friendly error messages in UI-facing code
 - Log detailed error context on the server side
@@ -66,6 +68,7 @@ ALWAYS handle errors comprehensively:
 ## Input Validation
 
 ALWAYS validate at system boundaries:
+
 - Validate all user input before processing
 - Use schema-based validation where available
 - Fail fast with clear error messages
@@ -98,6 +101,10 @@ Use named constants for meaningful thresholds, delays, and limits.
 ### Long Functions
 
 Split large functions into focused pieces with clear responsibilities (50 lines max).
+
+## Shell Variables
+
+Commands may run under zsh. When a variable is immediately followed by a colon, always write `${VAR}:...`, never `$VAR:...`. zsh reads `:c`, `:t`, `:h` and similar as modifiers. `${VAR}` works in both bash and zsh.
 
 ## Quality Gate (Self-Check Before Commit)
 
