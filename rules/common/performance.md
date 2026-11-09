@@ -5,11 +5,11 @@
 Pick by **task shape**, not by model capability claims. The aliases below are
 stable; which generation they resolve to is the harness's business, not this file's.
 
-| Alias    | Choose when the task…                                                    |
-| -------- | ------------------------------------------------------------------------ |
+| Alias    | Choose when the task…                                                                                                                                   |
+| -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `haiku`  | has a known-good procedure and a checkable output — formatting, extraction, classification, mechanical edits, high-frequency worker agents in a fan-out |
-| `sonnet` | requires reading unfamiliar code and deciding what to change — the default for implementation, review, and orchestration |
-| `opus`   | has no known procedure and an expensive wrong answer — architecture, cross-cutting refactor design, root-causing a bug that survived one fix attempt |
+| `sonnet` | requires reading unfamiliar code and deciding what to change — the default for implementation, review, and orchestration                                |
+| `opus`   | has no known procedure and an expensive wrong answer — architecture, cross-cutting refactor design, root-causing a bug that survived one fix attempt    |
 
 **Default to `sonnet`.** Deviate only for a stated reason.
 
@@ -60,3 +60,16 @@ Delegate to specialized resolvers instead of trial-and-error:
 - Language-specific → `go-build-resolver`, `rust-build-resolver`, `kotlin-build-resolver`, `java-build-resolver`, `cpp-build-resolver`, `dart-build-resolver`, `pytorch-build-resolver`
 
 Fix incrementally; verify after each fix.
+
+## GitHub Rate-Limit Warnings
+
+Claude Code may append a "GitHub API rate limit exceeded" reminder to a
+successful `gh` result when the output merely mentions `rate limit`, `429`,
+or `RATE_LIMITED` (for example, an issue about API throttling).
+
+Do not report the limit as exhausted or sleep on that reminder alone. First run:
+
+    gh api rate_limit --jq '.resources | {core, search, graphql}'
+
+- `remaining` is healthy and the `gh` command succeeded: treat it as a false alarm and continue.
+- `remaining` is near 0 or the `gh` command itself failed with a rate-limit error: wait until `reset`.
